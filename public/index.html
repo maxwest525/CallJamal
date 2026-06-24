@@ -1484,6 +1484,13 @@
   let allConversations = [];
   let selectedClientForSms = null;
 
+  // Virtual office floor plan rooms (status → room mapping)
+  const OFFICE_ROOMS = [
+    { icon: '🏢', name: 'Main Office',  statuses: ['online'] },
+    { icon: '📅', name: 'Conference',   statuses: ['busy'] },
+    { icon: '☕', name: 'Break Room',   statuses: ['away'] },
+  ];
+
   // ============================================================
   // Navigation
   // ============================================================
@@ -1773,11 +1780,7 @@
         </div>`;
     }
 
-    const rooms = [
-      { icon: '🏢', name: 'Main Office',    statuses: ['online'] },
-      { icon: '📅', name: 'Conference',     statuses: ['busy'] },
-      { icon: '☕', name: 'Break Room',     statuses: ['away'] },
-    ];
+    const rooms = OFFICE_ROOMS;
 
     const offlineUsers = users.filter(u => (u.status || 'offline') === 'offline');
 
