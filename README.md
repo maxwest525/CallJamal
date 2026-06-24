@@ -18,6 +18,7 @@ A production-ready Virtual Office system with SlickText SMS integration and Supa
 - **Google Workspace Sync** — Pull team members directly from your Google directory
 - **Conversation History** — All SMS threads grouped by phone number
 - **Audit Log** — Every action recorded for compliance
+- **Floating Huddle Widget** — Instant Daily.co video huddles from a draggable floating widget; Picture-in-Picture (PiP) pop-out to keep the call on screen while switching tabs; one-click Google Meet fallback
 
 ---
 
@@ -122,6 +123,8 @@ Open [http://localhost:3000](http://localhost:3000) to view the dashboard.
 | `GOOGLE_WORKSPACE_DOMAIN`         | Your Google Workspace domain (e.g. company.com)     |
 | `GOOGLE_SERVICE_ACCOUNT_KEY_FILE` | Path to Google service account JSON key file        |
 | `WEBHOOK_SECRET`                  | Secret for validating incoming SlickText webhooks   |
+| `DAILY_CO_API_KEY`                | Daily.co API key (for video huddles)                |
+| `DAILY_CO_DOMAIN`                 | Your Daily.co subdomain (e.g. `yourteam.daily.co`)  |
 
 ---
 
@@ -159,6 +162,14 @@ Open [http://localhost:3000](http://localhost:3000) to view the dashboard.
 | POST   | `/api/clients/:id/sms`          | Send SMS to a specific client       |
 | GET    | `/api/clients/:id/conversations`| Get SMS history for a client        |
 | GET    | `/api/clients/conversations/all`| All conversation threads            |
+
+### Meetings (Daily.co Huddles)
+
+| Method | Path                     | Description                                    |
+|--------|--------------------------|------------------------------------------------|
+| GET    | `/api/meetings/status`   | Check if Daily.co is configured                |
+| POST   | `/api/meetings/create`   | Create a new Daily.co room (returns URL)       |
+| GET    | `/api/meetings/rooms`    | List active (non-expired) Daily.co rooms       |
 
 ### Health
 

@@ -1010,6 +1010,147 @@
       .chat-panel { width: calc(100vw - 24px); right: 12px; }
       .chat-panel-ai { right: 12px; bottom: 160px; }
     }
+
+    /* ============================================================
+       Huddle Widget (floating video call)
+    ============================================================ */
+    .huddle-widget {
+      position: fixed;
+      bottom: 160px;
+      right: 24px;
+      width: 360px;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 10px 40px rgba(0,0,0,.25);
+      z-index: 310;
+      transition: opacity .2s, transform .2s;
+      opacity: 0;
+      transform: translateY(14px) scale(.97);
+      pointer-events: none;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .huddle-widget.open {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .huddle-widget.minimized .huddle-body { display: none; }
+
+    .huddle-header {
+      padding: 10px 14px;
+      background: #1e1e2e;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: grab;
+      user-select: none;
+      flex-shrink: 0;
+      border-radius: 14px 14px 0 0;
+    }
+
+    .huddle-header:active { cursor: grabbing; }
+    .huddle-header h4 { font-size: 0.875rem; font-weight: 600; flex: 1; margin: 0; }
+
+    .huddle-header-btns { display: flex; gap: 2px; }
+
+    .huddle-icon-btn {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,.55);
+      cursor: pointer;
+      font-size: 1rem;
+      line-height: 1;
+      padding: 3px 6px;
+      border-radius: 4px;
+      transition: background .1s, color .1s;
+    }
+
+    .huddle-icon-btn:hover { background: rgba(255,255,255,.12); color: #fff; }
+
+    .huddle-body { display: flex; flex-direction: column; }
+
+    .huddle-lobby { padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+
+    .huddle-lobby-note {
+      font-size: 0.8rem;
+      color: var(--color-gray-500);
+      background: var(--color-gray-50);
+      border: 1px solid var(--color-gray-200);
+      border-radius: var(--border-radius);
+      padding: 10px 12px;
+    }
+
+    .huddle-meet-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 9px 14px;
+      border-radius: var(--border-radius);
+      background: #1a73e8;
+      color: #fff;
+      font-size: 0.875rem;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      transition: background .15s;
+      text-decoration: none;
+    }
+
+    .huddle-meet-btn:hover { background: #1557b0; }
+
+    .huddle-rooms-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--color-gray-400);
+      text-transform: uppercase;
+      letter-spacing: .6px;
+    }
+
+    .huddle-room-list { display: flex; flex-direction: column; gap: 6px; max-height: 130px; overflow-y: auto; }
+
+    .huddle-room-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 6px;
+      background: var(--color-gray-50);
+      border: 1px solid var(--color-gray-200);
+      font-size: 0.8125rem;
+    }
+
+    .huddle-room-item-name { flex: 1; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    .huddle-call-frame {
+      width: 100%;
+      height: 280px;
+      border: none;
+      display: none;
+      background: #000;
+    }
+
+    .huddle-call-frame.active { display: block; }
+
+    .huddle-call-bar {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-top: 1px solid var(--color-gray-200);
+      background: var(--color-gray-50);
+    }
+
+    .huddle-call-bar.active { display: flex; }
+
+    .fab-huddle { background: #7c3aed; color: #fff; }
+
   </style>
 </head>
 <body>
@@ -1301,6 +1442,10 @@
 
 <!-- FAB Buttons -->
 <div class="fab-group">
+  <button class="fab fab-huddle" id="fabHuddle" title="Huddle">
+    📹
+    <span class="fab-label">Huddle</span>
+  </button>
   <button class="fab fab-ai" id="fabAi" title="AI Assistant">
     🤖
     <span class="fab-label">AI Assistant</span>
@@ -1338,6 +1483,40 @@
   <div class="chat-panel-compose">
     <input type="text" id="aiChatInput" placeholder="Ask AI…" maxlength="1000" />
     <button class="chat-send-btn" id="aiChatSend">➤</button>
+  </div>
+</div>
+
+<!-- Huddle Widget -->
+<div class="huddle-widget" id="huddleWidget">
+  <div class="huddle-header" id="huddleHeader">
+    <h4>📹 Huddle</h4>
+    <div class="huddle-header-btns">
+      <button class="huddle-icon-btn" id="huddlePipBtn" title="Pop out">⧉</button>
+      <button class="huddle-icon-btn" id="huddleMinimizeBtn" title="Minimize">−</button>
+      <button class="huddle-icon-btn" id="huddleCloseBtn" title="Close">✕</button>
+    </div>
+  </div>
+  <div class="huddle-body" id="huddleBody">
+    <!-- Lobby -->
+    <div class="huddle-lobby" id="huddleLobby">
+      <div class="huddle-lobby-note" id="huddleNote">Start a video huddle with your team or jump into Google Meet.</div>
+      <button class="btn btn-primary" style="width:100%;" id="huddleStartBtn">📹 Start New Daily Huddle</button>
+      <button class="huddle-meet-btn" id="huddleMeetBtn">🎥 Open Google Meet</button>
+      <div id="huddleRoomSection" style="display:none;">
+        <div class="huddle-rooms-label">Active Rooms</div>
+        <div class="huddle-room-list" id="huddleRoomList"></div>
+      </div>
+    </div>
+    <!-- Active call frame -->
+    <iframe id="huddleFrame" class="huddle-call-frame"
+      allow="camera; microphone; fullscreen; display-capture; autoplay; picture-in-picture"
+      allowfullscreen></iframe>
+    <!-- Call controls bar -->
+    <div class="huddle-call-bar" id="huddleCallBar">
+      <span style="flex:1;font-size:0.8125rem;color:var(--color-gray-600);" id="huddleRoomLabel">In a huddle</span>
+      <button class="btn btn-secondary btn-sm" id="huddlePipCallBtn">⧉ Pop out</button>
+      <button class="btn btn-danger btn-sm" id="huddleLeaveBtn">📵 Leave</button>
+    </div>
   </div>
 </div>
 
@@ -2246,16 +2425,19 @@
   // ============================================================
   let slackIsConnected = false;
   let aiIsConfigured = false;
+  let huddleIsConfigured = false;
 
   async function loadIntegrations() {
     try {
-      const [webhookData, slackStatus, aiStatus] = await Promise.all([
+      const [webhookData, slackStatus, aiStatus, meetingsStatus] = await Promise.all([
         apiFetch('/api/webhooks/status'),
         apiFetch('/api/slack/status').catch(() => ({ connected: false })),
         apiFetch('/api/ai/status').catch(() => ({ configured: false })),
+        apiFetch('/api/meetings/status').catch(() => ({ configured: false })),
       ]);
       slackIsConnected = slackStatus.connected;
       aiIsConfigured = aiStatus.configured;
+      huddleIsConfigured = meetingsStatus.configured;
       renderIntegrationCards(webhookData);
       document.getElementById('inboundWebhookUrl').textContent = webhookData.inboundUrl || '';
     } catch (err) {
@@ -2302,6 +2484,13 @@
         title: 'AI Assistant',
         desc: 'Chat with Gemini or Claude via the floating widget. Requires GEMINI_API_KEY or ANTHROPIC_API_KEY.',
         connected: aiIsConfigured,
+        action: null,
+      },
+      {
+        icon: '📹',
+        title: 'Daily.co Huddles',
+        desc: 'Start instant video huddles with your team via the floating Huddle widget. Requires DAILY_CO_API_KEY and DAILY_CO_DOMAIN.',
+        connected: huddleIsConfigured,
         action: null,
       },
     ];
@@ -2530,6 +2719,254 @@
   }
 
   // ============================================================
+  // Huddle Widget (Daily.co video calls + PiP)
+  // ============================================================
+  let huddleOpen = false;
+  let huddleMinimized = false;
+  let huddleInCall = false;
+  let huddleDailyConfigured = false;
+  let currentHuddleUrl = null;
+
+  // Restore persisted state from sessionStorage on load
+  (function restoreHuddle() {
+    try {
+      const saved = JSON.parse(sessionStorage.getItem('cj_huddle') || 'null');
+      if (!saved) return;
+      if (saved.url) {
+        currentHuddleUrl = saved.url;
+        huddleInCall = true;
+        document.getElementById('huddleFrame').src = saved.url;
+        document.getElementById('huddleFrame').classList.add('active');
+        document.getElementById('huddleLobby').style.display = 'none';
+        document.getElementById('huddleCallBar').classList.add('active');
+        const label = saved.url.split('/').pop();
+        document.getElementById('huddleRoomLabel').textContent = label ? `Room: ${escHtml(label)}` : 'In a huddle';
+      }
+      if (saved.open) {
+        huddleOpen = true;
+        document.getElementById('huddleWidget').classList.add('open');
+      }
+      if (saved.minimized) {
+        huddleMinimized = true;
+        document.getElementById('huddleWidget').classList.add('minimized');
+      }
+      if (saved.right) document.getElementById('huddleWidget').style.right = saved.right;
+      if (saved.bottom) document.getElementById('huddleWidget').style.bottom = saved.bottom;
+    } catch { /* ignore */ }
+  })();
+
+  function saveHuddleState() {
+    try {
+      const widget = document.getElementById('huddleWidget');
+      sessionStorage.setItem('cj_huddle', JSON.stringify({
+        url: currentHuddleUrl,
+        open: huddleOpen,
+        minimized: huddleMinimized,
+        right: widget.style.right || '',
+        bottom: widget.style.bottom || '',
+      }));
+    } catch { /* ignore */ }
+  }
+
+  async function openHuddleWidget() {
+    huddleOpen = true;
+    document.getElementById('huddleWidget').classList.add('open');
+    // Load Daily.co status and active rooms on first open
+    if (!huddleInCall) await loadHuddleLobby();
+    saveHuddleState();
+  }
+
+  function closeHuddleWidget() {
+    huddleOpen = false;
+    document.getElementById('huddleWidget').classList.remove('open');
+    saveHuddleState();
+  }
+
+  function toggleHuddle() {
+    if (huddleOpen) closeHuddleWidget();
+    else openHuddleWidget();
+  }
+
+  function toggleHuddleMinimize() {
+    huddleMinimized = !huddleMinimized;
+    document.getElementById('huddleWidget').classList.toggle('minimized', huddleMinimized);
+    document.getElementById('huddleMinimizeBtn').textContent = huddleMinimized ? '+' : '−';
+    saveHuddleState();
+  }
+
+  async function loadHuddleLobby() {
+    const note = document.getElementById('huddleNote');
+    const roomSection = document.getElementById('huddleRoomSection');
+    const roomList = document.getElementById('huddleRoomList');
+    const startBtn = document.getElementById('huddleStartBtn');
+
+    try {
+      const status = await apiFetch('/api/meetings/status');
+      huddleDailyConfigured = status.configured;
+
+      if (!huddleDailyConfigured) {
+        startBtn.disabled = true;
+        startBtn.textContent = '📹 Daily.co not configured';
+        note.textContent = 'Set DAILY_CO_API_KEY and DAILY_CO_DOMAIN in .env to enable video huddles. Google Meet is always available.';
+        roomSection.style.display = 'none';
+        return;
+      }
+
+      startBtn.disabled = false;
+      startBtn.textContent = '📹 Start New Daily Huddle';
+      note.textContent = 'Start a video huddle with your team or jump into Google Meet.';
+
+      // Load active rooms
+      const data = await apiFetch('/api/meetings/rooms');
+      const rooms = data.rooms || [];
+      if (rooms.length) {
+        roomSection.style.display = 'block';
+        roomList.innerHTML = rooms.map(r => `
+          <div class="huddle-room-item">
+            <span class="huddle-room-item-name" title="${escAttr(r.name)}">🔴 ${escHtml(r.name)}</span>
+            <button class="btn btn-primary btn-sm js-join-room" data-url="${escAttr(r.url)}" data-name="${escAttr(r.name)}">Join</button>
+          </div>
+        `).join('');
+        roomList.querySelectorAll('.js-join-room').forEach(btn => {
+          btn.addEventListener('click', () => joinHuddleRoom(btn.dataset.url, btn.dataset.name));
+        });
+      } else {
+        roomSection.style.display = 'none';
+      }
+    } catch (err) {
+      note.textContent = `Could not load status: ${err.message}`;
+    }
+  }
+
+  async function startNewHuddle() {
+    const btn = document.getElementById('huddleStartBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner" style="border-color:rgba(255,255,255,.3);border-top-color:#fff;"></span>';
+    try {
+      const data = await apiFetch('/api/meetings/create', { method: 'POST', body: JSON.stringify({}) });
+      joinHuddleRoom(data.url, data.name);
+    } catch (err) {
+      toast(`Huddle error: ${err.message}`, 'error');
+      btn.disabled = false;
+      btn.textContent = '📹 Start New Daily Huddle';
+    }
+  }
+
+  function joinHuddleRoom(url, name) {
+    if (!url) return;
+    currentHuddleUrl = url;
+    huddleInCall = true;
+
+    const frame = document.getElementById('huddleFrame');
+    frame.src = url;
+    frame.classList.add('active');
+
+    document.getElementById('huddleLobby').style.display = 'none';
+    document.getElementById('huddleCallBar').classList.add('active');
+    document.getElementById('huddleRoomLabel').textContent = name ? `Room: ${escHtml(name)}` : 'In a huddle';
+
+    // Re-enable start button for next time
+    const startBtn = document.getElementById('huddleStartBtn');
+    startBtn.disabled = false;
+    startBtn.textContent = '📹 Start New Daily Huddle';
+
+    saveHuddleState();
+    toast(`Joined huddle: ${name || url}`, 'success');
+  }
+
+  function leaveHuddle() {
+    huddleInCall = false;
+    currentHuddleUrl = null;
+
+    const frame = document.getElementById('huddleFrame');
+    frame.src = '';
+    frame.classList.remove('active');
+
+    document.getElementById('huddleLobby').style.display = '';
+    document.getElementById('huddleCallBar').classList.remove('active');
+
+    sessionStorage.removeItem('cj_huddle');
+    loadHuddleLobby();
+  }
+
+  function openGoogleMeet() {
+    window.open('https://meet.new', '_blank', 'noopener,noreferrer');
+  }
+
+  // Picture-in-Picture: use Document PiP API if available, otherwise open popup
+  async function requestHuddlePiP() {
+    if (!currentHuddleUrl) {
+      toast('No active huddle to pop out.', 'warning');
+      return;
+    }
+
+    if (window.documentPictureInPicture) {
+      try {
+        const pipWin = await window.documentPictureInPicture.requestWindow({ width: 420, height: 320 });
+        const iframe = pipWin.document.createElement('iframe');
+        iframe.src = currentHuddleUrl;
+        iframe.setAttribute('allow', 'camera; microphone; fullscreen; display-capture; autoplay; picture-in-picture');
+        iframe.style.cssText = 'width:100%;height:100%;border:none;background:#000;';
+        pipWin.document.body.style.cssText = 'margin:0;padding:0;background:#000;overflow:hidden;';
+        pipWin.document.body.appendChild(iframe);
+        toast('Huddle popped out!', 'success');
+        return;
+      } catch (err) {
+        // Fall through to popup
+      }
+    }
+    // Fallback: open in a small popup window
+    window.open(
+      currentHuddleUrl,
+      'huddlePiP',
+      'width=440,height=340,resizable=yes,scrollbars=no,toolbar=no,menubar=no,location=no,status=no'
+    );
+    toast('Huddle opened in popup window.', 'success');
+  }
+
+  // Draggable huddle widget
+  (function initHuddleDrag() {
+    const widget = document.getElementById('huddleWidget');
+    const handle = document.getElementById('huddleHeader');
+    let dragging = false, startX, startY, origRight, origBottom;
+
+    handle.addEventListener('mousedown', (e) => {
+      // Don't drag when clicking header buttons
+      if (e.target.closest('.huddle-header-btns')) return;
+      dragging = true;
+      const rect = widget.getBoundingClientRect();
+      startX = e.clientX;
+      startY = e.clientY;
+      origRight = window.innerWidth - rect.right;
+      origBottom = window.innerHeight - rect.bottom;
+      widget.style.right = origRight + 'px';
+      widget.style.bottom = origBottom + 'px';
+      widget.style.left = 'auto';
+      widget.style.top = 'auto';
+      widget.style.transition = 'none';
+      document.body.style.userSelect = 'none';
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (!dragging) return;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      const newRight = Math.max(0, origRight - dx);
+      const newBottom = Math.max(0, origBottom - dy);
+      widget.style.right = Math.min(newRight, window.innerWidth - 60) + 'px';
+      widget.style.bottom = Math.min(newBottom, window.innerHeight - 40) + 'px';
+    });
+
+    document.addEventListener('mouseup', () => {
+      if (!dragging) return;
+      dragging = false;
+      widget.style.transition = '';
+      document.body.style.userSelect = '';
+      saveHuddleState();
+    });
+  })();
+
+  // ============================================================
   // New event listeners
   // ============================================================
   document.getElementById('gmailComposeBtn').addEventListener('click', () => openModal('gmailComposeModal'));
@@ -2540,6 +2977,15 @@
 
   document.getElementById('testWebhookBtn').addEventListener('click', testWebhook);
   document.getElementById('copyWebhookUrlBtn').addEventListener('click', copyWebhookUrl);
+
+  document.getElementById('fabHuddle').addEventListener('click', toggleHuddle);
+  document.getElementById('huddleCloseBtn').addEventListener('click', closeHuddleWidget);
+  document.getElementById('huddleMinimizeBtn').addEventListener('click', toggleHuddleMinimize);
+  document.getElementById('huddlePipBtn').addEventListener('click', requestHuddlePiP);
+  document.getElementById('huddleStartBtn').addEventListener('click', startNewHuddle);
+  document.getElementById('huddleMeetBtn').addEventListener('click', openGoogleMeet);
+  document.getElementById('huddleLeaveBtn').addEventListener('click', leaveHuddle);
+  document.getElementById('huddlePipCallBtn').addEventListener('click', requestHuddlePiP);
 
   document.getElementById('fabTeam').addEventListener('click', toggleTeamChat);
   document.getElementById('fabAi').addEventListener('click', toggleAiChat);

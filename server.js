@@ -14,6 +14,7 @@ const aiRoutes = require('./routes/ai');
 const webhooksRoutes = require('./routes/webhooks');
 const authRoutes = require('./routes/auth');
 const internalChatRoutes = require('./routes/internal-chat');
+const meetingsRoutes = require('./routes/meetings');
 const { authMiddleware } = require('./lib/auth');
 
 const app = express();
@@ -73,6 +74,7 @@ app.use('/api/slack', slackRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/webhooks', webhooksRoutes);
 app.use('/api/internal-chat', internalChatRoutes);
+app.use('/api/meetings', meetingsRoutes);
 
 // Auth routes (OAuth callbacks live outside /api/)
 app.use('/auth', authRoutes);
