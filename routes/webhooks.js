@@ -25,7 +25,7 @@ router.get('/status', (req, res) => {
   res.json({
     zapier: { configured: Boolean(zapierUrl), url: redact(zapierUrl) },
     n8n: { configured: Boolean(n8nUrl), url: redact(n8nUrl) },
-    inboundUrl: `${process.env.BASE_URL || 'http://localhost:' + (process.env.PORT || 3000)}/api/webhooks/inbound`,
+    inboundUrl: `${process.env.BASE_URL || `http://localhost:${process.env.PORT || 3000}`}/api/webhooks/inbound`,
   });
 });
 

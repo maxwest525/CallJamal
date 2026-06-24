@@ -34,7 +34,8 @@ router.post('/chat', async (req, res) => {
     res.json({ response });
   } catch (err) {
     console.error('AI chat error:', err.message);
-    res.status(500).json({ error: err.message });
+    const message = process.env.NODE_ENV === 'development' ? err.message : 'AI service error. Check server configuration.';
+    res.status(500).json({ error: message });
   }
 });
 
@@ -59,11 +60,12 @@ router.post('/chat/stream', async (req, res) => {
     res.end();
   } catch (err) {
     console.error('AI chat stream error:', err.message);
+    const message = process.env.NODE_ENV === 'development' ? err.message : 'AI service error. Check server configuration.';
     // If headers already sent (streaming started), we can only close connection
     if (!res.headersSent) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: message });
     } else {
-      res.write(`data: ${JSON.stringify({ error: err.message })}\n\n`);
+      res.write(`data: ${JSON.stringify({ error: message })}\n\n`);
       res.end();
     }
   }
