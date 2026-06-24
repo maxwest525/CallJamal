@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CallJamal – Virtual Office</title>
+  <style>
+    /* ============================================================
+       CSS Reset & Variables
+    ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --color-primary: #4f46e5;
+      --color-primary-dark: #4338ca;
+      --color-primary-light: #e0e7ff;
+      --color-success: #10b981;
+      --color-warning: #f59e0b;
+      --color-danger: #ef4444;
+      --color-gray-50: #f9fafb;
+      --color-gray-100: #f3f4f6;
+      --color-gray-200: #e5e7eb;
+      --color-gray-300: #d1d5db;
+      --color-gray-400: #9ca3af;
+      --color-gray-500: #6b7280;
+      --color-gray-600: #4b5563;
+      --color-gray-700: #374151;
+      --color-gray-800: #1f2937;
+      --color-gray-900: #111827;
+      --sidebar-width: 240px;
+      --header-height: 60px;
+      --border-radius: 8px;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,.05);
+      --shadow: 0 1px 3px rgba(0,0,0,.1), 0 1px 2px rgba(0,0,0,.06);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -1px rgba(0,0,0,.06);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+      background: var(--color-gray-50);
+      color: var(--color-gray-800);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ============================================================
+       Sidebar
+    ============================================================ */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--color-gray-900);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      height: 100vh;
+    }
+
+    .sidebar-logo {
+      padding: 20px 16px;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+
+    .sidebar-logo h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.5px;
+    }
+
+    .sidebar-logo p {
+      font-size: 0.75rem;
+      color: var(--color-gray-400);
+      margin-top: 2px;
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 12px 8px;
+      overflow-y: auto;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      font-size: 0.875rem;
+      color: var(--color-gray-300);
+      transition: all .15s ease;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      margin-bottom: 2px;
+    }
+
+    .nav-item:hover { background: rgba(255,255,255,.08); color: #fff; }
+    .nav-item.active { background: var(--color-primary); color: #fff; }
+
+    .nav-item .nav-icon { font-size: 1.1rem; width: 20px; text-align: center; }
+
+    .sidebar-footer {
+      padding: 12px 8px;
+      border-top: 1px solid rgba(255,255,255,.1);
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: var(--border-radius);
+      background: rgba(255,255,255,.05);
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--color-success);
+      flex-shrink: 0;
+    }
+
+    .status-dot.away { background: var(--color-warning); }
+    .status-dot.busy { background: var(--color-danger); }
+    .status-dot.offline { background: var(--color-gray-500); }
+
+    .status-info { flex: 1; min-width: 0; }
+    .status-name { font-size: 0.8125rem; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .status-label { font-size: 0.7rem; color: var(--color-gray-400); }
+
+    /* ============================================================
+       Main Content
+    ============================================================ */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .header {
+      height: var(--header-height);
+      background: #fff;
+      border-bottom: 1px solid var(--color-gray-200);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+
+    .header-title { font-size: 1.125rem; font-weight: 600; flex: 1; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: var(--border-radius);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all .15s ease;
+    }
+
+    .btn-primary { background: var(--color-primary); color: #fff; }
+    .btn-primary:hover { background: var(--color-primary-dark); }
+    .btn-secondary { background: var(--color-gray-100); color: var(--color-gray-700); border: 1px solid var(--color-gray-200); }
+    .btn-secondary:hover { background: var(--color-gray-200); }
+    .btn-danger { background: var(--color-danger); color: #fff; }
+    .btn-danger:hover { background: #dc2626; }
+    .btn-sm { padding: 5px 10px; font-size: 0.8125rem; }
+
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+    }
+
+    /* ============================================================
+       Tabs (views)
+    ============================================================ */
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* ============================================================
+       Cards & Panels
+    ============================================================ */
+    .card {
+      background: #fff;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--color-gray-200);
+    }
+
+    .card-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--color-gray-200);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .card-header h3 { font-size: 0.9375rem; font-weight: 600; flex: 1; }
+    .card-body { padding: 20px; }
+
+    /* ============================================================
+       Form Elements
+    ============================================================ */
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; font-size: 0.8125rem; font-weight: 500; color: var(--color-gray-700); margin-bottom: 6px; }
+
+    .form-control {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid var(--color-gray-300);
+      border-radius: var(--border-radius);
+      font-size: 0.875rem;
+      color: var(--color-gray-800);
+      background: #fff;
+      transition: border-color .15s ease, box-shadow .15s ease;
+      outline: none;
+    }
+
+    .form-control:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(79,70,229,.15);
+    }
+
+    textarea.form-control { resize: vertical; min-height: 80px; }
+
+    select.form-control { cursor: pointer; }
+
+    /* ============================================================
+       Grid layouts
+    ============================================================ */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+    /* ============================================================
+       Messages View
+    ============================================================ */
+    .messages-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .message-list {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .message-item {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--color-gray-100);
+      font-size: 0.875rem;
+    }
+
+    .message-item:last-child { border-bottom: none; }
+
+    .message-item .meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .message-item .sender { font-weight: 600; font-size: 0.8125rem; }
+    .message-item .timestamp { font-size: 0.75rem; color: var(--color-gray-400); }
+    .message-item .body { color: var(--color-gray-600); }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-external { background: var(--color-primary-light); color: var(--color-primary-dark); }
+    .badge-internal { background: #dcfce7; color: #15803d; }
+    .badge-broadcast { background: #fef3c7; color: #92400e; }
+    .badge-inbound { background: #f3f4f6; color: var(--color-gray-600); }
+
+    /* ============================================================
+       Users / Team View
+    ============================================================ */
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .user-card {
+      background: #fff;
+      border: 1px solid var(--color-gray-200);
+      border-radius: var(--border-radius);
+      padding: 20px 16px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .user-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 0 auto 12px;
+      display: block;
+    }
+
+    .user-avatar-placeholder {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      color: #fff;
+      font-size: 1.25rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 12px;
+    }
+
+    .user-name { font-size: 0.9375rem; font-weight: 600; margin-bottom: 2px; }
+    .user-title { font-size: 0.8125rem; color: var(--color-gray-500); margin-bottom: 8px; }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .status-pill.online { background: #dcfce7; color: #15803d; }
+    .status-pill.away { background: #fef3c7; color: #92400e; }
+    .status-pill.busy { background: #fee2e2; color: #b91c1c; }
+    .status-pill.offline { background: var(--color-gray-100); color: var(--color-gray-500); }
+
+    /* ============================================================
+       Clients View
+    ============================================================ */
+    .clients-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+    .clients-table th { padding: 10px 16px; text-align: left; background: var(--color-gray-50); border-bottom: 1px solid var(--color-gray-200); font-weight: 600; font-size: 0.8125rem; color: var(--color-gray-600); }
+    .clients-table td { padding: 12px 16px; border-bottom: 1px solid var(--color-gray-100); vertical-align: middle; }
+    .clients-table tr:last-child td { border-bottom: none; }
+    .clients-table tr:hover td { background: var(--color-gray-50); }
+
+    /* ============================================================
+       Conversations View
+    ============================================================ */
+    .conversation-list { display: flex; flex-direction: column; gap: 0; }
+
+    .conversation-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--color-gray-100);
+      cursor: pointer;
+      transition: background .1s;
+    }
+
+    .conversation-item:hover { background: var(--color-gray-50); }
+
+    .conv-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .conv-info { flex: 1; min-width: 0; }
+    .conv-name { font-weight: 600; font-size: 0.9375rem; }
+    .conv-preview { font-size: 0.8125rem; color: var(--color-gray-500); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .conv-meta { text-align: right; flex-shrink: 0; }
+    .conv-time { font-size: 0.75rem; color: var(--color-gray-400); }
+    .conv-unread {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    /* ============================================================
+       Search bar
+    ============================================================ */
+    .search-bar {
+      position: relative;
+    }
+
+    .search-bar input {
+      padding-left: 36px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--color-gray-400);
+      font-size: 1rem;
+      pointer-events: none;
+    }
+
+    /* ============================================================
+       Stat Cards
+    ============================================================ */
+    .stat-card {
+      background: #fff;
+      border: 1px solid var(--color-gray-200);
+      border-radius: var(--border-radius);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .stat-label { font-size: 0.8125rem; color: var(--color-gray-500); margin-bottom: 4px; }
+    .stat-value { font-size: 1.75rem; font-weight: 700; color: var(--color-gray-900); }
+    .stat-change { font-size: 0.8125rem; color: var(--color-success); margin-top: 4px; }
+
+    /* ============================================================
+       Modal
+    ============================================================ */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.5);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-backdrop.open { display: flex; }
+
+    .modal {
+      background: #fff;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+    }
+
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--color-gray-200);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-header h3 { font-size: 1rem; font-weight: 600; }
+    .modal-close { background: none; border: none; font-size: 1.25rem; cursor: pointer; color: var(--color-gray-400); }
+    .modal-close:hover { color: var(--color-gray-700); }
+    .modal-body { padding: 20px; }
+    .modal-footer { padding: 12px 20px; border-top: 1px solid var(--color-gray-200); display: flex; gap: 8px; justify-content: flex-end; }
+
+    /* ============================================================
+       Toast
+    ============================================================ */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 200;
+    }
+
+    .toast {
+      padding: 12px 16px;
+      border-radius: var(--border-radius);
+      background: var(--color-gray-900);
+      color: #fff;
+      font-size: 0.875rem;
+      box-shadow: var(--shadow-md);
+      animation: slideIn .2s ease;
+      max-width: 320px;
+    }
+
+    .toast.success { background: var(--color-success); }
+    .toast.error { background: var(--color-danger); }
+    .toast.warning { background: var(--color-warning); color: var(--color-gray-900); }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* ============================================================
+       Loading spinner
+    ============================================================ */
+    .spinner {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255,255,255,.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--color-gray-400);
+    }
+
+    .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
+    .empty-state p { font-size: 0.9375rem; }
+
+    /* ============================================================
+       Responsive
+    ============================================================ */
+    @media (max-width: 768px) {
+      .sidebar { width: 60px; }
+      .sidebar-logo h1, .sidebar-logo p, .nav-item span, .status-info { display: none; }
+      .sidebar-width { --sidebar-width: 60px; }
+      .messages-layout { grid-template-columns: 1fr; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ============================================================
+     SIDEBAR
+============================================================ -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <h1>📞 CallJamal</h1>
+    <p>Virtual Office</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <button class="nav-item active" data-view="messages">
+      <span class="nav-icon">💬</span>
+      <span>Messages</span>
+    </button>
+    <button class="nav-item" data-view="conversations">
+      <span class="nav-icon">🗂️</span>
+      <span>Conversations</span>
+    </button>
+    <button class="nav-item" data-view="users">
+      <span class="nav-icon">👥</span>
+      <span>Team</span>
+    </button>
+    <button class="nav-item" data-view="clients">
+      <span class="nav-icon">📋</span>
+      <span>Clients</span>
+    </button>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="status-indicator">
+      <div class="status-dot" id="myStatusDot"></div>
+      <div class="status-info">
+        <div class="status-name" id="myStatusName">You</div>
+        <div class="status-label" id="myStatusLabel">Online</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ============================================================
+     MAIN CONTENT
+============================================================ -->
+<main class="main">
+  <header class="header">
+    <span class="header-title" id="headerTitle">Messages</span>
+    <button class="btn btn-secondary btn-sm" id="refreshBtn" onclick="refreshCurrentView()">🔄 Refresh</button>
+  </header>
+
+  <div class="content">
+
+    <!-- ========== MESSAGES VIEW ========== -->
+    <div class="view active" id="view-messages">
+      <div class="grid-3" style="margin-bottom:24px;">
+        <div class="stat-card">
+          <div class="stat-label">Messages Today</div>
+          <div class="stat-value" id="statMsgToday">–</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Active Conversations</div>
+          <div class="stat-value" id="statConvActive">–</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Clients</div>
+          <div class="stat-value" id="statClients">–</div>
+        </div>
+      </div>
+
+      <div class="messages-layout">
+        <!-- Send SMS Form -->
+        <div class="card">
+          <div class="card-header">
+            <h3>📤 Send SMS</h3>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <label class="form-label">Type</label>
+              <select class="form-control" id="msgType" onchange="handleMsgTypeChange()">
+                <option value="external">External (to Client)</option>
+                <option value="internal">Internal (to Team Member)</option>
+                <option value="broadcast">Broadcast (to All Clients)</option>
+              </select>
+            </div>
+            <div class="form-group" id="toGroup">
+              <label class="form-label">To Phone Number</label>
+              <input class="form-control" id="msgTo" type="tel" placeholder="+15551234567" />
+            </div>
+            <div class="form-group" id="clientSelectGroup" style="display:none;">
+              <label class="form-label">Select Client</label>
+              <select class="form-control" id="msgClientSelect">
+                <option value="">Loading clients…</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Message</label>
+              <textarea class="form-control" id="msgBody" placeholder="Type your message…"></textarea>
+            </div>
+            <button class="btn btn-primary" style="width:100%;" onclick="sendMessage()">
+              <span id="sendBtnText">Send Message</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Recent Messages -->
+        <div class="card">
+          <div class="card-header">
+            <h3>📨 Recent Messages</h3>
+          </div>
+          <div class="message-list" id="messageList">
+            <div class="empty-state"><div class="icon">💬</div><p>No messages yet</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== CONVERSATIONS VIEW ========== -->
+    <div class="view" id="view-conversations">
+      <div class="card">
+        <div class="card-header">
+          <h3>🗂️ SMS Conversations</h3>
+          <div class="search-bar" style="width:240px;">
+            <span class="search-icon">🔍</span>
+            <input class="form-control" type="text" placeholder="Search…" oninput="filterConversations(this.value)" />
+          </div>
+        </div>
+        <div class="conversation-list" id="conversationList">
+          <div class="empty-state"><div class="icon">💬</div><p>No conversations yet</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== USERS / TEAM VIEW ========== -->
+    <div class="view" id="view-users">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+        <h2 style="font-size:1.125rem; font-weight:600;">Team Members</h2>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-secondary btn-sm" onclick="syncGoogleWorkspace()">🔄 Sync Google Workspace</button>
+          <button class="btn btn-primary btn-sm" onclick="openAddUserModal()">+ Add Member</button>
+        </div>
+      </div>
+      <div class="team-grid" id="teamGrid">
+        <div class="empty-state"><div class="icon">👥</div><p>No team members yet</p></div>
+      </div>
+    </div>
+
+    <!-- ========== CLIENTS VIEW ========== -->
+    <div class="view" id="view-clients">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+        <div class="search-bar" style="width:280px;">
+          <span class="search-icon">🔍</span>
+          <input class="form-control" type="text" placeholder="Search clients…" oninput="searchClients(this.value)" />
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openAddClientModal()">+ Add Client</button>
+      </div>
+      <div class="card">
+        <table class="clients-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Company</th>
+              <th>Phone</th>
+              <th>Email</th>
+              <th>Last Contacted</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="clientTableBody">
+            <tr><td colspan="6" style="text-align:center; padding:32px; color:#9ca3af;">Loading clients…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</main>
+
+<!-- ============================================================
+     MODALS
+============================================================ -->
+
+<!-- Add Client Modal -->
+<div class="modal-backdrop" id="addClientModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Add New Client</h3>
+      <button class="modal-close" onclick="closeModal('addClientModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Name *</label>
+        <input class="form-control" id="newClientName" placeholder="Full name" />
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">Company</label>
+          <input class="form-control" id="newClientCompany" placeholder="Company name" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone *</label>
+          <input class="form-control" id="newClientPhone" type="tel" placeholder="+15551234567" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-control" id="newClientEmail" type="email" placeholder="email@example.com" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes</label>
+        <textarea class="form-control" id="newClientNotes" placeholder="Optional notes…"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('addClientModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="createClient()">Create Client</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add User Modal -->
+<div class="modal-backdrop" id="addUserModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Add Team Member</h3>
+      <button class="modal-close" onclick="closeModal('addUserModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">First Name</label>
+          <input class="form-control" id="newUserFirstName" placeholder="First name" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name</label>
+          <input class="form-control" id="newUserLastName" placeholder="Last name" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email *</label>
+        <input class="form-control" id="newUserEmail" type="email" placeholder="user@company.com" />
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">Phone</label>
+          <input class="form-control" id="newUserPhone" type="tel" placeholder="+15551234567" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Job Title</label>
+          <input class="form-control" id="newUserTitle" placeholder="e.g. Account Manager" />
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('addUserModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="createUser()">Add Member</button>
+    </div>
+  </div>
+</div>
+
+<!-- Send SMS to Client Modal -->
+<div class="modal-backdrop" id="sendClientSmsModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Send SMS to <span id="smsClientName"></span></h3>
+      <button class="modal-close" onclick="closeModal('sendClientSmsModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Message *</label>
+        <textarea class="form-control" id="smsClientBody" placeholder="Type your message…"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('sendClientSmsModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="sendClientSms()">Send SMS</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ============================================================
+     JAVASCRIPT
+============================================================ -->
+<script>
+  const API = '';  // Same origin
+  let currentView = 'messages';
+  let allClients = [];
+  let allConversations = [];
+  let selectedClientForSms = null;
+
+  // ============================================================
+  // Navigation
+  // ============================================================
+  document.querySelectorAll('.nav-item').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const view = btn.dataset.view;
+      navigate(view);
+    });
+  });
+
+  function navigate(view) {
+    currentView = view;
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.dataset.view === view));
+    document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === `view-${view}`));
+
+    const titles = { messages: 'Messages', conversations: 'Conversations', users: 'Team', clients: 'Clients' };
+    document.getElementById('headerTitle').textContent = titles[view] || view;
+
+    loadView(view);
+  }
+
+  function refreshCurrentView() { loadView(currentView); }
+
+  function loadView(view) {
+    if (view === 'messages') { loadMessages(); loadStats(); loadClientOptions(); }
+    else if (view === 'conversations') loadConversations();
+    else if (view === 'users') loadTeam();
+    else if (view === 'clients') loadClients();
+  }
+
+  // ============================================================
+  // Toast
+  // ============================================================
+  function toast(message, type = 'default', duration = 4000) {
+    const el = document.createElement('div');
+    el.className = `toast ${type}`;
+    el.textContent = message;
+    document.getElementById('toastContainer').appendChild(el);
+    setTimeout(() => el.remove(), duration);
+  }
+
+  // ============================================================
+  // API helpers
+  // ============================================================
+  async function apiFetch(path, options = {}) {
+    const res = await fetch(API + path, {
+      headers: { 'Content-Type': 'application/json', ...options.headers },
+      ...options,
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+    return data;
+  }
+
+  // ============================================================
+  // Stats
+  // ============================================================
+  async function loadStats() {
+    try {
+      const [msgData, convData, clientData] = await Promise.all([
+        apiFetch('/api/sms/messages?limit=200'),
+        apiFetch('/api/clients/conversations/all?limit=200'),
+        apiFetch('/api/clients?limit=1000'),
+      ]);
+
+      const today = new Date().toDateString();
+      const msgToday = (msgData.messages || []).filter(m => new Date(m.created_at).toDateString() === today).length;
+
+      document.getElementById('statMsgToday').textContent = msgToday;
+      document.getElementById('statConvActive').textContent = (convData.conversations || []).length;
+      document.getElementById('statClients').textContent = (clientData.clients || []).length;
+    } catch (err) {
+      console.error('Stats error:', err.message);
+    }
+  }
+
+  // ============================================================
+  // Messages
+  // ============================================================
+  async function loadMessages() {
+    try {
+      const data = await apiFetch('/api/sms/messages?limit=30');
+      renderMessages(data.messages || []);
+    } catch (err) {
+      console.error('Load messages error:', err.message);
+    }
+  }
+
+  function renderMessages(messages) {
+    const el = document.getElementById('messageList');
+    if (!messages.length) {
+      el.innerHTML = `<div class="empty-state"><div class="icon">💬</div><p>No messages yet</p></div>`;
+      return;
+    }
+    el.innerHTML = messages.map(m => {
+      const sender = m.sender?.name || m.from_number || 'Unknown';
+      const time = new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const date = new Date(m.created_at).toLocaleDateString();
+      const typeClass = m.direction === 'inbound' ? 'badge-inbound' : `badge-${m.message_type}`;
+      const typeLabel = m.direction === 'inbound' ? 'Inbound' : m.message_type;
+      return `
+        <div class="message-item">
+          <div class="meta">
+            <span class="sender">${escHtml(sender)}</span>
+            <div style="display:flex;gap:6px;align-items:center;">
+              <span class="badge ${typeClass}">${typeLabel}</span>
+              <span class="timestamp">${date} ${time}</span>
+            </div>
+          </div>
+          <div class="body">${escHtml(m.body)}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  async function loadClientOptions() {
+    try {
+      const data = await apiFetch('/api/clients?limit=500');
+      allClients = data.clients || [];
+      const select = document.getElementById('msgClientSelect');
+      select.innerHTML = '<option value="">– Select a client –</option>' +
+        allClients.map(c => `<option value="${c.id}" data-phone="${escAttr(c.phone)}">${escHtml(c.name)} (${escHtml(c.phone)})</option>`).join('');
+    } catch (err) {
+      console.error('Load client options error:', err.message);
+    }
+  }
+
+  function handleMsgTypeChange() {
+    const type = document.getElementById('msgType').value;
+    const toGroup = document.getElementById('toGroup');
+    const clientSelectGroup = document.getElementById('clientSelectGroup');
+
+    if (type === 'external') {
+      toGroup.style.display = 'block';
+      clientSelectGroup.style.display = 'block';
+    } else if (type === 'internal') {
+      toGroup.style.display = 'block';
+      clientSelectGroup.style.display = 'none';
+    } else {
+      toGroup.style.display = 'none';
+      clientSelectGroup.style.display = 'none';
+    }
+  }
+
+  document.getElementById('msgClientSelect').addEventListener('change', function () {
+    const opt = this.options[this.selectedIndex];
+    const phone = opt.dataset.phone || '';
+    if (phone) document.getElementById('msgTo').value = phone;
+  });
+
+  async function sendMessage() {
+    const type = document.getElementById('msgType').value;
+    const to = document.getElementById('msgTo').value.trim();
+    const body = document.getElementById('msgBody').value.trim();
+    const clientId = document.getElementById('msgClientSelect').value || undefined;
+
+    if (!body) { toast('Please enter a message.', 'warning'); return; }
+    if (type !== 'broadcast' && !to) { toast('Please enter a phone number.', 'warning'); return; }
+
+    const btn = document.querySelector('#view-messages .btn-primary');
+    const btnText = document.getElementById('sendBtnText');
+    btn.disabled = true;
+    btnText.innerHTML = '<span class="spinner"></span>';
+
+    try {
+      if (type === 'external') {
+        await apiFetch('/api/sms/send-external', { method: 'POST', body: JSON.stringify({ to, message: body, clientId }) });
+      } else if (type === 'internal') {
+        await apiFetch('/api/sms/send-internal', { method: 'POST', body: JSON.stringify({ to, message: body }) });
+      } else {
+        await apiFetch('/api/sms/broadcast', { method: 'POST', body: JSON.stringify({ message: body }) });
+      }
+
+      toast('Message sent successfully!', 'success');
+      document.getElementById('msgBody').value = '';
+      document.getElementById('msgTo').value = '';
+      loadMessages();
+      loadStats();
+    } catch (err) {
+      toast(`Error: ${err.message}`, 'error');
+    } finally {
+      btn.disabled = false;
+      btnText.textContent = 'Send Message';
+    }
+  }
+
+  // ============================================================
+  // Conversations
+  // ============================================================
+  async function loadConversations() {
+    try {
+      const data = await apiFetch('/api/clients/conversations/all?limit=50');
+      allConversations = data.conversations || [];
+      renderConversations(allConversations);
+    } catch (err) {
+      console.error('Load conversations error:', err.message);
+    }
+  }
+
+  function renderConversations(conversations) {
+    const el = document.getElementById('conversationList');
+    if (!conversations.length) {
+      el.innerHTML = `<div class="empty-state"><div class="icon">💬</div><p>No conversations yet</p></div>`;
+      return;
+    }
+    el.innerHTML = conversations.map(c => {
+      const name = c.client?.name || c.phone_number;
+      const initials = name.slice(0, 2).toUpperCase();
+      const time = c.last_message_at ? new Date(c.last_message_at).toLocaleDateString() : '';
+      const preview = c.last_message || 'No messages yet';
+      const unread = c.unread_count > 0 ? `<div class="conv-unread">${c.unread_count}</div>` : '';
+      return `
+        <div class="conversation-item">
+          <div class="conv-avatar">${escHtml(initials)}</div>
+          <div class="conv-info">
+            <div class="conv-name">${escHtml(name)}</div>
+            <div class="conv-preview">${escHtml(preview)}</div>
+          </div>
+          <div class="conv-meta">
+            <div class="conv-time">${escHtml(time)}</div>
+            ${unread}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function filterConversations(query) {
+    const q = query.toLowerCase();
+    const filtered = allConversations.filter(c =>
+      (c.client?.name || c.phone_number).toLowerCase().includes(q) ||
+      (c.last_message || '').toLowerCase().includes(q)
+    );
+    renderConversations(filtered);
+  }
+
+  // ============================================================
+  // Team / Users
+  // ============================================================
+  async function loadTeam() {
+    try {
+      const data = await apiFetch('/api/users/team');
+      const team = data.team || [];
+
+      if (!team.length) {
+        // Fallback: try getting all users
+        const usersData = await apiFetch('/api/users');
+        renderUsers(usersData.users || []);
+        return;
+      }
+
+      const users = team.map(tm => ({ ...tm.user, role: tm.role, extension: tm.extension, employee_number: tm.employee_number }));
+      renderUsers(users);
+    } catch (err) {
+      console.error('Load team error:', err.message);
+      try {
+        const data = await apiFetch('/api/users');
+        renderUsers(data.users || []);
+      } catch (e) { /* ignore */ }
+    }
+  }
+
+  function renderUsers(users) {
+    const el = document.getElementById('teamGrid');
+    if (!users.length) {
+      el.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="icon">👥</div><p>No team members yet. Add members or sync from Google Workspace.</p></div>`;
+      return;
+    }
+    el.innerHTML = users.map(u => {
+      const status = u.status || 'offline';
+      const statusLabel = status.charAt(0).toUpperCase() + status.slice(1);
+      const avatar = u.avatar_url
+        ? `<img class="user-avatar" src="${escAttr(u.avatar_url)}" alt="${escAttr(u.name)}" />`
+        : `<div class="user-avatar-placeholder">${(u.name || 'U').slice(0, 2).toUpperCase()}</div>`;
+      return `
+        <div class="user-card">
+          ${avatar}
+          <div class="user-name">${escHtml(u.name)}</div>
+          <div class="user-title">${escHtml(u.job_title || u.role || u.department || '')}</div>
+          <span class="status-pill ${status}">● ${statusLabel}</span>
+          ${u.extension ? `<div style="font-size:.75rem;color:#9ca3af;margin-top:6px;">Ext. ${escHtml(u.extension)}</div>` : ''}
+        </div>
+      `;
+    }).join('');
+  }
+
+  async function syncGoogleWorkspace() {
+    try {
+      const data = await apiFetch('/api/users/sync', { method: 'POST' });
+      toast(`Synced ${data.synced} users from Google Workspace.`, 'success');
+      loadTeam();
+    } catch (err) {
+      toast(`Sync failed: ${err.message}`, 'error');
+    }
+  }
+
+  // ============================================================
+  // Clients
+  // ============================================================
+  async function loadClients(search = '') {
+    const path = search ? `/api/clients?search=${encodeURIComponent(search)}&limit=100` : '/api/clients?limit=100';
+    try {
+      const data = await apiFetch(path);
+      allClients = data.clients || [];
+      renderClients(allClients);
+    } catch (err) {
+      console.error('Load clients error:', err.message);
+    }
+  }
+
+  function renderClients(clients) {
+    const tbody = document.getElementById('clientTableBody');
+    if (!clients.length) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:32px;color:#9ca3af;">No clients found</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = clients.map(c => {
+      const lastContacted = c.last_contacted_at ? new Date(c.last_contacted_at).toLocaleDateString() : '–';
+      return `
+        <tr>
+          <td><strong>${escHtml(c.name)}</strong></td>
+          <td>${escHtml(c.company || '–')}</td>
+          <td><a href="tel:${escAttr(c.phone)}">${escHtml(c.phone)}</a></td>
+          <td>${c.email ? `<a href="mailto:${escAttr(c.email)}">${escHtml(c.email)}</a>` : '–'}</td>
+          <td>${lastContacted}</td>
+          <td>
+            <button class="btn btn-primary btn-sm" onclick="openSendClientSms('${c.id}', '${escAttr(c.name)}')">💬 SMS</button>
+            <button class="btn btn-secondary btn-sm" onclick="deleteClient('${c.id}', '${escAttr(c.name)}')">🗑️</button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  function searchClients(query) {
+    loadClients(query);
+  }
+
+  async function createClient() {
+    const name = document.getElementById('newClientName').value.trim();
+    const phone = document.getElementById('newClientPhone').value.trim();
+    const company = document.getElementById('newClientCompany').value.trim();
+    const email = document.getElementById('newClientEmail').value.trim();
+    const notes = document.getElementById('newClientNotes').value.trim();
+
+    if (!name || !phone) { toast('Name and phone are required.', 'warning'); return; }
+
+    try {
+      await apiFetch('/api/clients', { method: 'POST', body: JSON.stringify({ name, phone, company, email, notes }) });
+      toast('Client created!', 'success');
+      closeModal('addClientModal');
+      loadClients();
+      loadClientOptions();
+      loadStats();
+      // Reset form
+      ['newClientName','newClientPhone','newClientCompany','newClientEmail','newClientNotes'].forEach(id => { document.getElementById(id).value = ''; });
+    } catch (err) {
+      toast(`Error: ${err.message}`, 'error');
+    }
+  }
+
+  async function deleteClient(id, name) {
+    if (!confirm(`Remove ${name} from the client directory?`)) return;
+    try {
+      await apiFetch(`/api/clients/${id}`, { method: 'DELETE' });
+      toast(`${name} removed.`, 'success');
+      loadClients();
+      loadStats();
+    } catch (err) {
+      toast(`Error: ${err.message}`, 'error');
+    }
+  }
+
+  function openSendClientSms(clientId, clientName) {
+    selectedClientForSms = clientId;
+    document.getElementById('smsClientName').textContent = clientName;
+    document.getElementById('smsClientBody').value = '';
+    openModal('sendClientSmsModal');
+  }
+
+  async function sendClientSms() {
+    const body = document.getElementById('smsClientBody').value.trim();
+    if (!body) { toast('Please enter a message.', 'warning'); return; }
+
+    try {
+      await apiFetch(`/api/clients/${selectedClientForSms}/sms`, { method: 'POST', body: JSON.stringify({ message: body }) });
+      toast('SMS sent!', 'success');
+      closeModal('sendClientSmsModal');
+      loadMessages();
+      loadStats();
+    } catch (err) {
+      toast(`Error: ${err.message}`, 'error');
+    }
+  }
+
+  // ============================================================
+  // Users
+  // ============================================================
+  async function createUser() {
+    const email = document.getElementById('newUserEmail').value.trim();
+    const firstName = document.getElementById('newUserFirstName').value.trim();
+    const lastName = document.getElementById('newUserLastName').value.trim();
+    const phone = document.getElementById('newUserPhone').value.trim();
+    const jobTitle = document.getElementById('newUserTitle').value.trim();
+    const name = [firstName, lastName].filter(Boolean).join(' ') || email;
+
+    if (!email) { toast('Email is required.', 'warning'); return; }
+
+    try {
+      await apiFetch('/api/users', { method: 'POST', body: JSON.stringify({ email, name, firstName, lastName, phone, jobTitle }) });
+      toast('Team member added!', 'success');
+      closeModal('addUserModal');
+      loadTeam();
+      ['newUserEmail','newUserFirstName','newUserLastName','newUserPhone','newUserTitle'].forEach(id => { document.getElementById(id).value = ''; });
+    } catch (err) {
+      toast(`Error: ${err.message}`, 'error');
+    }
+  }
+
+  // ============================================================
+  // Modals
+  // ============================================================
+  function openModal(id) { document.getElementById(id).classList.add('open'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+  function openAddClientModal() { openModal('addClientModal'); }
+  function openAddUserModal() { openModal('addUserModal'); }
+
+  // Close modal on backdrop click
+  document.querySelectorAll('.modal-backdrop').forEach(backdrop => {
+    backdrop.addEventListener('click', (e) => {
+      if (e.target === backdrop) backdrop.classList.remove('open');
+    });
+  });
+
+  // ============================================================
+  // Security helpers
+  // ============================================================
+  function escHtml(str) {
+    if (str == null) return '';
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+  }
+
+  function escAttr(str) {
+    if (str == null) return '';
+    return String(str).replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+  }
+
+  // ============================================================
+  // Init
+  // ============================================================
+  loadView('messages');
+</script>
+
+</body>
+</html>
