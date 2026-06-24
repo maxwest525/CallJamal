@@ -601,7 +601,7 @@
 <main class="main">
   <header class="header">
     <span class="header-title" id="headerTitle">Messages</span>
-    <button class="btn btn-secondary btn-sm" id="refreshBtn" onclick="refreshCurrentView()">🔄 Refresh</button>
+    <button class="btn btn-secondary btn-sm" id="refreshBtn">🔄 Refresh</button>
   </header>
 
   <div class="content">
@@ -632,7 +632,7 @@
           <div class="card-body">
             <div class="form-group">
               <label class="form-label">Type</label>
-              <select class="form-control" id="msgType" onchange="handleMsgTypeChange()">
+              <select class="form-control" id="msgType">
                 <option value="external">External (to Client)</option>
                 <option value="internal">Internal (to Team Member)</option>
                 <option value="broadcast">Broadcast (to All Clients)</option>
@@ -652,7 +652,7 @@
               <label class="form-label">Message</label>
               <textarea class="form-control" id="msgBody" placeholder="Type your message…"></textarea>
             </div>
-            <button class="btn btn-primary" style="width:100%;" onclick="sendMessage()">
+            <button class="btn btn-primary" style="width:100%;" id="sendMsgBtn">
               <span id="sendBtnText">Send Message</span>
             </button>
           </div>
@@ -677,7 +677,7 @@
           <h3>🗂️ SMS Conversations</h3>
           <div class="search-bar" style="width:240px;">
             <span class="search-icon">🔍</span>
-            <input class="form-control" type="text" placeholder="Search…" oninput="filterConversations(this.value)" />
+            <input class="form-control" id="convSearchInput" type="text" placeholder="Search…" />
           </div>
         </div>
         <div class="conversation-list" id="conversationList">
@@ -691,8 +691,8 @@
       <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
         <h2 style="font-size:1.125rem; font-weight:600;">Team Members</h2>
         <div style="display:flex; gap:8px;">
-          <button class="btn btn-secondary btn-sm" onclick="syncGoogleWorkspace()">🔄 Sync Google Workspace</button>
-          <button class="btn btn-primary btn-sm" onclick="openAddUserModal()">+ Add Member</button>
+          <button class="btn btn-secondary btn-sm" id="syncGwBtn">🔄 Sync Google Workspace</button>
+          <button class="btn btn-primary btn-sm" id="addUserBtn">+ Add Member</button>
         </div>
       </div>
       <div class="team-grid" id="teamGrid">
@@ -705,9 +705,9 @@
       <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
         <div class="search-bar" style="width:280px;">
           <span class="search-icon">🔍</span>
-          <input class="form-control" type="text" placeholder="Search clients…" oninput="searchClients(this.value)" />
+          <input class="form-control" id="clientSearchInput" type="text" placeholder="Search clients…" />
         </div>
-        <button class="btn btn-primary btn-sm" onclick="openAddClientModal()">+ Add Client</button>
+        <button class="btn btn-primary btn-sm" id="addClientBtn">+ Add Client</button>
       </div>
       <div class="card">
         <table class="clients-table">
@@ -740,7 +740,7 @@
   <div class="modal">
     <div class="modal-header">
       <h3>Add New Client</h3>
-      <button class="modal-close" onclick="closeModal('addClientModal')">✕</button>
+      <button class="modal-close" data-close="addClientModal">✕</button>
     </div>
     <div class="modal-body">
       <div class="form-group">
@@ -767,8 +767,8 @@
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeModal('addClientModal')">Cancel</button>
-      <button class="btn btn-primary" onclick="createClient()">Create Client</button>
+      <button class="btn btn-secondary" data-close="addClientModal">Cancel</button>
+      <button class="btn btn-primary" id="createClientBtn">Create Client</button>
     </div>
   </div>
 </div>
@@ -778,7 +778,7 @@
   <div class="modal">
     <div class="modal-header">
       <h3>Add Team Member</h3>
-      <button class="modal-close" onclick="closeModal('addUserModal')">✕</button>
+      <button class="modal-close" data-close="addUserModal">✕</button>
     </div>
     <div class="modal-body">
       <div class="grid-2">
@@ -807,8 +807,8 @@
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeModal('addUserModal')">Cancel</button>
-      <button class="btn btn-primary" onclick="createUser()">Add Member</button>
+      <button class="btn btn-secondary" data-close="addUserModal">Cancel</button>
+      <button class="btn btn-primary" id="createUserBtn">Add Member</button>
     </div>
   </div>
 </div>
@@ -818,7 +818,7 @@
   <div class="modal">
     <div class="modal-header">
       <h3>Send SMS to <span id="smsClientName"></span></h3>
-      <button class="modal-close" onclick="closeModal('sendClientSmsModal')">✕</button>
+      <button class="modal-close" data-close="sendClientSmsModal">✕</button>
     </div>
     <div class="modal-body">
       <div class="form-group">
@@ -827,8 +827,8 @@
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeModal('sendClientSmsModal')">Cancel</button>
-      <button class="btn btn-primary" onclick="sendClientSms()">Send SMS</button>
+      <button class="btn btn-secondary" data-close="sendClientSmsModal">Cancel</button>
+      <button class="btn btn-primary" id="sendClientSmsBtn">Send SMS</button>
     </div>
   </div>
 </div>
@@ -1302,8 +1302,25 @@
   }
 
   // ============================================================
-  // Init
+  // Init — wire up all event listeners here
   // ============================================================
+  document.getElementById('refreshBtn').addEventListener('click', refreshCurrentView);
+  document.getElementById('msgType').addEventListener('change', handleMsgTypeChange);
+  document.getElementById('sendMsgBtn').addEventListener('click', sendMessage);
+  document.getElementById('convSearchInput').addEventListener('input', (e) => filterConversations(e.target.value));
+  document.getElementById('clientSearchInput').addEventListener('input', (e) => searchClients(e.target.value));
+  document.getElementById('addClientBtn').addEventListener('click', () => openModal('addClientModal'));
+  document.getElementById('addUserBtn').addEventListener('click', () => openModal('addUserModal'));
+  document.getElementById('syncGwBtn').addEventListener('click', syncGoogleWorkspace);
+  document.getElementById('createClientBtn').addEventListener('click', createClient);
+  document.getElementById('createUserBtn').addEventListener('click', createUser);
+  document.getElementById('sendClientSmsBtn').addEventListener('click', sendClientSms);
+
+  // Close buttons (data-close attribute)
+  document.querySelectorAll('[data-close]').forEach(btn => {
+    btn.addEventListener('click', () => closeModal(btn.dataset.close));
+  });
+
   loadView('messages');
 </script>
 
