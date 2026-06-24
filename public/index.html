@@ -1918,12 +1918,11 @@
     }
     list.innerHTML = messages.map(m => {
       const unread = m.unread ? 'unread' : '';
-      const from = m.from.replace(/<[^>]+>/, '').trim();
       const date = m.date ? new Date(m.date).toLocaleDateString() : '';
       return `
         <div class="gmail-item ${unread}" data-id="${escAttr(m.id)}" data-thread="${escAttr(m.threadId)}">
           <div class="gmail-item-info">
-            <div class="gmail-item-from">${escHtml(from || m.from)}</div>
+            <div class="gmail-item-from">${escHtml(m.from)}</div>
             <div class="gmail-item-subject">${escHtml(m.subject)}</div>
             <div class="gmail-item-snippet">${escHtml(m.snippet)}</div>
           </div>

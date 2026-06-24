@@ -98,13 +98,11 @@ router.post('/verify-token', authLimiter, async (req, res) => {
 
 /**
  * GET /auth/status
- * Returns current auth/connection status for the frontend
+ * Returns current connection status for the frontend
  */
 router.get('/status', (req, res) => {
   res.json({
     gmailConnected: getTokens() !== null,
-    authRequired: process.env.GOOGLE_AUTH_REQUIRED === 'true',
-    workspaceDomain: process.env.GOOGLE_WORKSPACE_DOMAIN || null,
   });
 });
 
