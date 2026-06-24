@@ -60,7 +60,7 @@ app.use('/api/users', usersRoutes);
 app.use('/api/clients', clientsRoutes);
 
 // Catch-all: serve frontend for any non-API route (SPA support)
-app.get('*', (req, res) => {
+app.get('*', apiLimiter, (req, res) => {
   if (!req.path.startsWith('/api/')) {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
   } else {
@@ -71,7 +71,8 @@ app.get('*', (req, res) => {
 // Global error handler
 app.use((err, req, res, next) => {
   console.error('Unhandled error:', err);
-  res.status(500).json({ error: 'Internal server error' });
+  const message = process.env.NODE_ENV === 'development' ? err.message : 'Internal server error';
+  res.status(500).json({ error: message });
 });
 
 app.listen(PORT, () => {

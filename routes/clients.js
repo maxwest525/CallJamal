@@ -1,18 +1,10 @@
 const express = require('express');
-const axios = require('axios');
+const { sendSms } = require('../lib/slicktext');
 const { supabase, logActivity, upsertConversation } = require('../lib/supabase');
 
 const router = express.Router();
 
-const SLICKTEXT_API_BASE = 'https://api.slicktext.com/v1';
-const SLICKTEXT_PUBLIC_KEY = process.env.SLICKTEXT_PUBLIC_KEY;
-const SLICKTEXT_PRIVATE_KEY = process.env.SLICKTEXT_PRIVATE_KEY;
 const SLICKTEXT_MAIN_NUMBER = process.env.SLICKTEXT_MAIN_NUMBER;
-
-function slicktextAuth() {
-  const credentials = Buffer.from(`${SLICKTEXT_PUBLIC_KEY}:${SLICKTEXT_PRIVATE_KEY}`).toString('base64');
-  return { Authorization: `Basic ${credentials}`, 'Content-Type': 'application/json' };
-}
 
 /** Normalize phone number to E.164 format (digits only, with leading country code) */
 function normalizePhone(phone) {
@@ -222,11 +214,11 @@ router.post('/:id/sms', async (req, res) => {
 
     if (clientError || !client) return res.status(404).json({ error: 'Client not found' });
 
-    const slicktextResponse = await axios.post(
-      `${SLICKTEXT_API_BASE}/send`,
-      { number: client.phone, message, from: SLICKTEXT_MAIN_NUMBER },
-      { headers: slicktextAuth() }
-    );
+    const slicktextResponse = await sendSms({
+      to: client.phone,
+      message,
+      from: SLICKTEXT_MAIN_NUMBER,
+    });
 
     const conversation = await upsertConversation({
       phoneNumber: client.phone,

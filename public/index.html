@@ -1172,12 +1172,20 @@
           <td>${c.email ? `<a href="mailto:${escAttr(c.email)}">${escHtml(c.email)}</a>` : '–'}</td>
           <td>${lastContacted}</td>
           <td>
-            <button class="btn btn-primary btn-sm" onclick="openSendClientSms('${c.id}', '${escAttr(c.name)}')">💬 SMS</button>
-            <button class="btn btn-secondary btn-sm" onclick="deleteClient('${c.id}', '${escAttr(c.name)}')">🗑️</button>
+            <button class="btn btn-primary btn-sm js-sms-btn" data-id="${escAttr(c.id)}" data-name="${escAttr(c.name)}">💬 SMS</button>
+            <button class="btn btn-secondary btn-sm js-del-btn" data-id="${escAttr(c.id)}" data-name="${escAttr(c.name)}">🗑️</button>
           </td>
         </tr>
       `;
     }).join('');
+
+    // Attach event handlers via data attributes to avoid inline onclick security concerns
+    tbody.querySelectorAll('.js-sms-btn').forEach(btn => {
+      btn.addEventListener('click', () => openSendClientSms(btn.dataset.id, btn.dataset.name));
+    });
+    tbody.querySelectorAll('.js-del-btn').forEach(btn => {
+      btn.addEventListener('click', () => deleteClient(btn.dataset.id, btn.dataset.name));
+    });
   }
 
   function searchClients(query) {
