@@ -552,6 +552,377 @@
       .messages-layout { grid-template-columns: 1fr; }
       .grid-2, .grid-3 { grid-template-columns: 1fr; }
     }
+
+    /* ============================================================
+       Gmail View
+    ============================================================ */
+    .gmail-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .gmail-item {
+      display: flex;
+      gap: 12px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--color-gray-100);
+      cursor: pointer;
+      transition: background .1s;
+      font-size: 0.875rem;
+    }
+
+    .gmail-item:hover { background: var(--color-gray-50); }
+    .gmail-item.unread { background: #eef2ff; }
+    .gmail-item.unread:hover { background: #e0e7ff; }
+
+    .gmail-item-info { flex: 1; min-width: 0; }
+    .gmail-item-from { font-weight: 600; font-size: 0.8125rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .gmail-item.unread .gmail-item-from { color: var(--color-gray-900); }
+    .gmail-item-subject { font-size: 0.8125rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--color-gray-700); }
+    .gmail-item-snippet { font-size: 0.75rem; color: var(--color-gray-400); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .gmail-item-date { font-size: 0.75rem; color: var(--color-gray-400); flex-shrink: 0; }
+
+    .gmail-thread {
+      background: #fff;
+      border: 1px solid var(--color-gray-200);
+      border-radius: var(--border-radius);
+      padding: 20px;
+      min-height: 300px;
+    }
+
+    .gmail-thread-subject { font-size: 1rem; font-weight: 600; margin-bottom: 8px; }
+    .gmail-thread-meta { font-size: 0.8125rem; color: var(--color-gray-500); margin-bottom: 16px; }
+    .gmail-thread-body { font-size: 0.875rem; line-height: 1.7; white-space: pre-wrap; word-break: break-word; }
+
+    .gmail-connect-banner {
+      background: var(--color-primary-light);
+      border: 1px solid var(--color-primary);
+      border-radius: var(--border-radius);
+      padding: 16px 20px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* ============================================================
+       Slack View
+    ============================================================ */
+    .slack-layout {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 16px;
+      height: calc(100vh - var(--header-height) - 48px);
+    }
+
+    .slack-channels {
+      background: #fff;
+      border: 1px solid var(--color-gray-200);
+      border-radius: var(--border-radius);
+      overflow-y: auto;
+    }
+
+    .slack-channel-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      color: var(--color-gray-600);
+      border-bottom: 1px solid var(--color-gray-100);
+      transition: background .1s;
+    }
+
+    .slack-channel-item:hover { background: var(--color-gray-50); }
+    .slack-channel-item.active { background: var(--color-primary-light); color: var(--color-primary-dark); font-weight: 600; }
+
+    .slack-messages-pane {
+      background: #fff;
+      border: 1px solid var(--color-gray-200);
+      border-radius: var(--border-radius);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .slack-msg-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .slack-msg {
+      display: flex;
+      gap: 10px;
+      font-size: 0.875rem;
+    }
+
+    .slack-msg-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      background: var(--color-primary);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .slack-msg-content { flex: 1; min-width: 0; }
+    .slack-msg-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 2px; }
+    .slack-msg-user { font-weight: 600; font-size: 0.8125rem; }
+    .slack-msg-time { font-size: 0.75rem; color: var(--color-gray-400); }
+    .slack-msg-body { line-height: 1.5; }
+
+    .slack-compose {
+      padding: 12px 16px;
+      border-top: 1px solid var(--color-gray-200);
+      display: flex;
+      gap: 8px;
+    }
+
+    /* ============================================================
+       Integrations View
+    ============================================================ */
+    .integrations-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .integration-card {
+      background: #fff;
+      border: 1px solid var(--color-gray-200);
+      border-radius: var(--border-radius);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .integration-card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .integration-icon { font-size: 1.75rem; }
+
+    .integration-title { font-size: 0.9375rem; font-weight: 600; }
+    .integration-desc { font-size: 0.8125rem; color: var(--color-gray-500); margin-bottom: 4px; }
+    .integration-url { font-size: 0.75rem; color: var(--color-gray-400); font-family: monospace; word-break: break-all; }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .status-badge.connected { background: #dcfce7; color: #15803d; }
+    .status-badge.disconnected { background: var(--color-gray-100); color: var(--color-gray-500); }
+
+    /* ============================================================
+       Floating Chat Widgets
+    ============================================================ */
+    .fab-group {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 12px;
+      z-index: 300;
+    }
+
+    .fab {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      font-size: 1.4rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,.2);
+      transition: transform .15s, box-shadow .15s;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .fab:hover { transform: scale(1.08); box-shadow: 0 6px 16px rgba(0,0,0,.25); }
+
+    .fab-team { background: var(--color-success); color: #fff; }
+    .fab-ai { background: var(--color-primary); color: #fff; }
+
+    .fab-label {
+      position: absolute;
+      right: 60px;
+      white-space: nowrap;
+      background: var(--color-gray-900);
+      color: #fff;
+      font-size: 0.75rem;
+      padding: 4px 8px;
+      border-radius: 4px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .15s;
+    }
+
+    .fab:hover .fab-label { opacity: 1; }
+
+    .chat-panel {
+      position: fixed;
+      bottom: 90px;
+      right: 24px;
+      width: 340px;
+      height: 460px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 8px 30px rgba(0,0,0,.18);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 299;
+      transition: opacity .2s, transform .2s;
+      opacity: 0;
+      transform: translateY(12px) scale(.97);
+      pointer-events: none;
+    }
+
+    .chat-panel.open {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .chat-panel-ai { right: 90px; }
+
+    .chat-panel-header {
+      padding: 12px 16px;
+      background: var(--color-gray-900);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .chat-panel-header h4 { font-size: 0.875rem; font-weight: 600; }
+    .chat-panel-close { background: none; border: none; color: rgba(255,255,255,.6); cursor: pointer; font-size: 1.1rem; line-height: 1; }
+    .chat-panel-close:hover { color: #fff; }
+
+    .chat-panel-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .chat-bubble {
+      max-width: 85%;
+      padding: 8px 12px;
+      border-radius: 12px;
+      font-size: 0.8125rem;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+
+    .chat-bubble.theirs {
+      background: var(--color-gray-100);
+      color: var(--color-gray-800);
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+
+    .chat-bubble.mine {
+      background: var(--color-primary);
+      color: #fff;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+
+    .chat-bubble.ai-bubble {
+      background: var(--color-gray-100);
+      color: var(--color-gray-800);
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+      white-space: pre-wrap;
+    }
+
+    .chat-bubble-meta {
+      font-size: 0.7rem;
+      color: var(--color-gray-400);
+      margin-bottom: 2px;
+    }
+
+    .chat-panel-compose {
+      padding: 10px 12px;
+      border-top: 1px solid var(--color-gray-200);
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .chat-panel-compose input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid var(--color-gray-300);
+      border-radius: 20px;
+      font-size: 0.8125rem;
+      outline: none;
+    }
+
+    .chat-panel-compose input:focus { border-color: var(--color-primary); }
+
+    .chat-send-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: none;
+      background: var(--color-primary);
+      color: #fff;
+      cursor: pointer;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background .15s;
+    }
+
+    .chat-send-btn:hover { background: var(--color-primary-dark); }
+    .chat-send-btn:disabled { background: var(--color-gray-300); cursor: not-allowed; }
+
+    .ai-thinking {
+      align-self: flex-start;
+      background: var(--color-gray-100);
+      border-radius: 12px;
+      border-bottom-left-radius: 4px;
+      padding: 8px 14px;
+      font-size: 0.8125rem;
+      color: var(--color-gray-500);
+    }
+
+    @media (max-width: 480px) {
+      .chat-panel { width: calc(100vw - 24px); right: 12px; }
+      .chat-panel-ai { right: 12px; bottom: 160px; }
+    }
   </style>
 </head>
 <body>
@@ -581,6 +952,18 @@
     <button class="nav-item" data-view="clients">
       <span class="nav-icon">📋</span>
       <span>Clients</span>
+    </button>
+    <button class="nav-item" data-view="gmail">
+      <span class="nav-icon">📧</span>
+      <span>Gmail</span>
+    </button>
+    <button class="nav-item" data-view="slack">
+      <span class="nav-icon">💼</span>
+      <span>Slack</span>
+    </button>
+    <button class="nav-item" data-view="integrations">
+      <span class="nav-icon">🔌</span>
+      <span>Integrations</span>
     </button>
   </nav>
 
@@ -728,8 +1111,148 @@
       </div>
     </div>
 
+    <!-- ========== GMAIL VIEW ========== -->
+    <div class="view" id="view-gmail">
+      <div id="gmailConnectBanner" class="gmail-connect-banner" style="display:none;">
+        <span style="font-size:1.5rem;">📧</span>
+        <div style="flex:1;">
+          <strong>Connect Gmail</strong>
+          <div style="font-size:0.8125rem;color:var(--color-gray-600);margin-top:2px;">Authorize Gmail access to read and send emails from within the app.</div>
+        </div>
+        <a id="gmailConnectBtn" href="/auth/google" class="btn btn-primary btn-sm">Connect Gmail</a>
+      </div>
+
+      <div class="gmail-layout">
+        <!-- Inbox list -->
+        <div class="card">
+          <div class="card-header">
+            <h3>📥 Inbox</h3>
+            <button class="btn btn-primary btn-sm" id="gmailComposeBtn">✉️ Compose</button>
+          </div>
+          <div id="gmailInboxList" style="max-height:600px;overflow-y:auto;">
+            <div class="empty-state"><div class="icon">📧</div><p>Loading inbox…</p></div>
+          </div>
+        </div>
+
+        <!-- Email thread viewer -->
+        <div class="gmail-thread" id="gmailThreadPane">
+          <div class="empty-state"><div class="icon">📨</div><p>Select an email to read it</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== SLACK VIEW ========== -->
+    <div class="view" id="view-slack">
+      <div id="slackNotConfigured" style="display:none;">
+        <div class="gmail-connect-banner">
+          <span style="font-size:1.5rem;">💼</span>
+          <div style="flex:1;">
+            <strong>Configure Slack</strong>
+            <div style="font-size:0.8125rem;color:var(--color-gray-600);margin-top:2px;">Set <code>SLACK_BOT_TOKEN</code> in your .env file to connect your Slack workspace.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slack-layout" id="slackLayout">
+        <!-- Channels sidebar -->
+        <div class="slack-channels">
+          <div style="padding:12px 14px;font-size:0.8125rem;font-weight:600;color:var(--color-gray-500);border-bottom:1px solid var(--color-gray-100);">CHANNELS</div>
+          <div id="slackChannelList">
+            <div style="padding:16px;font-size:0.8125rem;color:var(--color-gray-400);">Loading…</div>
+          </div>
+        </div>
+
+        <!-- Messages pane -->
+        <div class="slack-messages-pane">
+          <div class="card-header" style="flex-shrink:0;">
+            <h3 id="slackChannelHeader">Select a channel</h3>
+          </div>
+          <div class="slack-msg-list" id="slackMsgList">
+            <div class="empty-state"><div class="icon">💼</div><p>Select a channel to view messages</p></div>
+          </div>
+          <div class="slack-compose">
+            <input class="form-control" id="slackComposeInput" placeholder="Message…" maxlength="1000" />
+            <button class="btn btn-primary btn-sm" id="slackSendBtn">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== INTEGRATIONS VIEW ========== -->
+    <div class="view" id="view-integrations">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <h2 style="font-size:1.125rem;font-weight:600;">Integrations &amp; Webhooks</h2>
+        <button class="btn btn-secondary btn-sm" id="testWebhookBtn">🔥 Test Outbound Webhooks</button>
+      </div>
+
+      <div class="integrations-grid" id="integrationsGrid">
+        <!-- Cards rendered by JS -->
+        <div class="empty-state"><div class="icon">🔌</div><p>Loading…</p></div>
+      </div>
+
+      <div style="margin-top:24px;" class="card">
+        <div class="card-header"><h3>📥 Inbound Webhook</h3></div>
+        <div class="card-body">
+          <p style="font-size:0.875rem;color:var(--color-gray-600);margin-bottom:12px;">
+            Point your Zapier Zap or n8n workflow to this URL to push data into CallJamal automatically.
+            Send a JSON POST with a <code>type</code> field (e.g. <code>new_lead</code>, <code>new_client</code>).
+          </p>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <code id="inboundWebhookUrl" style="flex:1;background:var(--color-gray-100);padding:8px 12px;border-radius:var(--border-radius);font-size:0.8125rem;word-break:break-all;"></code>
+            <button class="btn btn-secondary btn-sm" id="copyWebhookUrlBtn">📋 Copy</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div><!-- /content -->
 </main>
+
+<!-- ============================================================
+     FLOATING CHAT WIDGETS
+============================================================ -->
+
+<!-- FAB Buttons -->
+<div class="fab-group">
+  <button class="fab fab-ai" id="fabAi" title="AI Assistant">
+    🤖
+    <span class="fab-label">AI Assistant</span>
+  </button>
+  <button class="fab fab-team" id="fabTeam" title="Team Chat">
+    💬
+    <span class="fab-label">Team Chat</span>
+  </button>
+</div>
+
+<!-- Internal Team Chat Panel -->
+<div class="chat-panel" id="teamChatPanel">
+  <div class="chat-panel-header">
+    <h4>💬 Team Chat</h4>
+    <button class="chat-panel-close" id="closeTeamChat">✕</button>
+  </div>
+  <div class="chat-panel-messages" id="teamChatMessages">
+    <div class="empty-state" style="padding:32px 16px;"><div class="icon">💬</div><p>No messages yet</p></div>
+  </div>
+  <div class="chat-panel-compose">
+    <input type="text" id="teamChatInput" placeholder="Message your team…" maxlength="500" />
+    <button class="chat-send-btn" id="teamChatSend">➤</button>
+  </div>
+</div>
+
+<!-- AI Assistant Chat Panel -->
+<div class="chat-panel chat-panel-ai" id="aiChatPanel">
+  <div class="chat-panel-header">
+    <h4>🤖 AI Assistant</h4>
+    <button class="chat-panel-close" id="closeAiChat">✕</button>
+  </div>
+  <div class="chat-panel-messages" id="aiChatMessages">
+    <div class="chat-bubble theirs">Hi! I'm your AI assistant. Ask me anything about your work, clients, or team.</div>
+  </div>
+  <div class="chat-panel-compose">
+    <input type="text" id="aiChatInput" placeholder="Ask AI…" maxlength="1000" />
+    <button class="chat-send-btn" id="aiChatSend">➤</button>
+  </div>
+</div>
 
 <!-- ============================================================
      MODALS
@@ -833,6 +1356,34 @@
   </div>
 </div>
 
+<!-- Gmail Compose Modal -->
+<div class="modal-backdrop" id="gmailComposeModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>✉️ Compose Email</h3>
+      <button class="modal-close" data-close="gmailComposeModal">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">To *</label>
+        <input class="form-control" id="gmailTo" type="email" placeholder="recipient@example.com" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Subject *</label>
+        <input class="form-control" id="gmailSubject" placeholder="Subject" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Message *</label>
+        <textarea class="form-control" id="gmailBody" placeholder="Write your email…" style="min-height:140px;"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-close="gmailComposeModal">Cancel</button>
+      <button class="btn btn-primary" id="gmailSendBtn">📤 Send</button>
+    </div>
+  </div>
+</div>
+
 <!-- Toast Container -->
 <div class="toast-container" id="toastContainer"></div>
 
@@ -861,7 +1412,7 @@
     document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.dataset.view === view));
     document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === `view-${view}`));
 
-    const titles = { messages: 'Messages', conversations: 'Conversations', users: 'Team', clients: 'Clients' };
+    const titles = { messages: 'Messages', conversations: 'Conversations', users: 'Team', clients: 'Clients', gmail: 'Gmail', slack: 'Slack', integrations: 'Integrations' };
     document.getElementById('headerTitle').textContent = titles[view] || view;
 
     loadView(view);
@@ -874,6 +1425,9 @@
     else if (view === 'conversations') loadConversations();
     else if (view === 'users') loadTeam();
     else if (view === 'clients') loadClients();
+    else if (view === 'gmail') loadGmail();
+    else if (view === 'slack') loadSlack();
+    else if (view === 'integrations') loadIntegrations();
   }
 
   // ============================================================
@@ -1320,6 +1874,546 @@
   document.querySelectorAll('[data-close]').forEach(btn => {
     btn.addEventListener('click', () => closeModal(btn.dataset.close));
   });
+
+  // ============================================================
+  // Gmail
+  // ============================================================
+  let gmailConnected = false;
+
+  async function loadGmail() {
+    try {
+      const status = await apiFetch('/api/gmail/status');
+      gmailConnected = status.connected;
+      const banner = document.getElementById('gmailConnectBanner');
+      banner.style.display = gmailConnected ? 'none' : 'flex';
+      if (gmailConnected) loadGmailInbox();
+      else document.getElementById('gmailInboxList').innerHTML = `<div class="empty-state"><div class="icon">📧</div><p>Connect Gmail to see your inbox</p></div>`;
+    } catch (err) {
+      console.error('Gmail status error:', err.message);
+    }
+  }
+
+  async function loadGmailInbox() {
+    const list = document.getElementById('gmailInboxList');
+    list.innerHTML = `<div class="empty-state"><div class="icon">⏳</div><p>Loading…</p></div>`;
+    try {
+      const data = await apiFetch('/api/gmail/inbox?maxResults=25');
+      renderGmailInbox(data.messages || []);
+    } catch (err) {
+      if (err.message.includes('not connected') || err.message.includes('needsAuth')) {
+        gmailConnected = false;
+        document.getElementById('gmailConnectBanner').style.display = 'flex';
+        list.innerHTML = `<div class="empty-state"><div class="icon">🔒</div><p>Connect Gmail to continue</p></div>`;
+      } else {
+        list.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>${escHtml(err.message)}</p></div>`;
+      }
+    }
+  }
+
+  function renderGmailInbox(messages) {
+    const list = document.getElementById('gmailInboxList');
+    if (!messages.length) {
+      list.innerHTML = `<div class="empty-state"><div class="icon">📭</div><p>Inbox is empty</p></div>`;
+      return;
+    }
+    list.innerHTML = messages.map(m => {
+      const unread = m.unread ? 'unread' : '';
+      const from = m.from.replace(/<[^>]+>/, '').trim();
+      const date = m.date ? new Date(m.date).toLocaleDateString() : '';
+      return `
+        <div class="gmail-item ${unread}" data-id="${escAttr(m.id)}" data-thread="${escAttr(m.threadId)}">
+          <div class="gmail-item-info">
+            <div class="gmail-item-from">${escHtml(from || m.from)}</div>
+            <div class="gmail-item-subject">${escHtml(m.subject)}</div>
+            <div class="gmail-item-snippet">${escHtml(m.snippet)}</div>
+          </div>
+          <div class="gmail-item-date">${escHtml(date)}</div>
+        </div>
+      `;
+    }).join('');
+
+    list.querySelectorAll('.gmail-item').forEach(item => {
+      item.addEventListener('click', () => openGmailMessage(item.dataset.id));
+    });
+  }
+
+  async function openGmailMessage(id) {
+    const pane = document.getElementById('gmailThreadPane');
+    pane.innerHTML = `<div class="empty-state"><div class="icon">⏳</div><p>Loading…</p></div>`;
+    try {
+      const m = await apiFetch(`/api/gmail/message/${encodeURIComponent(id)}`);
+      pane.innerHTML = `
+        <div class="gmail-thread-subject">${escHtml(m.subject)}</div>
+        <div class="gmail-thread-meta">
+          <strong>From:</strong> ${escHtml(m.from)}<br>
+          <strong>To:</strong> ${escHtml(m.to)}<br>
+          <strong>Date:</strong> ${escHtml(m.date)}
+        </div>
+        <hr style="border:none;border-top:1px solid var(--color-gray-200);margin:12px 0;">
+        <div class="gmail-thread-body">${escHtml(m.body)}</div>
+      `;
+      // Mark as read in background
+      apiFetch(`/api/gmail/message/${encodeURIComponent(id)}/read`, { method: 'PATCH' }).catch(() => {});
+      // Remove unread styling from list item
+      const item = document.querySelector(`.gmail-item[data-id="${CSS.escape(id)}"]`);
+      if (item) item.classList.remove('unread');
+    } catch (err) {
+      pane.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>${escHtml(err.message)}</p></div>`;
+    }
+  }
+
+  async function sendGmail() {
+    const to = document.getElementById('gmailTo').value.trim();
+    const subject = document.getElementById('gmailSubject').value.trim();
+    const body = document.getElementById('gmailBody').value.trim();
+
+    if (!to || !subject || !body) { toast('To, Subject and Message are required.', 'warning'); return; }
+
+    const btn = document.getElementById('gmailSendBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>';
+    try {
+      await apiFetch('/api/gmail/send', { method: 'POST', body: JSON.stringify({ to, subject, body }) });
+      toast('Email sent!', 'success');
+      closeModal('gmailComposeModal');
+      ['gmailTo','gmailSubject','gmailBody'].forEach(id => { document.getElementById(id).value = ''; });
+    } catch (err) {
+      toast(`Error: ${err.message}`, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '📤 Send';
+    }
+  }
+
+  // Check for Gmail OAuth callback success/error in URL
+  (function checkGmailCallback() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('gmail_connected') === '1') {
+      toast('Gmail connected successfully!', 'success');
+      history.replaceState({}, '', '/');
+    } else if (params.get('auth_error')) {
+      toast(`Gmail auth error: ${params.get('auth_error')}`, 'error');
+      history.replaceState({}, '', '/');
+    }
+  })();
+
+  // ============================================================
+  // Slack
+  // ============================================================
+  let slackChannels = [];
+  let selectedSlackChannel = null;
+
+  async function loadSlack() {
+    try {
+      const status = await apiFetch('/api/slack/status');
+      const notConfigured = document.getElementById('slackNotConfigured');
+      const layout = document.getElementById('slackLayout');
+      if (!status.connected) {
+        notConfigured.style.display = 'block';
+        layout.style.display = 'none';
+        return;
+      }
+      notConfigured.style.display = 'none';
+      layout.style.display = '';
+      loadSlackChannels();
+    } catch (err) {
+      console.error('Slack status error:', err.message);
+    }
+  }
+
+  async function loadSlackChannels() {
+    try {
+      const data = await apiFetch('/api/slack/channels');
+      slackChannels = data.channels || [];
+      renderSlackChannels();
+    } catch (err) {
+      document.getElementById('slackChannelList').innerHTML = `<div style="padding:12px;font-size:.8125rem;color:var(--color-danger);">${escHtml(err.message)}</div>`;
+    }
+  }
+
+  function renderSlackChannels() {
+    const list = document.getElementById('slackChannelList');
+    if (!slackChannels.length) {
+      list.innerHTML = `<div style="padding:12px;font-size:.8125rem;color:var(--color-gray-400);">No channels found</div>`;
+      return;
+    }
+    list.innerHTML = slackChannels.map(c =>
+      `<div class="slack-channel-item${selectedSlackChannel === c.id ? ' active' : ''}" data-id="${escAttr(c.id)}" data-name="${escAttr(c.name)}"># ${escHtml(c.name)}</div>`
+    ).join('');
+
+    list.querySelectorAll('.slack-channel-item').forEach(item => {
+      item.addEventListener('click', () => selectSlackChannel(item.dataset.id, item.dataset.name));
+    });
+  }
+
+  async function selectSlackChannel(channelId, channelName) {
+    selectedSlackChannel = channelId;
+    renderSlackChannels();
+    document.getElementById('slackChannelHeader').textContent = `# ${channelName}`;
+    await loadSlackMessages(channelId);
+  }
+
+  async function loadSlackMessages(channelId) {
+    const msgList = document.getElementById('slackMsgList');
+    msgList.innerHTML = `<div class="empty-state"><div class="icon">⏳</div><p>Loading…</p></div>`;
+    try {
+      const data = await apiFetch(`/api/slack/channels/${encodeURIComponent(channelId)}/history?limit=50`);
+      renderSlackMessages(data.messages || []);
+    } catch (err) {
+      msgList.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>${escHtml(err.message)}</p></div>`;
+    }
+  }
+
+  function renderSlackMessages(messages) {
+    const msgList = document.getElementById('slackMsgList');
+    if (!messages.length) {
+      msgList.innerHTML = `<div class="empty-state"><div class="icon">💼</div><p>No messages in this channel</p></div>`;
+      return;
+    }
+    const sorted = [...messages].reverse();
+    msgList.innerHTML = sorted.map(m => {
+      const user = m.user || m.username || 'Unknown';
+      const initials = user.slice(0, 2).toUpperCase();
+      const time = m.ts ? new Date(parseFloat(m.ts) * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+      return `
+        <div class="slack-msg">
+          <div class="slack-msg-avatar">${escHtml(initials)}</div>
+          <div class="slack-msg-content">
+            <div class="slack-msg-meta">
+              <span class="slack-msg-user">${escHtml(user)}</span>
+              <span class="slack-msg-time">${escHtml(time)}</span>
+            </div>
+            <div class="slack-msg-body">${escHtml(m.text || '')}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+    msgList.scrollTop = msgList.scrollHeight;
+  }
+
+  async function sendSlackMessage() {
+    if (!selectedSlackChannel) { toast('Select a channel first.', 'warning'); return; }
+    const text = document.getElementById('slackComposeInput').value.trim();
+    if (!text) return;
+
+    const btn = document.getElementById('slackSendBtn');
+    btn.disabled = true;
+    try {
+      await apiFetch('/api/slack/send', { method: 'POST', body: JSON.stringify({ channel: selectedSlackChannel, text }) });
+      document.getElementById('slackComposeInput').value = '';
+      toast('Message sent to Slack!', 'success');
+      await loadSlackMessages(selectedSlackChannel);
+    } catch (err) {
+      toast(`Error: ${err.message}`, 'error');
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  // ============================================================
+  // Integrations / Webhooks
+  // ============================================================
+  async function loadIntegrations() {
+    try {
+      const data = await apiFetch('/api/webhooks/status');
+      renderIntegrationCards(data);
+      document.getElementById('inboundWebhookUrl').textContent = data.inboundUrl || '';
+    } catch (err) {
+      console.error('Integrations load error:', err.message);
+    }
+  }
+
+  function renderIntegrationCards(data) {
+    const grid = document.getElementById('integrationsGrid');
+
+    const gmailConn = gmailConnected;
+    const slackConn = Boolean(slackChannels.length) || Boolean(document.getElementById('slackNotConfigured').style.display === 'none');
+
+    const cards = [
+      {
+        icon: '📧',
+        title: 'Gmail',
+        desc: 'Read and send emails from your Google Workspace inbox.',
+        connected: gmailConn,
+        action: gmailConn ? null : `<a href="/auth/google" class="btn btn-primary btn-sm">Connect</a>`,
+      },
+      {
+        icon: '💼',
+        title: 'Slack',
+        desc: 'Send and receive Slack channel messages. Requires SLACK_BOT_TOKEN.',
+        connected: Boolean(process?.env?.SLACK_BOT_TOKEN) || data.slack,
+        action: null,
+      },
+      {
+        icon: '⚡',
+        title: 'Zapier',
+        desc: 'Receive webhook triggers from your Zapier Zaps.',
+        connected: data.zapier?.configured,
+        url: data.zapier?.url,
+        action: null,
+      },
+      {
+        icon: '🔄',
+        title: 'n8n',
+        desc: 'Receive webhook triggers from your n8n workflows.',
+        connected: data.n8n?.configured,
+        url: data.n8n?.url,
+        action: null,
+      },
+      {
+        icon: '🤖',
+        title: 'AI Assistant',
+        desc: 'Chat with Gemini or Claude via the floating widget. Requires GEMINI_API_KEY or ANTHROPIC_API_KEY.',
+        connected: false,
+        action: null,
+      },
+    ];
+
+    grid.innerHTML = cards.map(c => `
+      <div class="integration-card">
+        <div class="integration-card-header">
+          <span class="integration-icon">${c.icon}</span>
+          <div style="flex:1;">
+            <div class="integration-title">${escHtml(c.title)}</div>
+            <span class="status-badge ${c.connected ? 'connected' : 'disconnected'}">${c.connected ? '● Connected' : '○ Not configured'}</span>
+          </div>
+        </div>
+        <div class="integration-desc">${escHtml(c.desc)}</div>
+        ${c.url ? `<div class="integration-url">${escHtml(c.url)}</div>` : ''}
+        ${c.action ? `<div style="margin-top:12px;">${c.action}</div>` : ''}
+      </div>
+    `).join('');
+  }
+
+  async function testWebhook() {
+    const btn = document.getElementById('testWebhookBtn');
+    btn.disabled = true;
+    try {
+      await apiFetch('/api/webhooks/test', { method: 'POST', body: JSON.stringify({ event: 'test_event' }) });
+      toast('Test webhook fired to all configured endpoints!', 'success');
+    } catch (err) {
+      toast(`Error: ${err.message}`, 'error');
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  function copyWebhookUrl() {
+    const url = document.getElementById('inboundWebhookUrl').textContent;
+    if (!url) return;
+    navigator.clipboard.writeText(url).then(() => toast('Webhook URL copied!', 'success')).catch(() => {
+      toast('Copy failed — select the URL manually.', 'warning');
+    });
+  }
+
+  // ============================================================
+  // Internal Team Chat (floating widget)
+  // ============================================================
+  let teamChatOpen = false;
+  let teamChatLastTs = null;
+  let teamChatPollInterval = null;
+  let currentUserName = 'You';
+
+  function toggleTeamChat() {
+    teamChatOpen = !teamChatOpen;
+    document.getElementById('teamChatPanel').classList.toggle('open', teamChatOpen);
+    if (teamChatOpen) {
+      startTeamChatPoll();
+      document.getElementById('teamChatInput').focus();
+    } else {
+      stopTeamChatPoll();
+    }
+  }
+
+  function startTeamChatPoll() {
+    loadTeamChatMessages();
+    teamChatPollInterval = setInterval(loadTeamChatMessages, 3000);
+  }
+
+  function stopTeamChatPoll() {
+    if (teamChatPollInterval) { clearInterval(teamChatPollInterval); teamChatPollInterval = null; }
+  }
+
+  async function loadTeamChatMessages() {
+    const path = teamChatLastTs
+      ? `/api/internal-chat/messages?limit=100&since=${encodeURIComponent(teamChatLastTs)}`
+      : '/api/internal-chat/messages?limit=50';
+    try {
+      const data = await apiFetch(path);
+      const msgs = data.messages || [];
+      if (msgs.length > 0) {
+        renderTeamChatMessages(msgs, Boolean(teamChatLastTs));
+        teamChatLastTs = msgs[msgs.length - 1].created_at;
+      } else if (!teamChatLastTs) {
+        document.getElementById('teamChatMessages').innerHTML = `<div class="empty-state" style="padding:32px 16px;"><div class="icon">💬</div><p>No messages yet. Say hi!</p></div>`;
+      }
+    } catch (err) {
+      // Silently ignore poll errors to avoid spamming the user
+      console.error('Team chat poll error:', err.message);
+    }
+  }
+
+  function renderTeamChatMessages(messages, append) {
+    const container = document.getElementById('teamChatMessages');
+    if (!append) container.innerHTML = '';
+    messages.forEach(m => {
+      const isMine = m.sender_name === currentUserName;
+      const bubble = document.createElement('div');
+      bubble.innerHTML = `
+        ${!isMine ? `<div class="chat-bubble-meta">${escHtml(m.sender_name)}</div>` : ''}
+        <div class="chat-bubble ${isMine ? 'mine' : 'theirs'}">${escHtml(m.body)}</div>
+      `;
+      container.appendChild(bubble);
+    });
+    container.scrollTop = container.scrollHeight;
+  }
+
+  async function sendTeamChatMessage() {
+    const input = document.getElementById('teamChatInput');
+    const body = input.value.trim();
+    if (!body) return;
+
+    input.value = '';
+    const btn = document.getElementById('teamChatSend');
+    btn.disabled = true;
+    try {
+      await apiFetch('/api/internal-chat/send', { method: 'POST', body: JSON.stringify({ body, senderName: currentUserName }) });
+      // Immediately append optimistically and refresh
+      await loadTeamChatMessages();
+    } catch (err) {
+      toast(`Chat error: ${err.message}`, 'error');
+      input.value = body;
+    } finally {
+      btn.disabled = false;
+      input.focus();
+    }
+  }
+
+  // ============================================================
+  // AI Assistant Chat (floating widget)
+  // ============================================================
+  let aiChatOpen = false;
+  let aiMessages = []; // { role: 'user'|'assistant', content }
+  let aiStreaming = false;
+
+  function toggleAiChat() {
+    aiChatOpen = !aiChatOpen;
+    document.getElementById('aiChatPanel').classList.toggle('open', aiChatOpen);
+    if (aiChatOpen) document.getElementById('aiChatInput').focus();
+  }
+
+  async function sendAiMessage() {
+    if (aiStreaming) return;
+    const input = document.getElementById('aiChatInput');
+    const text = input.value.trim();
+    if (!text) return;
+
+    input.value = '';
+    aiMessages.push({ role: 'user', content: text });
+
+    const container = document.getElementById('aiChatMessages');
+
+    // Append user bubble
+    const userBubble = document.createElement('div');
+    userBubble.className = 'chat-bubble mine';
+    userBubble.textContent = text;
+    container.appendChild(userBubble);
+
+    // Show thinking indicator
+    const thinking = document.createElement('div');
+    thinking.className = 'ai-thinking';
+    thinking.textContent = '…';
+    container.appendChild(thinking);
+    container.scrollTop = container.scrollHeight;
+
+    aiStreaming = true;
+    document.getElementById('aiChatSend').disabled = true;
+
+    try {
+      const res = await fetch('/api/ai/chat/stream', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: aiMessages }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
+        throw new Error(err.error || `HTTP ${res.status}`);
+      }
+
+      thinking.remove();
+
+      const aiBubble = document.createElement('div');
+      aiBubble.className = 'chat-bubble ai-bubble';
+      container.appendChild(aiBubble);
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let aiText = '';
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop(); // keep incomplete line
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue;
+          const payload = line.slice(6);
+          if (payload === '[DONE]') break;
+          try {
+            const { text, error } = JSON.parse(payload);
+            if (error) throw new Error(error);
+            if (text) {
+              aiText += text;
+              aiBubble.textContent = aiText;
+              container.scrollTop = container.scrollHeight;
+            }
+          } catch { /* skip malformed */ }
+        }
+      }
+
+      aiMessages.push({ role: 'assistant', content: aiText });
+    } catch (err) {
+      thinking.remove();
+      const errBubble = document.createElement('div');
+      errBubble.className = 'chat-bubble theirs';
+      errBubble.style.color = 'var(--color-danger)';
+      errBubble.textContent = `Error: ${err.message}`;
+      container.appendChild(errBubble);
+      // Roll back user message so they can retry
+      aiMessages.pop();
+    } finally {
+      aiStreaming = false;
+      document.getElementById('aiChatSend').disabled = false;
+      container.scrollTop = container.scrollHeight;
+      input.focus();
+    }
+  }
+
+  // ============================================================
+  // New event listeners
+  // ============================================================
+  document.getElementById('gmailComposeBtn').addEventListener('click', () => openModal('gmailComposeModal'));
+  document.getElementById('gmailSendBtn').addEventListener('click', sendGmail);
+
+  document.getElementById('slackSendBtn').addEventListener('click', sendSlackMessage);
+  document.getElementById('slackComposeInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') sendSlackMessage(); });
+
+  document.getElementById('testWebhookBtn').addEventListener('click', testWebhook);
+  document.getElementById('copyWebhookUrlBtn').addEventListener('click', copyWebhookUrl);
+
+  document.getElementById('fabTeam').addEventListener('click', toggleTeamChat);
+  document.getElementById('fabAi').addEventListener('click', toggleAiChat);
+  document.getElementById('closeTeamChat').addEventListener('click', toggleTeamChat);
+  document.getElementById('closeAiChat').addEventListener('click', toggleAiChat);
+
+  document.getElementById('teamChatSend').addEventListener('click', sendTeamChatMessage);
+  document.getElementById('teamChatInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') sendTeamChatMessage(); });
+
+  document.getElementById('aiChatSend').addEventListener('click', sendAiMessage);
+  document.getElementById('aiChatInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') sendAiMessage(); });
 
   loadView('messages');
 </script>

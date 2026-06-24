@@ -8,6 +8,13 @@ const path = require('path');
 const smsRoutes = require('./routes/sms');
 const usersRoutes = require('./routes/users');
 const clientsRoutes = require('./routes/clients');
+const gmailRoutes = require('./routes/gmail');
+const slackRoutes = require('./routes/slack');
+const aiRoutes = require('./routes/ai');
+const webhooksRoutes = require('./routes/webhooks');
+const authRoutes = require('./routes/auth');
+const internalChatRoutes = require('./routes/internal-chat');
+const { authMiddleware } = require('./lib/auth');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -41,6 +48,9 @@ app.use('/api/sms/send-internal', smsLimiter);
 app.use('/api/sms/broadcast', smsLimiter);
 app.use('/api/clients/:id/sms', smsLimiter);
 
+// Optional Google Workspace auth middleware (non-blocking unless GOOGLE_AUTH_REQUIRED=true)
+app.use('/api/', authMiddleware);
+
 // Serve static frontend files
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -58,6 +68,14 @@ app.get('/health', (req, res) => {
 app.use('/api/sms', smsRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/clients', clientsRoutes);
+app.use('/api/gmail', gmailRoutes);
+app.use('/api/slack', slackRoutes);
+app.use('/api/ai', aiRoutes);
+app.use('/api/webhooks', webhooksRoutes);
+app.use('/api/internal-chat', internalChatRoutes);
+
+// Auth routes (OAuth callbacks live outside /api/)
+app.use('/auth', authRoutes);
 
 // Catch-all: serve frontend for any non-API route (SPA support)
 app.get('*', apiLimiter, (req, res) => {

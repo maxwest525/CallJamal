@@ -205,3 +205,21 @@ CREATE POLICY "Service role full access - clients" ON clients FOR ALL USING (aut
 CREATE POLICY "Service role full access - sms_conversations" ON sms_conversations FOR ALL USING (auth.role() = 'service_role');
 CREATE POLICY "Service role full access - messages" ON messages FOR ALL USING (auth.role() = 'service_role');
 CREATE POLICY "Service role full access - activity_log" ON activity_log FOR ALL USING (auth.role() = 'service_role');
+
+-- ============================================================
+-- INTERNAL MESSAGES TABLE
+-- Team chat widget — stores real-time internal messages
+-- ============================================================
+CREATE TABLE IF NOT EXISTS internal_messages (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  sender_id UUID REFERENCES users(id) ON DELETE SET NULL,
+  sender_name TEXT NOT NULL DEFAULT 'Team Member',
+  body TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_internal_messages_created_at ON internal_messages(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_internal_messages_sender ON internal_messages(sender_id);
+
+ALTER TABLE internal_messages ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Service role full access - internal_messages" ON internal_messages FOR ALL USING (auth.role() = 'service_role');
