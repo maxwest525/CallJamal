@@ -293,63 +293,150 @@
     .badge-inbound { background: #f3f4f6; color: var(--color-gray-600); }
 
     /* ============================================================
-       Users / Team View
+       Users / Virtual Office Floor Plan
     ============================================================ */
-    .team-grid {
+    .team-grid { display: block; }
+
+    .office-floor {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 12px;
+      padding: 16px;
+      background: #e8eaf0;
+      border-radius: 14px;
+      border: 1px solid var(--color-gray-300);
     }
 
-    .user-card {
+    .office-room {
       background: #fff;
-      border: 1px solid var(--color-gray-200);
-      border-radius: var(--border-radius);
-      padding: 20px 16px;
-      text-align: center;
-      box-shadow: var(--shadow-sm);
+      border-radius: 10px;
+      padding: 16px 18px 18px;
+      border: 2px solid var(--color-gray-200);
+      min-height: 150px;
+      transition: border-color .15s, box-shadow .15s;
     }
 
-    .user-avatar {
-      width: 56px;
-      height: 56px;
+    .office-room:hover {
+      border-color: var(--color-primary-light);
+      box-shadow: var(--shadow);
+    }
+
+    .room-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--color-gray-100);
+    }
+
+    .room-icon { font-size: 1rem; line-height: 1; }
+    .room-name {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--color-gray-600);
+      text-transform: uppercase;
+      letter-spacing: .6px;
+    }
+    .room-count {
+      margin-left: auto;
+      font-size: 0.75rem;
+      color: var(--color-gray-400);
+      font-weight: 500;
+    }
+
+    .room-avatars {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .office-avatar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      cursor: default;
+    }
+
+    .office-avatar-ring {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      padding: 3px;
+      background: var(--color-gray-300);
+      transition: transform .15s;
+    }
+
+    .office-avatar:hover .office-avatar-ring { transform: scale(1.1); }
+
+    .office-avatar-ring.online  { background: #22c55e; }
+    .office-avatar-ring.away    { background: #f59e0b; }
+    .office-avatar-ring.busy    { background: #ef4444; }
+    .office-avatar-ring.offline { background: var(--color-gray-300); }
+
+    .office-avatar-ring img {
+      width: 48px;
+      height: 48px;
       border-radius: 50%;
       object-fit: cover;
-      margin: 0 auto 12px;
       display: block;
+      border: 2px solid #fff;
     }
 
-    .user-avatar-placeholder {
-      width: 56px;
-      height: 56px;
+    .office-avatar-initials {
+      width: 48px;
+      height: 48px;
       border-radius: 50%;
       background: var(--color-primary);
       color: #fff;
-      font-size: 1.25rem;
+      font-size: 1rem;
       font-weight: 700;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto 12px;
+      border: 2px solid #fff;
     }
 
-    .user-name { font-size: 0.9375rem; font-weight: 600; margin-bottom: 2px; }
-    .user-title { font-size: 0.8125rem; color: var(--color-gray-500); margin-bottom: 8px; }
+    .office-avatar-label {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      color: var(--color-gray-700);
+      text-align: center;
+      max-width: 62px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-    .status-pill {
-      display: inline-flex;
+    .room-empty {
+      font-size: 0.8125rem;
+      color: var(--color-gray-300);
+      font-style: italic;
+    }
+
+    .offline-row {
+      margin-top: 14px;
+      padding: 12px 16px;
+      background: var(--color-gray-100);
+      border-radius: 8px;
+      border: 1px solid var(--color-gray-200);
+      display: flex;
       align-items: center;
-      gap: 4px;
-      padding: 3px 10px;
-      border-radius: 9999px;
-      font-size: 0.75rem;
-      font-weight: 500;
+      flex-wrap: wrap;
+      gap: 12px;
     }
 
-    .status-pill.online { background: #dcfce7; color: #15803d; }
-    .status-pill.away { background: #fef3c7; color: #92400e; }
-    .status-pill.busy { background: #fee2e2; color: #b91c1c; }
-    .status-pill.offline { background: var(--color-gray-100); color: var(--color-gray-500); }
+    .offline-row-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--color-gray-400);
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      white-space: nowrap;
+      margin-right: 4px;
+    }
 
     /* ============================================================
        Clients View
@@ -1665,25 +1752,58 @@
   function renderUsers(users) {
     const el = document.getElementById('teamGrid');
     if (!users.length) {
-      el.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="icon">👥</div><p>No team members yet. Add members or sync from Google Workspace.</p></div>`;
+      el.innerHTML = `<div class="empty-state"><div class="icon">👥</div><p>No team members yet. Add members or sync from Google Workspace.</p></div>`;
       return;
     }
-    el.innerHTML = users.map(u => {
+
+    function officeAvatarHtml(u) {
       const status = u.status || 'offline';
-      const statusLabel = status.charAt(0).toUpperCase() + status.slice(1);
-      const avatar = u.avatar_url
-        ? `<img class="user-avatar" src="${escAttr(u.avatar_url)}" alt="${escAttr(u.name)}" />`
-        : `<div class="user-avatar-placeholder">${(u.name || 'U').slice(0, 2).toUpperCase()}</div>`;
+      const initials = (u.name || 'U').split(' ').map(s => s[0]).join('').slice(0, 2).toUpperCase();
+      const inner = u.avatar_url
+        ? `<img src="${escAttr(u.avatar_url)}" alt="${escAttr(u.name)}" />`
+        : `<div class="office-avatar-initials">${escHtml(initials)}</div>`;
+      const tooltipParts = [u.name];
+      const title = u.job_title || u.role || u.department || '';
+      if (title) tooltipParts.push(title);
+      if (u.extension) tooltipParts.push(`Ext. ${u.extension}`);
       return `
-        <div class="user-card">
-          ${avatar}
-          <div class="user-name">${escHtml(u.name)}</div>
-          <div class="user-title">${escHtml(u.job_title || u.role || u.department || '')}</div>
-          <span class="status-pill ${status}">● ${statusLabel}</span>
-          ${u.extension ? `<div style="font-size:.75rem;color:#9ca3af;margin-top:6px;">Ext. ${escHtml(u.extension)}</div>` : ''}
-        </div>
-      `;
+        <div class="office-avatar" title="${escAttr(tooltipParts.join(' – '))}">
+          <div class="office-avatar-ring ${status}">${inner}</div>
+          <div class="office-avatar-label">${escHtml((u.name || '').split(' ')[0])}</div>
+        </div>`;
+    }
+
+    const rooms = [
+      { icon: '🏢', name: 'Main Office',    statuses: ['online'] },
+      { icon: '📅', name: 'Conference',     statuses: ['busy'] },
+      { icon: '☕', name: 'Break Room',     statuses: ['away'] },
+    ];
+
+    const offlineUsers = users.filter(u => (u.status || 'offline') === 'offline');
+
+    const floorHtml = rooms.map(room => {
+      const roomUsers = users.filter(u => room.statuses.includes(u.status || 'offline'));
+      const count = roomUsers.length;
+      return `
+        <div class="office-room">
+          <div class="room-header">
+            <span class="room-icon">${room.icon}</span>
+            <span class="room-name">${room.name}</span>
+            ${count ? `<span class="room-count">${count} ${count === 1 ? 'person' : 'people'}</span>` : ''}
+          </div>
+          <div class="room-avatars">
+            ${count ? roomUsers.map(officeAvatarHtml).join('') : '<span class="room-empty">Empty</span>'}
+          </div>
+        </div>`;
     }).join('');
+
+    const offlineHtml = offlineUsers.length ? `
+      <div class="offline-row">
+        <span class="offline-row-label">Offline</span>
+        ${offlineUsers.map(officeAvatarHtml).join('')}
+      </div>` : '';
+
+    el.innerHTML = `<div class="office-floor">${floorHtml}</div>${offlineHtml}`;
   }
 
   async function syncGoogleWorkspace() {
