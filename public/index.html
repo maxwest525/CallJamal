@@ -2739,8 +2739,8 @@
         document.getElementById('huddleFrame').classList.add('active');
         document.getElementById('huddleLobby').style.display = 'none';
         document.getElementById('huddleCallBar').classList.add('active');
-        const label = saved.url.split('/').pop();
-        document.getElementById('huddleRoomLabel').textContent = label ? `Room: ${escHtml(label)}` : 'In a huddle';
+        const roomIdentifier = saved.url.split('/').pop();
+        document.getElementById('huddleRoomLabel').textContent = roomIdentifier ? `Room: ${escHtml(roomIdentifier)}` : 'In a huddle';
       }
       if (saved.open) {
         huddleOpen = true;

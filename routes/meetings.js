@@ -30,8 +30,8 @@ router.post('/create', async (req, res) => {
   }
 
   // Sanitise the provided name — only allow safe characters
-  const rawName = typeof req.body.name === 'string' ? req.body.name.trim() : '';
-  const roomName = rawName.replace(/[^a-zA-Z0-9-]/g, '').slice(0, 40) || `huddle-${Date.now()}`;
+  const userProvidedName = typeof req.body.name === 'string' ? req.body.name.trim() : '';
+  const roomName = userProvidedName.replace(/[^a-zA-Z0-9-]/g, '').slice(0, 40) || `huddle-${Date.now()}`;
 
   try {
     const response = await fetch('https://api.daily.co/v1/rooms', {
