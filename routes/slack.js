@@ -31,7 +31,7 @@ router.get('/channels', async (req, res) => {
   } catch (err) {
     console.error('slack channels error:', err.message);
     if (err.message.includes('not configured')) {
-      return res.status(501).json({ error: err.message, notConfigured: true });
+      return res.status(503).json({ error: err.message, notConfigured: true });
     }
     res.status(500).json({ error: err.message });
   }

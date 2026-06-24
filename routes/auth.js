@@ -1,15 +1,25 @@
 const express = require('express');
+const rateLimit = require('express-rate-limit');
 const { getOAuth2Client, SCOPES, setTokens, getTokens } = require('../lib/gmail');
 const { verifyGoogleToken } = require('../lib/auth');
 
 const router = express.Router();
+
+// Auth endpoints are sensitive — apply a tight rate limit
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many authentication requests, please try again later.' },
+});
 
 /**
  * GET /auth/google
  * Redirect the browser to Google's OAuth2 consent screen.
  * Scopes: Gmail + openid/profile/email
  */
-router.get('/google', (req, res) => {
+router.get('/google', authLimiter, (req, res) => {
   try {
     const oauth2Client = getOAuth2Client();
     const url = oauth2Client.generateAuthUrl({
@@ -32,7 +42,7 @@ router.get('/google', (req, res) => {
  * GET /auth/google/callback
  * OAuth2 callback — exchanges the code for tokens, stores them, then redirects to app.
  */
-router.get('/google/callback', async (req, res) => {
+router.get('/google/callback', authLimiter, async (req, res) => {
   const { code, error } = req.query;
 
   if (error) {
@@ -62,7 +72,7 @@ router.get('/google/callback', async (req, res) => {
  * Body: { idToken }
  * Returns: { user: { id, email, name, picture } }
  */
-router.post('/verify-token', async (req, res) => {
+router.post('/verify-token', authLimiter, async (req, res) => {
   const { idToken } = req.body;
 
   if (!idToken) {

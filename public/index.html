@@ -1939,19 +1939,28 @@
 
   async function openGmailMessage(id) {
     const pane = document.getElementById('gmailThreadPane');
-    pane.innerHTML = `<div class="empty-state"><div class="icon">⏳</div><p>Loading…</p></div>`;
+    pane.innerHTML = '';
     try {
       const m = await apiFetch(`/api/gmail/message/${encodeURIComponent(id)}`);
-      pane.innerHTML = `
-        <div class="gmail-thread-subject">${escHtml(m.subject)}</div>
-        <div class="gmail-thread-meta">
-          <strong>From:</strong> ${escHtml(m.from)}<br>
-          <strong>To:</strong> ${escHtml(m.to)}<br>
-          <strong>Date:</strong> ${escHtml(m.date)}
-        </div>
-        <hr style="border:none;border-top:1px solid var(--color-gray-200);margin:12px 0;">
-        <div class="gmail-thread-body">${escHtml(m.body)}</div>
-      `;
+    const subjectEl = document.createElement('div');
+    subjectEl.className = 'gmail-thread-subject';
+    subjectEl.textContent = m.subject;
+
+    const metaEl = document.createElement('div');
+    metaEl.className = 'gmail-thread-meta';
+    metaEl.innerHTML = `<strong>From:</strong> ${escHtml(m.from)}<br><strong>To:</strong> ${escHtml(m.to)}<br><strong>Date:</strong> ${escHtml(m.date)}`;
+
+    const divider = document.createElement('hr');
+    divider.style.cssText = 'border:none;border-top:1px solid var(--color-gray-200);margin:12px 0;';
+
+    const bodyEl = document.createElement('div');
+    bodyEl.className = 'gmail-thread-body';
+    bodyEl.textContent = m.body;  // textContent prevents XSS
+
+    pane.appendChild(subjectEl);
+    pane.appendChild(metaEl);
+    pane.appendChild(divider);
+    pane.appendChild(bodyEl);
       // Mark as read in background
       apiFetch(`/api/gmail/message/${encodeURIComponent(id)}/read`, { method: 'PATCH' }).catch(() => {});
       // Remove unread styling from list item
@@ -2113,11 +2122,20 @@
   // ============================================================
   // Integrations / Webhooks
   // ============================================================
+  let slackIsConnected = false;
+  let aiIsConfigured = false;
+
   async function loadIntegrations() {
     try {
-      const data = await apiFetch('/api/webhooks/status');
-      renderIntegrationCards(data);
-      document.getElementById('inboundWebhookUrl').textContent = data.inboundUrl || '';
+      const [webhookData, slackStatus, aiStatus] = await Promise.all([
+        apiFetch('/api/webhooks/status'),
+        apiFetch('/api/slack/status').catch(() => ({ connected: false })),
+        apiFetch('/api/ai/status').catch(() => ({ configured: false })),
+      ]);
+      slackIsConnected = slackStatus.connected;
+      aiIsConfigured = aiStatus.configured;
+      renderIntegrationCards(webhookData);
+      document.getElementById('inboundWebhookUrl').textContent = webhookData.inboundUrl || '';
     } catch (err) {
       console.error('Integrations load error:', err.message);
     }
@@ -2126,22 +2144,19 @@
   function renderIntegrationCards(data) {
     const grid = document.getElementById('integrationsGrid');
 
-    const gmailConn = gmailConnected;
-    const slackConn = Boolean(slackChannels.length) || Boolean(document.getElementById('slackNotConfigured').style.display === 'none');
-
     const cards = [
       {
         icon: '📧',
         title: 'Gmail',
         desc: 'Read and send emails from your Google Workspace inbox.',
-        connected: gmailConn,
-        action: gmailConn ? null : `<a href="/auth/google" class="btn btn-primary btn-sm">Connect</a>`,
+        connected: gmailConnected,
+        action: gmailConnected ? null : `<a href="/auth/google" class="btn btn-primary btn-sm">Connect</a>`,
       },
       {
         icon: '💼',
         title: 'Slack',
         desc: 'Send and receive Slack channel messages. Requires SLACK_BOT_TOKEN.',
-        connected: Boolean(process?.env?.SLACK_BOT_TOKEN) || data.slack,
+        connected: slackIsConnected,
         action: null,
       },
       {
@@ -2164,7 +2179,7 @@
         icon: '🤖',
         title: 'AI Assistant',
         desc: 'Chat with Gemini or Claude via the floating widget. Requires GEMINI_API_KEY or ANTHROPIC_API_KEY.',
-        connected: false,
+        connected: aiIsConfigured,
         action: null,
       },
     ];

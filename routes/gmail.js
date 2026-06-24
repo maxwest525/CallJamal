@@ -1,9 +1,19 @@
 const express = require('express');
+const rateLimit = require('express-rate-limit');
 const { google } = require('googleapis');
 const { getOAuth2Client, getAuthenticatedClient, setTokens, getTokens, SCOPES, extractBody, buildRawEmail } = require('../lib/gmail');
 const { logActivity } = require('../lib/supabase');
 
 const router = express.Router();
+
+// Tight limit for auth-initiating endpoint
+const authUrlLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests, please try again later.' },
+});
 
 /**
  * GET /api/gmail/status
@@ -17,7 +27,7 @@ router.get('/status', (req, res) => {
  * GET /api/gmail/auth-url
  * Returns the Google OAuth2 authorization URL for Gmail
  */
-router.get('/auth-url', (req, res) => {
+router.get('/auth-url', authUrlLimiter, (req, res) => {
   try {
     const oauth2Client = getOAuth2Client();
     const url = oauth2Client.generateAuthUrl({
