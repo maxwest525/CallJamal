@@ -8,17 +8,42 @@ A production-ready Virtual Office system with SlickText SMS integration and Supa
 
 ## 🚀 Features
 
+### SMS & Messaging
 - **Unified SMS Messaging** — Shared SlickText number for the whole team
 - **External SMS** — Send messages to clients from the team number
 - **Internal Alerts** — Send SMS alerts to individual team members
 - **Broadcast SMS** — Message all active clients at once
 - **Incoming Webhook** — Auto-log replies from clients into conversation threads
-- **Client Directory** — Full CRUD for client contact management
-- **Team Status** — Live presence (Online / Away / Busy / Offline)
+- **Conversation Threads** — Click any conversation to open a full message thread with inline reply
+
+### Clients & Team
+- **Client Directory** — Full CRUD for client contacts including edit modal
+- **Team Status** — Live presence (Online / Away / Busy / Offline); click any avatar to update status instantly
 - **Google Workspace Sync** — Pull team members directly from your Google directory
-- **Conversation History** — All SMS threads grouped by phone number
-- **Audit Log** — Every action recorded for compliance
-- **Floating Huddle Widget** — Instant Daily.co video huddles from a draggable floating widget; Picture-in-Picture (PiP) pop-out to keep the call on screen while switching tabs; one-click Google Meet fallback
+
+### Email
+- **Gmail Integration** — Read, compose, and reply to emails from your Google Workspace inbox
+- **Gmail Reply** — One-click Reply modal directly from any email thread view
+
+### Templates
+- **Message Templates** — Create reusable SMS and email templates with `{{variable}}` placeholders
+- **Template Send** — Pick a client, fill in variables, preview, and send with one click
+- **Template CRUD** — Create, edit, and delete templates from the Templates view
+
+### Brand & Customization
+- **Brand Settings** — Set company name, tagline, logo URL, footer text, and brand colors
+- **Live Preview** — See your brand colors and text update in real time as you type
+
+### Integrations
+- **Slack** — Send and receive Slack channel messages
+- **Zapier / n8n** — Trigger webhooks from CallJamal events
+- **AI Assistant** — Floating chat widget powered by Gemini or Claude
+- **Daily.co Huddles** — Instant video huddles with PiP pop-out and Google Meet fallback
+- **Integrations Vault** — Admin-only vault to store API keys; no per-user setup required
+
+### Observability
+- **Activity Log** — Every action recorded with user, timestamp, entity, and details
+- **Audit Trail** — Full compliance-ready log accessible from the Activity view
 
 ---
 
