@@ -1491,6 +1491,18 @@
       <span class="nav-icon">📹</span>
       <span>Meetings</span>
     </button>
+    <button class="nav-item" data-view="templates">
+      <span class="nav-icon">📝</span>
+      <span>Templates</span>
+    </button>
+    <button class="nav-item" data-view="brand">
+      <span class="nav-icon">🎨</span>
+      <span>Brand</span>
+    </button>
+    <button class="nav-item" data-view="activity">
+      <span class="nav-icon">📋</span>
+      <span>Activity</span>
+    </button>
   </nav>
 
   <div class="sidebar-footer">
@@ -1752,6 +1764,122 @@
 
       <div class="meetings-rooms-grid" id="meetingsRoomsGrid">
         <div class="empty-state"><div class="icon">📹</div><p>Loading rooms…</p></div>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         TEMPLATES VIEW
+    ============================================================ -->
+    <div class="view" id="view-templates">
+      <div class="meetings-header-row">
+        <h2 style="font-size:1.125rem;font-weight:600;">📝 Message Templates</h2>
+        <button class="btn btn-primary btn-sm" id="newTemplateBtn">+ New Template</button>
+      </div>
+      <div class="card">
+        <div class="card-body" style="padding:0;">
+          <table class="clients-table" id="templatesTable">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Subject / Preview</th>
+                <th>Variables</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="templateTableBody">
+              <tr><td colspan="5" style="text-align:center;padding:32px;color:#9ca3af;">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         BRAND SETTINGS VIEW
+    ============================================================ -->
+    <div class="view" id="view-brand">
+      <div class="meetings-header-row">
+        <h2 style="font-size:1.125rem;font-weight:600;">🎨 Brand Settings</h2>
+        <button class="btn btn-primary btn-sm" id="saveBrandBtn">💾 Save</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:900px;">
+        <div class="card">
+          <div class="card-header">Company Identity</div>
+          <div class="card-body">
+            <div class="form-group">
+              <label class="form-label">Company Name</label>
+              <input class="form-control" id="brandCompanyName" type="text" placeholder="Acme Corp" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Logo URL</label>
+              <input class="form-control" id="brandLogoUrl" type="url" placeholder="https://example.com/logo.png" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Tagline</label>
+              <input class="form-control" id="brandTagline" type="text" placeholder="Your trusted partner" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email Footer Text</label>
+              <input class="form-control" id="brandFooterText" type="text" placeholder="© 2025 Acme Corp. All rights reserved." />
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">Email Colors &amp; Preview</div>
+          <div class="card-body">
+            <div class="form-group">
+              <label class="form-label">Primary Color</label>
+              <div style="display:flex;gap:8px;align-items:center;">
+                <input class="form-control" id="brandPrimaryColor" type="text" placeholder="#4F46E5" style="flex:1;" />
+                <input type="color" id="brandPrimaryColorPicker" value="#4F46E5" style="width:40px;height:38px;padding:2px;border:1px solid var(--color-gray-300);border-radius:6px;cursor:pointer;" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Secondary Color</label>
+              <div style="display:flex;gap:8px;align-items:center;">
+                <input class="form-control" id="brandSecondaryColor" type="text" placeholder="#7C3AED" style="flex:1;" />
+                <input type="color" id="brandSecondaryColorPicker" value="#7C3AED" style="width:40px;height:38px;padding:2px;border:1px solid var(--color-gray-300);border-radius:6px;cursor:pointer;" />
+              </div>
+            </div>
+            <div id="brandEmailPreview" style="margin-top:16px;border:1px solid var(--color-gray-200);border-radius:8px;overflow:hidden;font-size:0.8125rem;">
+              <div id="brandPreviewHeader" style="background:#4F46E5;color:#fff;padding:16px 20px;text-align:center;">
+                <div id="brandPreviewName" style="font-weight:700;font-size:1rem;">Company Name</div>
+                <div id="brandPreviewTagline" style="font-size:0.75rem;opacity:0.85;margin-top:2px;">Your tagline</div>
+              </div>
+              <div style="padding:16px 20px;color:#374151;font-size:0.8125rem;">Your email body will appear here.</div>
+              <div id="brandPreviewFooter" style="background:#f9fafb;border-top:1px solid #e5e7eb;padding:10px 20px;text-align:center;font-size:0.75rem;color:#6b7280;">Footer text</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         ACTIVITY LOG VIEW
+    ============================================================ -->
+    <div class="view" id="view-activity">
+      <div class="meetings-header-row">
+        <h2 style="font-size:1.125rem;font-weight:600;">📋 Activity Log</h2>
+        <button class="btn btn-secondary btn-sm" id="refreshActivityBtn">🔄 Refresh</button>
+      </div>
+      <div class="card">
+        <div class="card-body" style="padding:0;">
+          <table class="clients-table">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>User</th>
+                <th>Action</th>
+                <th>Entity</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody id="activityTableBody">
+              <tr><td colspan="5" style="text-align:center;padding:32px;color:#9ca3af;">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
@@ -2095,6 +2223,196 @@
   </div>
 </div>
 
+<!-- Conversation Thread Modal -->
+<div class="modal-backdrop" id="conversationThreadModal">
+  <div class="modal" style="max-width:640px;display:flex;flex-direction:column;height:80vh;max-height:700px;">
+    <div class="modal-header" style="flex-shrink:0;">
+      <div>
+        <h3 id="convThreadTitle">Conversation</h3>
+        <div id="convThreadPhone" style="font-size:0.75rem;color:var(--color-gray-500);margin-top:2px;"></div>
+      </div>
+      <button class="modal-close" data-close="conversationThreadModal">✕</button>
+    </div>
+    <div class="modal-body" id="convThreadMessages" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:16px;">
+      <div class="empty-state"><div class="icon">⏳</div><p>Loading…</p></div>
+    </div>
+    <div style="flex-shrink:0;border-top:1px solid var(--color-gray-200);padding:12px 16px;display:flex;gap:8px;background:#fff;">
+      <textarea id="convThreadReplyInput" class="form-control" placeholder="Type your reply…" style="flex:1;min-height:60px;max-height:120px;resize:vertical;" maxlength="1600"></textarea>
+      <button class="btn btn-primary" id="convThreadSendBtn" style="align-self:flex-end;">Send</button>
+    </div>
+  </div>
+</div>
+
+<!-- Template Create/Edit Modal -->
+<div class="modal-backdrop" id="templateModal">
+  <div class="modal" style="max-width:560px;">
+    <div class="modal-header">
+      <h3 id="templateModalTitle">📝 New Template</h3>
+      <button class="modal-close" data-close="templateModal">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="templateEditId" />
+      <div class="form-group">
+        <label class="form-label">Template Name <span style="color:var(--color-danger);">*</span></label>
+        <input class="form-control" id="templateName" placeholder="e.g. Welcome Message" maxlength="100" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Type <span style="color:var(--color-danger);">*</span></label>
+        <select class="form-control" id="templateType">
+          <option value="sms">SMS</option>
+          <option value="email">Email</option>
+        </select>
+      </div>
+      <div class="form-group" id="templateSubjectGroup">
+        <label class="form-label">Subject <span style="color:var(--color-danger);">*</span></label>
+        <input class="form-control" id="templateSubject" placeholder="Subject line" maxlength="200" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Body <span style="color:var(--color-danger);">*</span></label>
+        <textarea class="form-control" id="templateBody" placeholder="Use {{variable_name}} for dynamic values, e.g. Hello {{client_name}}!" style="min-height:120px;"></textarea>
+        <p style="font-size:0.75rem;color:var(--color-gray-400);margin-top:4px;">Use <code>{{variable}}</code> placeholders — detected automatically.</p>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-close="templateModal">Cancel</button>
+      <button class="btn btn-primary" id="saveTemplateBtn">💾 Save Template</button>
+    </div>
+  </div>
+</div>
+
+<!-- Template Send Modal -->
+<div class="modal-backdrop" id="templateSendModal">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-header">
+      <h3 id="templateSendTitle">📤 Send Template</h3>
+      <button class="modal-close" data-close="templateSendModal">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group" id="templateSendToGroup">
+        <label class="form-label">Recipient</label>
+        <select class="form-control" id="templateSendClient">
+          <option value="">– Select a client –</option>
+        </select>
+      </div>
+      <div id="templateSendVars"></div>
+      <div id="templateSendPreview" style="display:none;background:var(--color-gray-50);border:1px solid var(--color-gray-200);border-radius:6px;padding:12px;font-size:0.875rem;margin-top:8px;">
+        <div style="font-weight:600;margin-bottom:4px;font-size:0.75rem;color:var(--color-gray-500);text-transform:uppercase;letter-spacing:.05em;">Preview</div>
+        <div id="templateSendPreviewBody" style="color:var(--color-gray-700);white-space:pre-wrap;"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="templateSendPreviewBtn">👁 Preview</button>
+      <button class="btn btn-primary" id="templateSendConfirmBtn">📤 Send</button>
+    </div>
+  </div>
+</div>
+
+<!-- Client Edit Modal -->
+<div class="modal-backdrop" id="editClientModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>✏️ Edit Client</h3>
+      <button class="modal-close" data-close="editClientModal">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editClientId" />
+      <div class="form-group">
+        <label class="form-label">Full Name <span style="color:var(--color-danger);">*</span></label>
+        <input class="form-control" id="editClientName" placeholder="Full name" />
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">Company</label>
+          <input class="form-control" id="editClientCompany" placeholder="Company name" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone <span style="color:var(--color-danger);">*</span></label>
+          <input class="form-control" id="editClientPhone" type="tel" placeholder="+15551234567" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-control" id="editClientEmail" type="email" placeholder="email@example.com" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes</label>
+        <textarea class="form-control" id="editClientNotes" placeholder="Optional notes…"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-close="editClientModal">Cancel</button>
+      <button class="btn btn-primary" id="saveEditClientBtn">💾 Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Gmail Reply Modal -->
+<div class="modal-backdrop" id="gmailReplyModal">
+  <div class="modal" style="max-width:540px;">
+    <div class="modal-header">
+      <h3>↩️ Reply</h3>
+      <button class="modal-close" data-close="gmailReplyModal">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="gmailReplyTo" />
+      <div class="form-group">
+        <label class="form-label">To</label>
+        <input class="form-control" id="gmailReplyToDisplay" type="text" readonly style="background:var(--color-gray-50);" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Subject</label>
+        <input class="form-control" id="gmailReplySubject" type="text" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Message</label>
+        <textarea class="form-control" id="gmailReplyBody" style="min-height:140px;" placeholder="Write your reply…"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-close="gmailReplyModal">Cancel</button>
+      <button class="btn btn-primary" id="gmailReplySendBtn">📤 Send Reply</button>
+    </div>
+  </div>
+</div>
+
+<!-- User Status Modal -->
+<div class="modal-backdrop" id="userStatusModal">
+  <div class="modal" style="max-width:380px;">
+    <div class="modal-header">
+      <h3>🟢 Update Your Status</h3>
+      <button class="modal-close" data-close="userStatusModal">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="statusUserId" />
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:6px;border:1px solid var(--color-gray-200);">
+            <input type="radio" name="statusPick" value="online" /> <span style="width:8px;height:8px;border-radius:50%;background:var(--color-success);display:inline-block;"></span> Online
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:6px;border:1px solid var(--color-gray-200);">
+            <input type="radio" name="statusPick" value="away" /> <span style="width:8px;height:8px;border-radius:50%;background:var(--color-warning);display:inline-block;"></span> Away
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:6px;border:1px solid var(--color-gray-200);">
+            <input type="radio" name="statusPick" value="busy" /> <span style="width:8px;height:8px;border-radius:50%;background:var(--color-danger);display:inline-block;"></span> Busy
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:6px;border:1px solid var(--color-gray-200);">
+            <input type="radio" name="statusPick" value="offline" /> <span style="width:8px;height:8px;border-radius:50%;background:var(--color-gray-400);display:inline-block;"></span> Offline
+          </label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Status Message <span style="color:var(--color-gray-400);font-weight:400;">(optional)</span></label>
+        <input class="form-control" id="statusMessage" placeholder="e.g. In a meeting until 3pm" maxlength="100" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-close="userStatusModal">Cancel</button>
+      <button class="btn btn-primary" id="saveStatusBtn">✅ Update Status</button>
+    </div>
+  </div>
+</div>
+
 <!-- Toast Container -->
 <div class="toast-container" id="toastContainer"></div>
 
@@ -2226,7 +2544,7 @@
     document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.dataset.view === view));
     document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === `view-${view}`));
 
-    const titles = { messages: 'Messages', conversations: 'Conversations', users: 'Team', clients: 'Clients', gmail: 'Gmail', slack: 'Slack', integrations: 'Integrations', meetings: 'Meetings' };
+    const titles = { messages: 'Messages', conversations: 'Conversations', users: 'Team', clients: 'Clients', gmail: 'Gmail', slack: 'Slack', integrations: 'Integrations', meetings: 'Meetings', templates: 'Templates', brand: 'Brand Settings', activity: 'Activity Log' };
     document.getElementById('headerTitle').textContent = titles[view] || view;
 
     loadView(view);
@@ -2243,6 +2561,9 @@
     else if (view === 'slack') loadSlack();
     else if (view === 'integrations') loadIntegrations();
     else if (view === 'meetings') loadMeetingsView();
+    else if (view === 'templates') loadTemplates();
+    else if (view === 'brand') loadBrand();
+    else if (view === 'activity') loadActivity();
   }
 
   // ============================================================
@@ -2427,7 +2748,7 @@
       const preview = c.last_message || 'No messages yet';
       const unread = c.unread_count > 0 ? `<div class="conv-unread">${c.unread_count}</div>` : '';
       return `
-        <div class="conversation-item">
+        <div class="conversation-item" data-conv-id="${escAttr(c.id)}" style="cursor:pointer;">
           <div class="conv-avatar">${escHtml(initials)}</div>
           <div class="conv-info">
             <div class="conv-name">${escHtml(name)}</div>
@@ -2495,7 +2816,7 @@
       if (title) tooltipParts.push(title);
       if (u.extension) tooltipParts.push(`Ext. ${u.extension}`);
       return `
-        <div class="office-avatar" title="${escAttr(tooltipParts.join(' – '))}">
+        <div class="office-avatar js-status-avatar" data-user-id="${escAttr(u.id)}" data-status="${escAttr(u.status || 'offline')}" data-msg="${escAttr(u.status_message || '')}" title="${escAttr(tooltipParts.join(' – '))}" style="cursor:pointer;">
           <div class="office-avatar-ring ${status}">${inner}</div>
           <div class="office-avatar-label">${escHtml((u.name || '').split(' ')[0])}</div>
         </div>`;
@@ -2528,6 +2849,14 @@
       </div>` : '';
 
     el.innerHTML = `<div class="office-floor">${floorHtml}</div>${offlineHtml}`;
+
+    // Delegated click for status update
+    el.querySelectorAll('.js-status-avatar').forEach(avatar => {
+      avatar.addEventListener('click', () => {
+        const { userId, status, msg } = avatar.dataset;
+        openUserStatus(userId, status, msg);
+      });
+    });
   }
 
   async function syncGoogleWorkspace() {
@@ -2571,6 +2900,7 @@
           <td>${lastContacted}</td>
           <td>
             <button class="btn btn-primary btn-sm js-sms-btn" data-id="${escAttr(c.id)}" data-name="${escAttr(c.name)}">💬 SMS</button>
+            <button class="btn btn-secondary btn-sm js-edit-client-btn" data-id="${escAttr(c.id)}">✏️</button>
             <button class="btn btn-secondary btn-sm js-del-btn" data-id="${escAttr(c.id)}" data-name="${escAttr(c.name)}">🗑️</button>
           </td>
         </tr>
@@ -2580,6 +2910,9 @@
     // Attach event handlers via data attributes to avoid inline onclick security concerns
     tbody.querySelectorAll('.js-sms-btn').forEach(btn => {
       btn.addEventListener('click', () => openSendClientSms(btn.dataset.id, btn.dataset.name));
+    });
+    tbody.querySelectorAll('.js-edit-client-btn').forEach(btn => {
+      btn.addEventListener('click', () => openEditClient(btn.dataset.id));
     });
     tbody.querySelectorAll('.js-del-btn').forEach(btn => {
       btn.addEventListener('click', () => deleteClient(btn.dataset.id, btn.dataset.name));
@@ -2804,6 +3137,14 @@
     pane.appendChild(metaEl);
     pane.appendChild(divider);
     pane.appendChild(bodyEl);
+
+    // Reply button
+    const replyBtn = document.createElement('button');
+    replyBtn.className = 'btn btn-secondary';
+    replyBtn.style.cssText = 'margin-top:16px;';
+    replyBtn.textContent = '↩️ Reply';
+    replyBtn.addEventListener('click', () => openGmailReply({ from: m.from, subject: m.subject }));
+    pane.appendChild(replyBtn);
       // Mark as read in background
       apiFetch(`/api/gmail/message/${encodeURIComponent(id)}/read`, { method: 'PATCH' }).catch(() => {});
       // Remove unread styling from list item
@@ -2983,16 +3324,17 @@
 
   async function loadIntegrations() {
     try {
-      const [webhookData, slackStatus, aiStatus, meetingsStatus] = await Promise.all([
+      const [webhookData, slackStatus, aiStatus, meetingsStatus, smsStatus] = await Promise.all([
         apiFetch('/api/webhooks/status'),
         apiFetch('/api/slack/status').catch(() => ({ connected: false })),
         apiFetch('/api/ai/status').catch(() => ({ configured: false })),
         apiFetch('/api/meetings/status').catch(() => ({ configured: false })),
+        apiFetch('/api/sms/status').catch(() => ({ configured: false })),
       ]);
       slackIsConnected = slackStatus.connected;
       aiIsConfigured = aiStatus.configured;
       huddleIsConfigured = meetingsStatus.configured;
-      renderIntegrationCards(webhookData);
+      renderIntegrationCards({ ...webhookData, sms: smsStatus });
       document.getElementById('inboundWebhookUrl').textContent = webhookData.inboundUrl || '';
     } catch (err) {
       console.error('Integrations load error:', err.message);
@@ -3930,6 +4272,574 @@
   document.getElementById('aiChatInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') sendAiMessage(); });
 
   // loadView is now called by boot() above after login resolves
+
+  // ============================================================
+  // Conversation Thread
+  // ============================================================
+  let activeConversationId = null;
+
+  function openConversationThread(conv) {
+    activeConversationId = conv.id;
+    const clientName = conv.client?.name || conv.phone_number;
+    document.getElementById('convThreadTitle').textContent = clientName;
+    document.getElementById('convThreadPhone').textContent = conv.phone_number;
+    document.getElementById('convThreadReplyInput').value = '';
+    document.getElementById('convThreadMessages').innerHTML =
+      '<div class="empty-state"><div class="icon">⏳</div><p>Loading…</p></div>';
+    openModal('conversationThreadModal');
+
+    // Mark as read
+    apiFetch(`/api/sms/conversations/${conv.id}/read`, { method: 'PATCH' }).catch(() => {});
+
+    loadConversationThread(conv.id);
+  }
+
+  async function loadConversationThread(convId) {
+    try {
+      const data = await apiFetch(`/api/sms/conversations/${convId}/messages?limit=100`);
+      renderConversationThread(data.messages || []);
+    } catch (err) {
+      document.getElementById('convThreadMessages').innerHTML =
+        `<div class="empty-state"><div class="icon">⚠️</div><p>${escHtml(err.message)}</p></div>`;
+    }
+  }
+
+  function renderConversationThread(messages) {
+    const el = document.getElementById('convThreadMessages');
+    if (!messages.length) {
+      el.innerHTML = '<div class="empty-state"><div class="icon">💬</div><p>No messages yet. Send the first one below!</p></div>';
+      return;
+    }
+    el.innerHTML = messages.map(m => {
+      const isOutbound = m.direction === 'outbound';
+      const sender = isOutbound ? (m.sender?.name || 'Team') : 'Client';
+      const time = new Date(m.created_at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+      const align = isOutbound ? 'flex-end' : 'flex-start';
+      const bubbleClass = isOutbound ? 'mine' : 'theirs';
+      return `
+        <div style="display:flex;flex-direction:column;align-items:${align};">
+          <div style="font-size:0.7rem;color:var(--color-gray-400);margin-bottom:2px;">${escHtml(sender)} · ${escHtml(time)}</div>
+          <div class="chat-bubble ${bubbleClass}" style="max-width:80%;">${escHtml(m.body)}</div>
+        </div>`;
+    }).join('');
+    el.scrollTop = el.scrollHeight;
+  }
+
+  async function sendConversationReply() {
+    if (!activeConversationId) return;
+    const message = document.getElementById('convThreadReplyInput').value.trim();
+    if (!message) return;
+
+    const btn = document.getElementById('convThreadSendBtn');
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+    try {
+      await apiFetch(`/api/sms/conversations/${activeConversationId}/reply`, {
+        method: 'POST',
+        body: JSON.stringify({ message }),
+      });
+      document.getElementById('convThreadReplyInput').value = '';
+      await loadConversationThread(activeConversationId);
+      loadConversations();
+    } catch (err) {
+      toast(`Reply failed: ${err.message}`, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Send';
+    }
+  }
+
+  document.getElementById('convThreadSendBtn').addEventListener('click', sendConversationReply);
+  document.getElementById('convThreadReplyInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) sendConversationReply();
+  });
+
+  // Wire up conversation items to open thread (delegated)
+  document.getElementById('conversationList').addEventListener('click', (e) => {
+    const item = e.target.closest('.conversation-item[data-conv-id]');
+    if (!item) return;
+    const convId = item.dataset.convId;
+    const conv = allConversations.find(c => c.id === convId);
+    if (conv) openConversationThread(conv);
+  });
+
+  // ============================================================
+  // Templates
+  // ============================================================
+  let allTemplates = [];
+  let templateSendId = null;
+  let templateSendType = null;
+
+  async function loadTemplates() {
+    try {
+      const data = await apiFetch('/api/templates');
+      allTemplates = data.templates || [];
+      renderTemplates(allTemplates);
+    } catch (err) {
+      document.getElementById('templateTableBody').innerHTML =
+        `<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--color-danger);">${escHtml(err.message)}</td></tr>`;
+    }
+  }
+
+  function renderTemplates(templates) {
+    const tbody = document.getElementById('templateTableBody');
+    if (!templates.length) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:32px;color:#9ca3af;">No templates yet. Click <strong>+ New Template</strong> to create one.</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = templates.map(t => {
+      const vars = (t.variables || []).length ? t.variables.map(v => `<code style="font-size:0.7rem;background:var(--color-gray-100);padding:1px 4px;border-radius:3px;">{{${escHtml(v)}}}</code>`).join(' ') : '–';
+      const preview = t.subject || t.body.slice(0, 60) + (t.body.length > 60 ? '…' : '');
+      return `
+        <tr>
+          <td><strong>${escHtml(t.name)}</strong></td>
+          <td><span class="badge badge-${t.type === 'email' ? 'external' : 'internal'}">${escHtml(t.type)}</span></td>
+          <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(preview)}</td>
+          <td>${vars}</td>
+          <td>
+            <button class="btn btn-primary btn-sm js-send-template" data-id="${escAttr(t.id)}" data-type="${escAttr(t.type)}">📤 Send</button>
+            <button class="btn btn-secondary btn-sm js-edit-template" data-id="${escAttr(t.id)}">✏️</button>
+            <button class="btn btn-secondary btn-sm js-del-template" data-id="${escAttr(t.id)}" data-name="${escAttr(t.name)}">🗑️</button>
+          </td>
+        </tr>`;
+    }).join('');
+
+    tbody.querySelectorAll('.js-send-template').forEach(btn => {
+      btn.addEventListener('click', () => openTemplateSend(btn.dataset.id, btn.dataset.type));
+    });
+    tbody.querySelectorAll('.js-edit-template').forEach(btn => {
+      btn.addEventListener('click', () => openTemplateEdit(btn.dataset.id));
+    });
+    tbody.querySelectorAll('.js-del-template').forEach(btn => {
+      btn.addEventListener('click', () => deleteTemplate(btn.dataset.id, btn.dataset.name));
+    });
+  }
+
+  function openNewTemplate() {
+    document.getElementById('templateEditId').value = '';
+    document.getElementById('templateModalTitle').textContent = '📝 New Template';
+    document.getElementById('templateName').value = '';
+    document.getElementById('templateType').value = 'sms';
+    document.getElementById('templateSubject').value = '';
+    document.getElementById('templateBody').value = '';
+    document.getElementById('templateSubjectGroup').style.display = 'none';
+    openModal('templateModal');
+  }
+
+  function openTemplateEdit(id) {
+    const t = allTemplates.find(x => x.id === id);
+    if (!t) return;
+    document.getElementById('templateEditId').value = t.id;
+    document.getElementById('templateModalTitle').textContent = '✏️ Edit Template';
+    document.getElementById('templateName').value = t.name;
+    document.getElementById('templateType').value = t.type;
+    document.getElementById('templateSubject').value = t.subject || '';
+    document.getElementById('templateBody').value = t.body;
+    document.getElementById('templateSubjectGroup').style.display = t.type === 'email' ? '' : 'none';
+    openModal('templateModal');
+  }
+
+  document.getElementById('templateType').addEventListener('change', function () {
+    document.getElementById('templateSubjectGroup').style.display = this.value === 'email' ? '' : 'none';
+  });
+
+  async function saveTemplate() {
+    const id = document.getElementById('templateEditId').value;
+    const name = document.getElementById('templateName').value.trim();
+    const type = document.getElementById('templateType').value;
+    const subject = document.getElementById('templateSubject').value.trim();
+    const body = document.getElementById('templateBody').value.trim();
+
+    if (!name || !body) { toast('Name and body are required.', 'warning'); return; }
+    if (type === 'email' && !subject) { toast('Subject is required for email templates.', 'warning'); return; }
+
+    const payload = { name, type, body };
+    if (type === 'email') payload.subject = subject;
+
+    const btn = document.getElementById('saveTemplateBtn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+    try {
+      if (id) {
+        await apiFetch(`/api/templates/${id}`, { method: 'PUT', body: JSON.stringify(payload) });
+        toast('Template updated!', 'success');
+      } else {
+        await apiFetch('/api/templates', { method: 'POST', body: JSON.stringify(payload) });
+        toast('Template created!', 'success');
+      }
+      closeModal('templateModal');
+      loadTemplates();
+    } catch (err) {
+      toast(`Error: ${err.message}`, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '💾 Save Template';
+    }
+  }
+
+  async function deleteTemplate(id, name) {
+    if (!confirm(`Delete template "${name}"?`)) return;
+    try {
+      await apiFetch(`/api/templates/${id}`, { method: 'DELETE' });
+      toast('Template deleted.', 'success');
+      loadTemplates();
+    } catch (err) {
+      toast(`Error: ${err.message}`, 'error');
+    }
+  }
+
+  async function openTemplateSend(id, type) {
+    templateSendId = id;
+    templateSendType = type;
+    const t = allTemplates.find(x => x.id === id);
+    if (!t) return;
+
+    document.getElementById('templateSendTitle').textContent = `📤 Send: ${t.name}`;
+    document.getElementById('templateSendPreview').style.display = 'none';
+
+    // Build variable inputs
+    const vars = t.variables || [];
+    const varHtml = vars.length ? vars.map(v => `
+      <div class="form-group">
+        <label class="form-label">{{${escHtml(v)}}}</label>
+        <input class="form-control template-var-input" data-var="${escAttr(v)}" placeholder="Value for ${escHtml(v)}" />
+      </div>`).join('') : '';
+    document.getElementById('templateSendVars').innerHTML = varHtml;
+
+    // Show/hide recipient field based on type
+    const toGroup = document.getElementById('templateSendToGroup');
+    toGroup.style.display = type === 'sms' ? '' : 'none';
+
+    // Load client options
+    const select = document.getElementById('templateSendClient');
+    select.innerHTML = '<option value="">– Select a client –</option>' +
+      allClients.map(c => `<option value="${escAttr(c.id)}" data-phone="${escAttr(c.phone)}" data-name="${escAttr(c.name)}" data-email="${escAttr(c.email || '')}">${escHtml(c.name)} (${escHtml(c.phone)})</option>`).join('');
+
+    openModal('templateSendModal');
+  }
+
+  async function previewTemplateSend() {
+    if (!templateSendId) return;
+    const values = {};
+    document.querySelectorAll('#templateSendVars .template-var-input').forEach(inp => {
+      values[inp.dataset.var] = inp.value;
+    });
+    try {
+      const data = await apiFetch(`/api/templates/${templateSendId}/render`, {
+        method: 'POST', body: JSON.stringify({ variables: values }),
+      });
+      const preview = document.getElementById('templateSendPreview');
+      preview.style.display = '';
+      document.getElementById('templateSendPreviewBody').textContent = data.rendered.body;
+    } catch (err) {
+      toast(`Preview error: ${err.message}`, 'error');
+    }
+  }
+
+  async function sendTemplateSend() {
+    if (!templateSendId || !templateSendType) return;
+    const values = {};
+    document.querySelectorAll('#templateSendVars .template-var-input').forEach(inp => {
+      values[inp.dataset.var] = inp.value;
+    });
+
+    const btn = document.getElementById('templateSendConfirmBtn');
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+
+    try {
+      // Render the template
+      const rendered = await apiFetch(`/api/templates/${templateSendId}/render`, {
+        method: 'POST', body: JSON.stringify({ variables: values }),
+      });
+
+      if (templateSendType === 'sms') {
+        const clientOpt = document.getElementById('templateSendClient');
+        const selected = clientOpt.options[clientOpt.selectedIndex];
+        const phone = selected?.dataset?.phone;
+        if (!phone) { toast('Select a client to send to.', 'warning'); return; }
+        const clientId = clientOpt.value || undefined;
+        await apiFetch('/api/sms/send-external', {
+          method: 'POST',
+          body: JSON.stringify({ to: phone, message: rendered.rendered.body, clientId }),
+        });
+        toast('SMS sent!', 'success');
+      } else {
+        const clientOpt = document.getElementById('templateSendClient');
+        const selected = clientOpt.options[clientOpt.selectedIndex];
+        const email = selected?.dataset?.email;
+        if (!email) { toast('Select a client with an email address.', 'warning'); return; }
+        await apiFetch('/api/gmail/send', {
+          method: 'POST',
+          body: JSON.stringify({ to: email, subject: rendered.rendered.subject || '(no subject)', body: rendered.rendered.body }),
+        });
+        toast('Email sent!', 'success');
+      }
+      closeModal('templateSendModal');
+    } catch (err) {
+      toast(`Error: ${err.message}`, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '📤 Send';
+    }
+  }
+
+  document.getElementById('newTemplateBtn').addEventListener('click', openNewTemplate);
+  document.getElementById('saveTemplateBtn').addEventListener('click', saveTemplate);
+  document.getElementById('templateSendPreviewBtn').addEventListener('click', previewTemplateSend);
+  document.getElementById('templateSendConfirmBtn').addEventListener('click', sendTemplateSend);
+
+  // ============================================================
+  // Brand Settings
+  // ============================================================
+  function updateBrandPreview() {
+    const name = document.getElementById('brandCompanyName').value || 'Company Name';
+    const tagline = document.getElementById('brandTagline').value || 'Your tagline';
+    const footer = document.getElementById('brandFooterText').value || 'Footer text';
+    const primary = document.getElementById('brandPrimaryColor').value || '#4F46E5';
+
+    document.getElementById('brandPreviewHeader').style.background = primary;
+    document.getElementById('brandPreviewName').textContent = name;
+    document.getElementById('brandPreviewTagline').textContent = tagline;
+    document.getElementById('brandPreviewFooter').textContent = footer;
+  }
+
+  // Sync color picker ↔ text input
+  document.getElementById('brandPrimaryColorPicker').addEventListener('input', function () {
+    document.getElementById('brandPrimaryColor').value = this.value;
+    updateBrandPreview();
+  });
+  document.getElementById('brandSecondaryColorPicker').addEventListener('input', function () {
+    document.getElementById('brandSecondaryColor').value = this.value;
+  });
+  document.getElementById('brandPrimaryColor').addEventListener('input', function () {
+    if (/^#[0-9A-Fa-f]{6}$/.test(this.value)) {
+      document.getElementById('brandPrimaryColorPicker').value = this.value;
+      updateBrandPreview();
+    }
+  });
+  ['brandCompanyName', 'brandTagline', 'brandFooterText'].forEach(id => {
+    document.getElementById(id).addEventListener('input', updateBrandPreview);
+  });
+
+  async function loadBrand() {
+    try {
+      const data = await apiFetch('/api/brand');
+      const b = data.brand || {};
+      document.getElementById('brandCompanyName').value = b.company_name || '';
+      document.getElementById('brandLogoUrl').value = b.logo_url || '';
+      document.getElementById('brandTagline').value = b.tagline || '';
+      document.getElementById('brandFooterText').value = b.footer_text || '';
+      const primary = b.primary_color || '#4F46E5';
+      const secondary = b.secondary_color || '#7C3AED';
+      document.getElementById('brandPrimaryColor').value = primary;
+      document.getElementById('brandSecondaryColor').value = secondary;
+      document.getElementById('brandPrimaryColorPicker').value = primary;
+      document.getElementById('brandSecondaryColorPicker').value = secondary;
+      updateBrandPreview();
+    } catch (err) {
+      console.error('Load brand error:', err.message);
+    }
+  }
+
+  async function saveBrand() {
+    const payload = {
+      company_name: document.getElementById('brandCompanyName').value.trim() || undefined,
+      logo_url: document.getElementById('brandLogoUrl').value.trim() || undefined,
+      tagline: document.getElementById('brandTagline').value.trim() || undefined,
+      footer_text: document.getElementById('brandFooterText').value.trim() || undefined,
+      primary_color: document.getElementById('brandPrimaryColor').value.trim() || undefined,
+      secondary_color: document.getElementById('brandSecondaryColor').value.trim() || undefined,
+    };
+    // Remove undefined keys
+    Object.keys(payload).forEach(k => payload[k] === undefined && delete payload[k]);
+
+    const btn = document.getElementById('saveBrandBtn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+    try {
+      await apiFetch('/api/brand', { method: 'PUT', body: JSON.stringify(payload) });
+      toast('Brand settings saved!', 'success');
+    } catch (err) {
+      toast(`Error: ${err.message}`, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '💾 Save';
+    }
+  }
+
+  document.getElementById('saveBrandBtn').addEventListener('click', saveBrand);
+
+  // ============================================================
+  // Activity Log
+  // ============================================================
+  async function loadActivity() {
+    try {
+      const data = await apiFetch('/api/activity?limit=100');
+      renderActivity(data.activity || []);
+    } catch (err) {
+      document.getElementById('activityTableBody').innerHTML =
+        `<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--color-danger);">${escHtml(err.message)}</td></tr>`;
+    }
+  }
+
+  function renderActivity(activities) {
+    const tbody = document.getElementById('activityTableBody');
+    if (!activities.length) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:#9ca3af;">No activity recorded yet.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = activities.map(a => {
+      const time = new Date(a.created_at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+      const user = a.user?.name || a.user?.email || '–';
+      const details = a.details ? Object.entries(a.details).map(([k, v]) => `${k}: ${typeof v === 'object' ? JSON.stringify(v) : v}`).join(', ') : '–';
+      const action = a.action.replace(/_/g, ' ');
+      return `
+        <tr>
+          <td style="white-space:nowrap;font-size:0.8125rem;">${escHtml(time)}</td>
+          <td style="font-size:0.8125rem;">${escHtml(user)}</td>
+          <td><span style="font-size:0.8125rem;font-weight:500;">${escHtml(action)}</span></td>
+          <td style="font-size:0.8125rem;">${escHtml(a.entity_type || '–')}</td>
+          <td style="font-size:0.75rem;color:var(--color-gray-500);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escAttr(details)}">${escHtml(details.slice(0, 80))}</td>
+        </tr>`;
+    }).join('');
+  }
+
+  document.getElementById('refreshActivityBtn').addEventListener('click', loadActivity);
+
+  // ============================================================
+  // Client Edit
+  // ============================================================
+  function openEditClient(id) {
+    const c = allClients.find(x => x.id === id);
+    if (!c) return;
+    document.getElementById('editClientId').value = c.id;
+    document.getElementById('editClientName').value = c.name || '';
+    document.getElementById('editClientCompany').value = c.company || '';
+    document.getElementById('editClientPhone').value = c.phone || '';
+    document.getElementById('editClientEmail').value = c.email || '';
+    document.getElementById('editClientNotes').value = c.notes || '';
+    openModal('editClientModal');
+  }
+
+  async function saveEditClient() {
+    const id = document.getElementById('editClientId').value;
+    const name = document.getElementById('editClientName').value.trim();
+    const phone = document.getElementById('editClientPhone').value.trim();
+
+    if (!name || !phone) { toast('Name and phone are required.', 'warning'); return; }
+
+    const payload = {
+      name,
+      phone,
+      company: document.getElementById('editClientCompany').value.trim() || null,
+      email: document.getElementById('editClientEmail').value.trim() || null,
+      notes: document.getElementById('editClientNotes').value.trim() || null,
+    };
+
+    const btn = document.getElementById('saveEditClientBtn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+    try {
+      await apiFetch(`/api/clients/${id}`, { method: 'PATCH', body: JSON.stringify(payload) });
+      toast('Client updated!', 'success');
+      closeModal('editClientModal');
+      loadClients();
+      loadClientOptions();
+    } catch (err) {
+      toast(`Error: ${err.message}`, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '💾 Save Changes';
+    }
+  }
+
+  document.getElementById('saveEditClientBtn').addEventListener('click', saveEditClient);
+
+  // ============================================================
+  // Gmail Reply
+  // ============================================================
+  function openGmailReply(messageData) {
+    const from = messageData.from || '';
+    // Extract just the email address from "Name <email@example.com>"
+    const emailMatch = from.match(/<([^>]+)>/) || [null, from];
+    const replyTo = emailMatch[1] || from;
+    const subject = messageData.subject || '';
+    const replySubject = subject.toLowerCase().startsWith('re:') ? subject : `Re: ${subject}`;
+
+    document.getElementById('gmailReplyTo').value = replyTo;
+    document.getElementById('gmailReplyToDisplay').value = from;
+    document.getElementById('gmailReplySubject').value = replySubject;
+    document.getElementById('gmailReplyBody').value = '';
+    openModal('gmailReplyModal');
+  }
+
+  async function sendGmailReply() {
+    const to = document.getElementById('gmailReplyTo').value.trim();
+    const subject = document.getElementById('gmailReplySubject').value.trim();
+    const body = document.getElementById('gmailReplyBody').value.trim();
+
+    if (!to || !subject || !body) { toast('To, Subject, and Message are required.', 'warning'); return; }
+
+    const btn = document.getElementById('gmailReplySendBtn');
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+    try {
+      await apiFetch('/api/gmail/send', { method: 'POST', body: JSON.stringify({ to, subject, body }) });
+      toast('Reply sent!', 'success');
+      closeModal('gmailReplyModal');
+    } catch (err) {
+      toast(`Error: ${err.message}`, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '📤 Send Reply';
+    }
+  }
+
+  document.getElementById('gmailReplySendBtn').addEventListener('click', sendGmailReply);
+
+  // ============================================================
+  // User Status Update
+  // ============================================================
+  async function openUserStatus(userId, currentStatus, currentMessage) {
+    document.getElementById('statusUserId').value = userId;
+    document.getElementById('statusMessage').value = currentMessage || '';
+    // Set the matching radio
+    document.querySelectorAll('[name="statusPick"]').forEach(r => {
+      r.checked = r.value === (currentStatus || 'online');
+    });
+    openModal('userStatusModal');
+  }
+
+  async function saveUserStatus() {
+    const userId = document.getElementById('statusUserId').value;
+    const status = document.querySelector('[name="statusPick"]:checked')?.value || 'online';
+    const statusMessage = document.getElementById('statusMessage').value.trim();
+
+    const btn = document.getElementById('saveStatusBtn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+    try {
+      await apiFetch(`/api/users/${userId}/status`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status, statusMessage }),
+      });
+      toast('Status updated!', 'success');
+      closeModal('userStatusModal');
+      if (currentView === 'users') loadTeam();
+    } catch (err) {
+      toast(`Error: ${err.message}`, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '✅ Update Status';
+    }
+  }
+
+  document.getElementById('saveStatusBtn').addEventListener('click', saveUserStatus);
+
+  // ============================================================
+  // Fix SlickText status in integrations — handled in loadIntegrations() above
+  // ============================================================
 </script>
 
 </body>

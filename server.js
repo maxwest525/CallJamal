@@ -38,6 +38,7 @@ const meetingsRoutes = require('./routes/meetings');
 const integrationsConfigRoutes = require('./routes/integrations-config');
 const templatesRoutes = require('./routes/templates');
 const brandRoutes = require('./routes/brand');
+const activityRoutes = require('./routes/activity');
 const { authMiddleware } = require('./lib/auth');
 
 const app = express();
@@ -91,11 +92,11 @@ app.get('/health', (req, res) => {
 // Guard routes that require a working Supabase connection.
 // If keys aren't configured yet the frontend will show a helpful message
 // instead of a cryptic 500 / unhandled-promise crash.
-const DB_ROUTES = ['/api/sms', '/api/users', '/api/clients', '/api/internal-chat', '/api/templates', '/api/brand'];
+const DB_ROUTES = ['/api/sms', '/api/users', '/api/clients', '/api/internal-chat', '/api/templates', '/api/brand', '/api/activity'];
 app.use(DB_ROUTES, (req, res, next) => {
-  // Re-read lazily so vault-injected env is picked up after save
-  const { supabase } = require('./lib/supabase');
-  if (!supabase) {
+  // Import lazily so vault-injected env is picked up; use getSupabaseClient() for live check
+  const { getSupabaseClient } = require('./lib/supabase');
+  if (!getSupabaseClient()) {
     return res.status(503).json({
       error: 'Database not configured. Open the Integrations tab and add your Supabase URL and Service Role Key.',
     });
@@ -116,6 +117,7 @@ app.use('/api/meetings', meetingsRoutes);
 app.use('/api/integrations-config', integrationsConfigRoutes);
 app.use('/api/templates', templatesRoutes);
 app.use('/api/brand', brandRoutes);
+app.use('/api/activity', activityRoutes);
 
 // Auth routes (OAuth callbacks live outside /api/)
 app.use('/auth', authRoutes);

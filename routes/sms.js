@@ -251,5 +251,146 @@ router.get('/messages', async (req, res) => {
   }
 });
 
+/**
+ * GET /api/sms/conversations/:id/messages
+ * Get all messages for a specific conversation, plus conversation metadata.
+ * Query: { limit=100, offset=0 }
+ */
+router.get('/conversations/:id/messages', async (req, res) => {
+  const { id } = req.params;
+  const { limit = 100, offset = 0 } = req.query;
+
+  try {
+    const { data: conversation, error: convError } = await supabase
+      .from('sms_conversations')
+      .select(`
+        *,
+        client:client_id(id, name, company, phone),
+        assigned_user:assigned_to(id, name, email, avatar_url)
+      `)
+      .eq('id', id)
+      .single();
+
+    if (convError || !conversation) return res.status(404).json({ error: 'Conversation not found' });
+
+    const { data: messages, error: msgError } = await supabase
+      .from('messages')
+      .select(`
+        *,
+        sender:sender_id(id, name, email, avatar_url)
+      `)
+      .eq('conversation_id', id)
+      .order('created_at', { ascending: true })
+      .range(Number(offset), Number(offset) + Math.min(Number(limit), 200) - 1);
+
+    if (msgError) throw new Error(msgError.message);
+
+    res.json({ conversation, messages: messages || [] });
+  } catch (err) {
+    console.error('get conversation messages error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/sms/conversations/:id/reply
+ * Send an outbound SMS reply in a conversation thread.
+ * Body: { message, senderId? }
+ */
+router.post('/conversations/:id/reply', async (req, res) => {
+  const { id } = req.params;
+  const { message, senderId } = req.body;
+
+  if (!message) {
+    return res.status(400).json({ error: 'message is required' });
+  }
+
+  try {
+    const { data: conversation, error: convError } = await supabase
+      .from('sms_conversations')
+      .select('id, phone_number, client_id')
+      .eq('id', id)
+      .single();
+
+    if (convError || !conversation) return res.status(404).json({ error: 'Conversation not found' });
+
+    const slicktextResponse = await sendSms({
+      to: conversation.phone_number,
+      message,
+      from: SLICKTEXT_MAIN_NUMBER,
+    });
+
+    const { data: msg, error: msgError } = await supabase.from('messages').insert({
+      conversation_id: id,
+      direction: 'outbound',
+      message_type: 'external',
+      from_number: SLICKTEXT_MAIN_NUMBER,
+      to_number: conversation.phone_number,
+      body: message,
+      status: 'sent',
+      sender_id: senderId || null,
+      client_id: conversation.client_id || null,
+      slicktext_message_id: slicktextResponse.data?.id || null,
+    }).select().single();
+
+    if (msgError) throw new Error(msgError.message);
+
+    // Update conversation last message
+    await supabase.from('sms_conversations').update({
+      last_message: message,
+      last_message_at: new Date().toISOString(),
+    }).eq('id', id);
+
+    if (conversation.client_id) {
+      await supabase.from('clients').update({ last_contacted_at: new Date().toISOString() }).eq('id', conversation.client_id);
+    }
+
+    await logActivity({
+      userId: senderId,
+      action: 'sms_reply_sent',
+      entityType: 'conversation',
+      entityId: id,
+      details: { to: conversation.phone_number, messagePreview: message.slice(0, 50) },
+    });
+
+    res.json({ success: true, message: msg });
+  } catch (err) {
+    console.error('conversation reply error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * PATCH /api/sms/conversations/:id/read
+ * Mark a conversation as read (reset unread count to 0)
+ */
+router.patch('/conversations/:id/read', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const { error } = await supabase
+      .from('sms_conversations')
+      .update({ unread_count: 0 })
+      .eq('id', id);
+
+    if (error) throw new Error(error.message);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('mark read error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/sms/status
+ * Returns whether SlickText is configured
+ */
+router.get('/status', (req, res) => {
+  res.json({
+    configured: Boolean(process.env.SLICKTEXT_PUBLIC_KEY && process.env.SLICKTEXT_PRIVATE_KEY),
+    mainNumber: process.env.SLICKTEXT_MAIN_NUMBER || null,
+  });
+});
+
 module.exports = router;
 
