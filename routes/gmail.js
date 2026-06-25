@@ -1,8 +1,8 @@
 const express = require('express');
 const rateLimit = require('express-rate-limit');
 const { google } = require('googleapis');
-const { getOAuth2Client, getAuthenticatedClient, setTokens, getTokens, SCOPES, extractBody, buildRawEmail } = require('../lib/gmail');
-const { logActivity } = require('../lib/supabase');
+const { getOAuth2Client, getAuthenticatedClient, setTokens, getTokens, SCOPES, extractBody, buildRawEmail, buildHtmlEmail } = require('../lib/gmail');
+const { supabase, logActivity } = require('../lib/supabase');
 
 const router = express.Router();
 
@@ -149,7 +149,18 @@ router.post('/send', async (req, res) => {
     const profile = await gmail.users.getProfile({ userId: 'me' });
     const from = profile.data.emailAddress;
 
-    const raw = buildRawEmail({ to, subject, body, from });
+    // Load brand settings (best-effort — fall back to plain text if unavailable)
+    let brand = null;
+    try {
+      const { data: brandRow } = await supabase
+        .from('brand_settings')
+        .select('*')
+        .limit(1)
+        .maybeSingle();
+      if (brandRow) brand = brandRow;
+    } catch (_) { /* ignore — brand is optional */ }
+
+    const raw = buildHtmlEmail({ to, subject, body, from, brand });
     const sendRes = await gmail.users.messages.send({ userId: 'me', requestBody: { raw } });
 
     await logActivity({

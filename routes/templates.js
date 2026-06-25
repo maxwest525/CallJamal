@@ -7,6 +7,10 @@ const router = express.Router();
  * Interpolate {{variable}} placeholders in a string using the provided values map.
  * Unmatched placeholders are left as-is.
  *
+ * Note: replacement values are inserted verbatim. Callers that render the result
+ * in an HTML context (e.g. email bodies) must HTML-escape values before passing
+ * them in to prevent XSS.
+ *
  * @param {string} text   Template string containing {{var}} placeholders
  * @param {object} values Map of variable name → replacement value
  * @returns {string}      Interpolated string
@@ -16,6 +20,19 @@ function interpolate(text, values) {
   return text.replace(/\{\{(\w+)\}\}/g, (match, key) =>
     Object.prototype.hasOwnProperty.call(values, key) ? String(values[key]) : match
   );
+}
+
+/**
+ * Auto-detect {{variable}} placeholders from a template body and optional subject.
+ *
+ * @param {string} body
+ * @param {string} [subject]
+ * @returns {string[]} Unique variable names
+ */
+function detectTemplateVariables(body, subject) {
+  const fromBody = (body || '').match(/\{\{(\w+)\}\}/g) || [];
+  const fromSubject = (subject || '').match(/\{\{(\w+)\}\}/g) || [];
+  return [...new Set([...fromBody, ...fromSubject])].map((v) => v.slice(2, -2));
 }
 
 /**
@@ -90,8 +107,7 @@ router.post('/', async (req, res) => {
 
   try {
     // Auto-detect variables from {{...}} placeholders if not supplied
-    const detectedVars = [...new Set([...(body.match(/\{\{(\w+)\}\}/g) || []), ...((subject || '').match(/\{\{(\w+)\}\}/g) || [])])].map((v) => v.slice(2, -2));
-    const templateVars = variables || detectedVars;
+    const templateVars = variables || detectTemplateVariables(body, subject);
 
     const { data, error } = await supabase
       .from('message_templates')
@@ -139,8 +155,7 @@ router.put('/:id', async (req, res) => {
       updates.body = body;
       // Re-detect variables if body changes and variables not explicitly provided
       if (variables === undefined) {
-        const subjectForDetect = subject || '';
-        const detected = [...new Set([...(body.match(/\{\{(\w+)\}\}/g) || []), ...(subjectForDetect.match(/\{\{(\w+)\}\}/g) || [])])].map((v) => v.slice(2, -2));
+        const detected = detectTemplateVariables(body, subject);
         if (detected.length > 0) updates.variables = detected;
       }
     }

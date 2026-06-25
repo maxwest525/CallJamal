@@ -252,7 +252,7 @@ CREATE TRIGGER update_message_templates_updated_at
 -- ============================================================
 CREATE TABLE IF NOT EXISTS brand_settings (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  company_name TEXT NOT NULL DEFAULT '',
+  company_name TEXT,
   logo_url TEXT,
   primary_color TEXT DEFAULT '#4F46E5',
   secondary_color TEXT DEFAULT '#7C3AED',

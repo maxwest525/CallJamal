@@ -6,6 +6,32 @@ const { supabase, logActivity } = require('../lib/supabase');
 const router = express.Router();
 
 /**
+ * Build a message array and call the AI provider with an optional system instruction
+ * and/or context preamble, then return the response text.
+ *
+ * @param {string} prompt
+ * @param {string} [context]
+ * @param {string} [system]
+ * @returns {Promise<string>}
+ */
+async function queryAI(prompt, context, system) {
+  const messages = [];
+
+  if (system) {
+    messages.push({ role: 'user', content: `[System instruction] ${system}` });
+    messages.push({ role: 'assistant', content: 'Understood.' });
+  }
+
+  if (context) {
+    messages.push({ role: 'user', content: `[Context] ${context}` });
+    messages.push({ role: 'assistant', content: 'Got it.' });
+  }
+
+  messages.push({ role: 'user', content: prompt });
+  return chat(messages);
+}
+
+/**
  * GET /api/webhooks/status
  * Returns configured webhook URLs (redacted) and integration status
  */
@@ -77,8 +103,7 @@ router.post('/inbound', async (req, res) => {
     // If the payload includes a prompt, generate an AI response
     if (payload.prompt) {
       try {
-        const messages = [{ role: 'user', content: String(payload.prompt) }];
-        result.aiResponse = await chat(messages);
+        result.aiResponse = await queryAI(String(payload.prompt), payload.context, payload.system);
       } catch (aiErr) {
         console.error('webhook inbound AI error:', aiErr.message);
         result.aiError = 'AI service unavailable';
@@ -112,21 +137,7 @@ router.post('/ai', async (req, res) => {
   }
 
   try {
-    const messages = [];
-
-    if (system) {
-      messages.push({ role: 'user', content: `[System instruction] ${system}` });
-      messages.push({ role: 'assistant', content: 'Understood.' });
-    }
-
-    if (context) {
-      messages.push({ role: 'user', content: `[Context] ${context}` });
-      messages.push({ role: 'assistant', content: 'Got it.' });
-    }
-
-    messages.push({ role: 'user', content: prompt });
-
-    const response = await chat(messages);
+    const response = await queryAI(prompt, context, system);
 
     await logActivity({
       userId: req.user?.id || null,
