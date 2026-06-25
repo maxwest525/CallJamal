@@ -1151,6 +1151,217 @@
 
     .fab-huddle { background: #7c3aed; color: #fff; }
 
+    /* ============================================================
+       Huddle Pre-join Panel
+    ============================================================ */
+    .huddle-prejoin {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .huddle-prejoin h5 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin: 0 0 4px;
+      color: var(--color-gray-800);
+    }
+
+    .huddle-prejoin .prejoin-room-label {
+      font-size: 0.75rem;
+      color: var(--color-gray-500);
+      margin-bottom: 8px;
+    }
+
+    .huddle-prejoin .prejoin-toggles {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .huddle-prejoin .prejoin-toggles label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8125rem;
+      color: var(--color-gray-700);
+      cursor: pointer;
+    }
+
+    .huddle-prejoin .prejoin-toggles input[type="checkbox"] {
+      width: 15px;
+      height: 15px;
+      cursor: pointer;
+    }
+
+    .huddle-prejoin .prejoin-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .huddle-prejoin .prejoin-actions .btn { flex: 1; justify-content: center; }
+
+    /* ============================================================
+       Huddle Room Creation Options
+    ============================================================ */
+    .huddle-create-opts {
+      padding: 0 16px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .huddle-create-opts-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--color-gray-400);
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      margin-bottom: 2px;
+    }
+
+    .huddle-create-opts .opt-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .huddle-create-opts .opt-row label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      color: var(--color-gray-600);
+      cursor: pointer;
+      flex: 1;
+    }
+
+    .huddle-secure-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.7rem;
+      color: #15803d;
+      background: #dcfce7;
+      padding: 2px 7px;
+      border-radius: 9999px;
+      font-weight: 600;
+    }
+
+    /* ============================================================
+       Meetings View
+    ============================================================ */
+    .meetings-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .meetings-rooms-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .meeting-room-card {
+      background: #fff;
+      border: 1px solid var(--color-gray-200);
+      border-radius: var(--border-radius);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .meeting-room-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .meeting-room-icon { font-size: 1.5rem; }
+
+    .meeting-room-name {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      flex: 1;
+      word-break: break-all;
+    }
+
+    .meeting-room-meta {
+      font-size: 0.75rem;
+      color: var(--color-gray-400);
+      margin-bottom: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .meeting-room-meta span {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .meeting-room-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    /* ============================================================
+       Vault / Integrations Configure UI
+    ============================================================ */
+    .integration-configure-btn {
+      margin-top: 12px;
+      width: 100%;
+    }
+
+    .vault-modal .modal { max-width: 520px; }
+
+    .vault-field-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .vault-masked-value {
+      font-family: monospace;
+      font-size: 0.8rem;
+      color: var(--color-gray-400);
+      background: var(--color-gray-50);
+      border: 1px solid var(--color-gray-200);
+      border-radius: 4px;
+      padding: 3px 8px;
+      flex: 1;
+    }
+
+    .vault-source-badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 9999px;
+    }
+
+    .vault-source-badge.vault { background: #ede9fe; color: #6d28d9; }
+    .vault-source-badge.env { background: #fef3c7; color: #92400e; }
+    .vault-source-badge.none { background: var(--color-gray-100); color: var(--color-gray-500); }
+
+    .vault-pin-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+      padding-top: 12px;
+      border-top: 1px solid var(--color-gray-200);
+    }
+
+    .vault-pin-row label { font-size: 0.8125rem; font-weight: 500; white-space: nowrap; }
+    .vault-pin-row input { flex: 1; }
+
   </style>
 </head>
 <body>
@@ -1192,6 +1403,10 @@
     <button class="nav-item" data-view="integrations">
       <span class="nav-icon">🔌</span>
       <span>Integrations</span>
+    </button>
+    <button class="nav-item" data-view="meetings">
+      <span class="nav-icon">📹</span>
+      <span>Meetings</span>
     </button>
   </nav>
 
@@ -1433,6 +1648,29 @@
       </div>
     </div>
 
+    <!-- ========== MEETINGS VIEW ========== -->
+    <div class="view" id="view-meetings">
+      <div class="meetings-header-row">
+        <h2 style="font-size:1.125rem;font-weight:600;">📹 Meetings &amp; Huddle Rooms</h2>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-secondary btn-sm" id="refreshRoomsBtn">🔄 Refresh</button>
+          <button class="btn btn-primary btn-sm" id="newMeetingBtn">+ New Meeting</button>
+        </div>
+      </div>
+
+      <div id="meetingsNotConfigured" style="display:none;" class="card" style="margin-bottom:16px;">
+        <div class="card-body">
+          <p style="font-size:0.875rem;color:var(--color-gray-600);">
+            Daily.co is not configured. Go to <strong>Integrations</strong> → Daily.co and enter your API key and domain to enable video meetings.
+          </p>
+        </div>
+      </div>
+
+      <div class="meetings-rooms-grid" id="meetingsRoomsGrid">
+        <div class="empty-state"><div class="icon">📹</div><p>Loading rooms…</p></div>
+      </div>
+    </div>
+
   </div><!-- /content -->
 </main>
 
@@ -1490,6 +1728,9 @@
 <div class="huddle-widget" id="huddleWidget">
   <div class="huddle-header" id="huddleHeader">
     <h4>📹 Huddle</h4>
+    <div style="display:flex;align-items:center;gap:6px;flex:1;">
+      <span class="huddle-secure-badge" id="huddleSecureBadge" style="display:none;">🔒 Secured</span>
+    </div>
     <div class="huddle-header-btns">
       <button class="huddle-icon-btn" id="huddlePipBtn" title="Pop out">⧉</button>
       <button class="huddle-icon-btn" id="huddleMinimizeBtn" title="Minimize">−</button>
@@ -1500,11 +1741,52 @@
     <!-- Lobby -->
     <div class="huddle-lobby" id="huddleLobby">
       <div class="huddle-lobby-note" id="huddleNote">Start a video huddle with your team or jump into Google Meet.</div>
-      <button class="btn btn-primary" style="width:100%;" id="huddleStartBtn">📹 Start New Daily Huddle</button>
+      <button class="btn btn-primary" style="width:100%;" id="huddleStartBtn">📹 Start New Huddle</button>
       <button class="huddle-meet-btn" id="huddleMeetBtn">🎥 Open Google Meet</button>
       <div id="huddleRoomSection" style="display:none;">
         <div class="huddle-rooms-label">Active Rooms</div>
         <div class="huddle-room-list" id="huddleRoomList"></div>
+      </div>
+    </div>
+    <!-- Room creation options (collapsible) -->
+    <div class="huddle-create-opts" id="huddleCreateOpts" style="display:none;">
+      <div class="huddle-create-opts-label">Room Settings</div>
+      <div class="form-group" style="margin-bottom:8px;">
+        <label class="form-label" style="font-size:0.75rem;">Room Name (optional)</label>
+        <input class="form-control" id="huddleRoomNameInput" placeholder="e.g. team-standup" maxlength="40" style="font-size:0.8125rem;padding:6px 10px;" />
+      </div>
+      <div class="opt-row">
+        <select class="form-control" id="huddleExpirySelect" style="font-size:0.8rem;padding:5px 8px;">
+          <option value="30">30 min</option>
+          <option value="60" selected>1 hour</option>
+          <option value="120">2 hours</option>
+          <option value="240">4 hours</option>
+          <option value="480">8 hours</option>
+        </select>
+        <span style="font-size:0.75rem;color:var(--color-gray-500);white-space:nowrap;">room duration</span>
+      </div>
+      <div class="opt-row">
+        <label><input type="checkbox" id="huddleWaitingRoom"> 🚪 Waiting room</label>
+      </div>
+      <div class="opt-row">
+        <label><input type="checkbox" id="huddleRecording"> ⏺ Enable recording</label>
+      </div>
+    </div>
+    <!-- Pre-join panel -->
+    <div class="huddle-prejoin" id="huddlePrejoin" style="display:none;">
+      <h5>Ready to join?</h5>
+      <div class="prejoin-room-label" id="prejoinRoomLabel">Room: —</div>
+      <div class="form-group" style="margin-bottom:8px;">
+        <label class="form-label" style="font-size:0.75rem;">Your display name</label>
+        <input class="form-control" id="prejoinName" placeholder="Enter your name" maxlength="50" style="font-size:0.8125rem;padding:6px 10px;" />
+      </div>
+      <div class="prejoin-toggles">
+        <label><input type="checkbox" id="prejoinMicOff"> 🎤 Start with mic muted</label>
+        <label><input type="checkbox" id="prejoinCamOff"> 📷 Start with camera off</label>
+      </div>
+      <div class="prejoin-actions">
+        <button class="btn btn-secondary btn-sm" id="prejoinCancelBtn">Cancel</button>
+        <button class="btn btn-primary btn-sm" id="prejoinJoinBtn">🚀 Join Meeting</button>
       </div>
     </div>
     <!-- Active call frame -->
@@ -1650,6 +1932,85 @@
   </div>
 </div>
 
+<!-- Vault Configure Modal -->
+<div class="modal-backdrop vault-modal" id="vaultConfigModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="vaultModalTitle">⚙️ Configure Integration</h3>
+      <button class="modal-close" id="vaultModalClose">✕</button>
+    </div>
+    <div class="modal-body" id="vaultModalBody">
+      <!-- Fields injected by JS -->
+    </div>
+    <div class="modal-footer">
+      <div class="vault-pin-row" style="flex:1;">
+        <label>🔑 Admin PIN</label>
+        <input class="form-control" type="password" id="vaultAdminPin" placeholder="Enter admin PIN to save" autocomplete="off" />
+      </div>
+      <button class="btn btn-secondary" id="vaultCancelBtn">Cancel</button>
+      <button class="btn btn-primary" id="vaultSaveBtn">💾 Save to Vault</button>
+    </div>
+  </div>
+</div>
+
+<!-- New Meeting Modal -->
+<div class="modal-backdrop" id="newMeetingModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>📹 Create New Meeting Room</h3>
+      <button class="modal-close" id="closeMeetingModalBtn">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Room Name <span style="color:var(--color-gray-400);font-weight:400;">(optional)</span></label>
+        <input class="form-control" id="newMeetingName" placeholder="e.g. team-standup, sales-call" maxlength="40" />
+        <p style="font-size:0.75rem;color:var(--color-gray-400);margin-top:4px;">Leave blank for an auto-generated name.</p>
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">Duration</label>
+          <select class="form-control" id="newMeetingExpiry">
+            <option value="30">30 minutes</option>
+            <option value="60" selected>1 hour</option>
+            <option value="120">2 hours</option>
+            <option value="240">4 hours</option>
+            <option value="480">8 hours</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Max Participants</label>
+          <input class="form-control" id="newMeetingMaxParticipants" type="number" min="2" max="50" placeholder="Unlimited" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" style="margin-bottom:8px;">Options</label>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.875rem;cursor:pointer;">
+            <input type="checkbox" id="newMeetingWaitingRoom" />
+            🚪 Waiting room (approve participants before they join)
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.875rem;cursor:pointer;">
+            <input type="checkbox" id="newMeetingRecording" />
+            ⏺ Enable cloud recording
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.875rem;cursor:pointer;">
+            <input type="checkbox" id="newMeetingAudioOff" />
+            🎤 Participants start muted
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.875rem;cursor:pointer;">
+            <input type="checkbox" id="newMeetingVideoOff" />
+            📷 Participants start with camera off
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="cancelMeetingModalBtn">Cancel</button>
+      <button class="btn btn-primary" id="createMeetingRoomBtn">📹 Create Room &amp; Join</button>
+    </div>
+  </div>
+</div>
+
 <!-- Toast Container -->
 <div class="toast-container" id="toastContainer"></div>
 
@@ -1685,7 +2046,7 @@
     document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.dataset.view === view));
     document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === `view-${view}`));
 
-    const titles = { messages: 'Messages', conversations: 'Conversations', users: 'Team', clients: 'Clients', gmail: 'Gmail', slack: 'Slack', integrations: 'Integrations' };
+    const titles = { messages: 'Messages', conversations: 'Conversations', users: 'Team', clients: 'Clients', gmail: 'Gmail', slack: 'Slack', integrations: 'Integrations', meetings: 'Meetings' };
     document.getElementById('headerTitle').textContent = titles[view] || view;
 
     loadView(view);
@@ -1701,6 +2062,7 @@
     else if (view === 'gmail') loadGmail();
     else if (view === 'slack') loadSlack();
     else if (view === 'integrations') loadIntegrations();
+    else if (view === 'meetings') loadMeetingsView();
   }
 
   // ============================================================
@@ -2427,6 +2789,18 @@
   let aiIsConfigured = false;
   let huddleIsConfigured = false;
 
+  // Integration key → vault group key mapping
+  const INTEGRATION_GROUP_KEYS = {
+    'Gmail': 'google',
+    'Slack': 'slack',
+    'Zapier': 'zapier',
+    'n8n': 'n8n',
+    'AI Assistant': 'ai',
+    'Daily.co Huddles': 'daily',
+    'Supabase': 'supabase',
+    'SlickText SMS': 'slicktext',
+  };
+
   async function loadIntegrations() {
     try {
       const [webhookData, slackStatus, aiStatus, meetingsStatus] = await Promise.all([
@@ -2454,44 +2828,59 @@
         title: 'Gmail',
         desc: 'Read and send emails from your Google Workspace inbox.',
         connected: gmailConnected,
-        action: gmailConnected ? null : `<a href="/auth/google" class="btn btn-primary btn-sm">Connect</a>`,
+        extraAction: gmailConnected ? null : `<a href="/auth/google" class="btn btn-primary btn-sm" style="display:inline-flex;align-items:center;gap:6px;">🔗 Connect Google</a>`,
+        groupKey: 'google',
       },
       {
         icon: '💼',
         title: 'Slack',
-        desc: 'Send and receive Slack channel messages. Requires SLACK_BOT_TOKEN.',
+        desc: 'Send and receive Slack channel messages.',
         connected: slackIsConnected,
-        action: null,
+        groupKey: 'slack',
       },
       {
         icon: '⚡',
         title: 'Zapier',
-        desc: 'Receive webhook triggers from your Zapier Zaps.',
+        desc: 'Trigger Zaps from CallJamal events.',
         connected: data.zapier?.configured,
         url: data.zapier?.url,
-        action: null,
+        groupKey: 'zapier',
       },
       {
         icon: '🔄',
         title: 'n8n',
-        desc: 'Receive webhook triggers from your n8n workflows.',
+        desc: 'Trigger n8n workflows from CallJamal events.',
         connected: data.n8n?.configured,
         url: data.n8n?.url,
-        action: null,
+        groupKey: 'n8n',
       },
       {
         icon: '🤖',
         title: 'AI Assistant',
-        desc: 'Chat with Gemini or Claude via the floating widget. Requires GEMINI_API_KEY or ANTHROPIC_API_KEY.',
+        desc: 'Chat with Gemini or Claude via the floating widget.',
         connected: aiIsConfigured,
-        action: null,
+        groupKey: 'ai',
       },
       {
         icon: '📹',
         title: 'Daily.co Huddles',
-        desc: 'Start instant video huddles with your team via the floating Huddle widget. Requires DAILY_CO_API_KEY and DAILY_CO_DOMAIN.',
+        desc: 'Instant video huddles with screen share, chat, and recording.',
         connected: huddleIsConfigured,
-        action: null,
+        groupKey: 'daily',
+      },
+      {
+        icon: '🗄️',
+        title: 'Supabase',
+        desc: 'Database for contacts, messages, and team data.',
+        connected: true,
+        groupKey: 'supabase',
+      },
+      {
+        icon: '💬',
+        title: 'SlickText SMS',
+        desc: 'Send and receive SMS with clients.',
+        connected: Boolean(data.sms?.configured),
+        groupKey: 'slicktext',
       },
     ];
 
@@ -2506,10 +2895,137 @@
         </div>
         <div class="integration-desc">${escHtml(c.desc)}</div>
         ${c.url ? `<div class="integration-url">${escHtml(c.url)}</div>` : ''}
-        ${c.action ? `<div style="margin-top:12px;">${c.action}</div>` : ''}
+        ${c.extraAction ? `<div style="margin-top:10px;">${c.extraAction}</div>` : ''}
+        <button class="btn btn-secondary btn-sm integration-configure-btn" data-group="${escAttr(c.groupKey)}" data-title="${escAttr(c.title)}">⚙️ Configure</button>
+      </div>
+    `).join('');
+
+    grid.querySelectorAll('.integration-configure-btn').forEach(btn => {
+      btn.addEventListener('click', () => openVaultModal(btn.dataset.group, btn.dataset.title));
+    });
+  }
+
+  // ============================================================
+  // Vault / Integrations Config UI
+  // ============================================================
+  let vaultConfigData = null;
+  let vaultCurrentGroup = null;
+
+  async function openVaultModal(groupKey, title) {
+    vaultCurrentGroup = groupKey;
+    document.getElementById('vaultModalTitle').textContent = `⚙️ Configure: ${title}`;
+    document.getElementById('vaultAdminPin').value = '';
+    document.getElementById('vaultModalBody').innerHTML = '<div style="padding:16px;color:var(--color-gray-500);">Loading…</div>';
+    document.getElementById('vaultConfigModal').classList.add('open');
+
+    try {
+      const data = await apiFetch('/api/integrations-config');
+      vaultConfigData = data;
+      const group = data.groups.find(g => g.key === groupKey);
+      if (!group) {
+        document.getElementById('vaultModalBody').innerHTML = '<div style="color:var(--color-danger);">Group not found.</div>';
+        return;
+      }
+      renderVaultFields(group, data.adminPinSet);
+    } catch (err) {
+      document.getElementById('vaultModalBody').innerHTML = `<div style="color:var(--color-danger);">Error: ${escHtml(err.message)}</div>`;
+    }
+  }
+
+  function renderVaultFields(group, adminPinSet) {
+    const body = document.getElementById('vaultModalBody');
+    if (!adminPinSet) {
+      body.innerHTML = `
+        <div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;padding:12px;font-size:0.8125rem;color:#92400e;margin-bottom:16px;">
+          ⚠️ <strong>ADMIN_PIN not set.</strong> Add <code>ADMIN_PIN=your-pin</code> to your <code>.env</code> file to enable the vault.
+        </div>
+      `;
+    }
+
+    body.innerHTML = (adminPinSet ? '' : `
+      <div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;padding:12px;font-size:0.8125rem;color:#92400e;margin-bottom:16px;">
+        ⚠️ <strong>ADMIN_PIN not set.</strong> Add <code>ADMIN_PIN=your-pin</code> to your <code>.env</code> file to enable saving.
+      </div>
+    `) + group.vars.map(v => `
+      <div class="form-group">
+        <label class="form-label">
+          ${escHtml(v.label)}
+          <span class="vault-source-badge ${escAttr(v.source)}">${escHtml(v.source)}</span>
+        </label>
+        ${v.hasValue ? `<div class="vault-field-row"><span class="vault-masked-value">${escHtml(v.maskedValue)}</span></div>` : ''}
+        <input class="form-control vault-input" type="${v.type === 'password' ? 'password' : 'text'}"
+          data-var="${escAttr(v.name)}"
+          placeholder="${v.hasValue ? 'Paste new value to update, or leave blank to keep current' : 'Paste value to configure'}"
+          autocomplete="off"
+          style="margin-top:${v.hasValue ? '6px' : '0'};" />
       </div>
     `).join('');
   }
+
+  async function saveVaultConfig() {
+    if (!vaultCurrentGroup || !vaultConfigData) return;
+
+    const pin = document.getElementById('vaultAdminPin').value.trim();
+    if (!pin) {
+      toast('Enter your admin PIN to save.', 'warning');
+      document.getElementById('vaultAdminPin').focus();
+      return;
+    }
+
+    const inputs = document.querySelectorAll('#vaultModalBody .vault-input');
+    const updates = {};
+    inputs.forEach(input => {
+      const varName = input.dataset.var;
+      const value = input.value.trim();
+      if (value) updates[varName] = value;
+    });
+
+    if (Object.keys(updates).length === 0) {
+      toast('No new values entered.', 'warning');
+      return;
+    }
+
+    const btn = document.getElementById('vaultSaveBtn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+    try {
+      const result = await apiFetch('/api/integrations-config', {
+        method: 'POST',
+        body: JSON.stringify({ adminPin: pin, updates }),
+      });
+      toast(result.message || 'Saved!', 'success');
+      document.getElementById('vaultConfigModal').classList.remove('open');
+      // Reload integrations to reflect new status
+      loadIntegrations();
+    } catch (err) {
+      toast(`Save failed: ${err.message}`, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '💾 Save to Vault';
+    }
+  }
+
+  function closeVaultModal() {
+    document.getElementById('vaultConfigModal').classList.remove('open');
+    vaultCurrentGroup = null;
+    vaultConfigData = null;
+  }
+
+  document.getElementById('vaultModalClose').addEventListener('click', closeVaultModal);
+  document.getElementById('vaultCancelBtn').addEventListener('click', closeVaultModal);
+  document.getElementById('vaultSaveBtn').addEventListener('click', saveVaultConfig);
+  document.getElementById('vaultConfigModal').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('vaultConfigModal')) closeVaultModal();
+  });
+
+  // Generic close for data-close-modal buttons
+  document.querySelectorAll('[data-close-modal]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.closeModal;
+      const modal = document.getElementById(id);
+      if (modal) modal.classList.remove('open');
+    });
+  });
 
   async function testWebhook() {
     const btn = document.getElementById('testWebhookBtn');
@@ -2531,6 +3047,121 @@
       toast('Copy failed — select the URL manually.', 'warning');
     });
   }
+
+  // ============================================================
+  // Meetings View
+  // ============================================================
+  async function loadMeetingsView() {
+    const grid = document.getElementById('meetingsRoomsGrid');
+    const notConfigured = document.getElementById('meetingsNotConfigured');
+    grid.innerHTML = '<div class="empty-state"><div class="icon">⏳</div><p>Loading…</p></div>';
+
+    try {
+      const status = await apiFetch('/api/meetings/status');
+      if (!status.configured) {
+        notConfigured.style.display = 'block';
+        grid.innerHTML = '';
+        return;
+      }
+      notConfigured.style.display = 'none';
+
+      const data = await apiFetch('/api/meetings/rooms');
+      const rooms = data.rooms || [];
+      if (!rooms.length) {
+        grid.innerHTML = '<div class="empty-state"><div class="icon">📹</div><p>No active rooms. Click <strong>+ New Meeting</strong> to create one.</p></div>';
+        return;
+      }
+      renderMeetingRooms(rooms);
+    } catch (err) {
+      grid.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>${escHtml(err.message)}</p></div>`;
+    }
+  }
+
+  function renderMeetingRooms(rooms) {
+    const grid = document.getElementById('meetingsRoomsGrid');
+    grid.innerHTML = rooms.map(r => {
+      const expiry = r.expiresAt ? new Date(r.expiresAt).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'No expiry';
+      const badges = [
+        r.waitingRoom ? '<span class="huddle-secure-badge">🚪 Waiting Room</span>' : '',
+        r.recordingEnabled ? '<span style="display:inline-flex;align-items:center;gap:4px;font-size:0.7rem;color:#dc2626;background:#fee2e2;padding:2px 7px;border-radius:9999px;font-weight:600;">⏺ Recording</span>' : '',
+      ].filter(Boolean).join(' ');
+      return `
+        <div class="meeting-room-card">
+          <div class="meeting-room-card-header">
+            <span class="meeting-room-icon">📹</span>
+            <div class="meeting-room-name">${escHtml(r.name)}</div>
+          </div>
+          <div class="meeting-room-meta">
+            <span>⏰ Expires ${escHtml(expiry)}</span>
+          </div>
+          ${badges ? `<div style="margin-bottom:10px;display:flex;flex-wrap:wrap;gap:6px;">${badges}</div>` : ''}
+          <div class="meeting-room-actions">
+            <button class="btn btn-primary btn-sm" style="flex:1;" data-room-url="${escAttr(r.url)}" data-room-name="${escAttr(r.name)}">Join</button>
+            <button class="btn btn-secondary btn-sm" data-copy-url="${escAttr(r.url)}" title="Copy join link">📋</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    grid.querySelectorAll('[data-room-url]').forEach(btn => {
+      btn.addEventListener('click', () => openPrejoin(btn.dataset.roomUrl, btn.dataset.roomName));
+    });
+    grid.querySelectorAll('[data-copy-url]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        navigator.clipboard.writeText(btn.dataset.copyUrl).then(() => toast('Room link copied!', 'success')).catch(() => toast('Copy failed', 'warning'));
+      });
+    });
+  }
+
+  async function openNewMeetingModal() {
+    const status = await apiFetch('/api/meetings/status').catch(() => ({ configured: false }));
+    if (!status.configured) {
+      toast('Daily.co is not configured. Set it up in Integrations first.', 'warning');
+      return;
+    }
+    document.getElementById('newMeetingName').value = '';
+    document.getElementById('newMeetingExpiry').value = '60';
+    document.getElementById('newMeetingMaxParticipants').value = '';
+    document.getElementById('newMeetingWaitingRoom').checked = false;
+    document.getElementById('newMeetingRecording').checked = false;
+    document.getElementById('newMeetingAudioOff').checked = false;
+    document.getElementById('newMeetingVideoOff').checked = false;
+    document.getElementById('newMeetingModal').classList.add('open');
+  }
+
+  async function createMeetingRoom() {
+    const btn = document.getElementById('createMeetingRoomBtn');
+    btn.disabled = true;
+    btn.textContent = 'Creating…';
+    try {
+      const data = await apiFetch('/api/meetings/create', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: document.getElementById('newMeetingName').value.trim(),
+          expiryMinutes: parseInt(document.getElementById('newMeetingExpiry').value),
+          maxParticipants: document.getElementById('newMeetingMaxParticipants').value || undefined,
+          waitingRoom: document.getElementById('newMeetingWaitingRoom').checked,
+          enableRecording: document.getElementById('newMeetingRecording').checked,
+          startAudioOff: document.getElementById('newMeetingAudioOff').checked,
+          startVideoOff: document.getElementById('newMeetingVideoOff').checked,
+        }),
+      });
+      document.getElementById('newMeetingModal').classList.remove('open');
+      openPrejoin(data.url, data.name);
+      if (currentView === 'meetings') loadMeetingsView();
+    } catch (err) {
+      toast(`Error: ${err.message}`, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '📹 Create Room &amp; Join';
+    }
+  }
+
+  document.getElementById('newMeetingBtn').addEventListener('click', openNewMeetingModal);
+  document.getElementById('createMeetingRoomBtn').addEventListener('click', createMeetingRoom);
+  document.getElementById('refreshRoomsBtn').addEventListener('click', loadMeetingsView);
+  document.getElementById('closeMeetingModalBtn').addEventListener('click', () => document.getElementById('newMeetingModal').classList.remove('open'));
+  document.getElementById('cancelMeetingModalBtn').addEventListener('click', () => document.getElementById('newMeetingModal').classList.remove('open'));
 
   // ============================================================
   // Internal Team Chat (floating widget)
@@ -2726,6 +3357,9 @@
   let huddleInCall = false;
   let huddleDailyConfigured = false;
   let currentHuddleUrl = null;
+  let currentHuddleRoomName = null;
+  let prejoinPendingUrl = null;
+  let prejoinPendingName = null;
 
   // Restore persisted state from sessionStorage on load
   (function restoreHuddle() {
@@ -2734,12 +3368,14 @@
       if (!saved) return;
       if (saved.url) {
         currentHuddleUrl = saved.url;
+        currentHuddleRoomName = saved.roomName || null;
         huddleInCall = true;
         document.getElementById('huddleFrame').src = saved.url;
         document.getElementById('huddleFrame').classList.add('active');
         document.getElementById('huddleLobby').style.display = 'none';
         document.getElementById('huddleCallBar').classList.add('active');
-        const roomIdentifier = saved.url.split('/').pop();
+        document.getElementById('huddleSecureBadge').style.display = saved.secured ? '' : 'none';
+        const roomIdentifier = saved.roomName || saved.url.split('/').pop();
         document.getElementById('huddleRoomLabel').textContent = roomIdentifier ? `Room: ${escHtml(roomIdentifier)}` : 'In a huddle';
       }
       if (saved.open) {
@@ -2755,11 +3391,13 @@
     } catch { /* ignore */ }
   })();
 
-  function saveHuddleState() {
+  function saveHuddleState(secured) {
     try {
       const widget = document.getElementById('huddleWidget');
       sessionStorage.setItem('cj_huddle', JSON.stringify({
         url: currentHuddleUrl,
+        roomName: currentHuddleRoomName,
+        secured: Boolean(secured),
         open: huddleOpen,
         minimized: huddleMinimized,
         right: widget.style.right || '',
@@ -2771,7 +3409,6 @@
   async function openHuddleWidget() {
     huddleOpen = true;
     document.getElementById('huddleWidget').classList.add('open');
-    // Load Daily.co status and active rooms on first open
     if (!huddleInCall) await loadHuddleLobby();
     saveHuddleState();
   }
@@ -2799,6 +3436,12 @@
     const roomSection = document.getElementById('huddleRoomSection');
     const roomList = document.getElementById('huddleRoomList');
     const startBtn = document.getElementById('huddleStartBtn');
+    const createOpts = document.getElementById('huddleCreateOpts');
+    const prejoin = document.getElementById('huddlePrejoin');
+
+    // Ensure lobby is visible
+    document.getElementById('huddleLobby').style.display = '';
+    prejoin.style.display = 'none';
 
     try {
       const status = await apiFetch('/api/meetings/status');
@@ -2806,15 +3449,17 @@
 
       if (!huddleDailyConfigured) {
         startBtn.disabled = true;
-        startBtn.textContent = '📹 Daily.co not configured';
-        note.textContent = 'Set DAILY_CO_API_KEY and DAILY_CO_DOMAIN in .env to enable video huddles. Google Meet is always available.';
+        startBtn.textContent = '⚙️ Configure Daily.co first';
+        note.textContent = 'Go to Integrations → Daily.co to enter your API key and domain.';
         roomSection.style.display = 'none';
+        createOpts.style.display = 'none';
         return;
       }
 
       startBtn.disabled = false;
-      startBtn.textContent = '📹 Start New Daily Huddle';
+      startBtn.textContent = '📹 Start New Huddle';
       note.textContent = 'Start a video huddle with your team or jump into Google Meet.';
+      createOpts.style.display = '';
 
       // Load active rooms
       const data = await apiFetch('/api/meetings/rooms');
@@ -2828,7 +3473,7 @@
           </div>
         `).join('');
         roomList.querySelectorAll('.js-join-room').forEach(btn => {
-          btn.addEventListener('click', () => joinHuddleRoom(btn.dataset.url, btn.dataset.name));
+          btn.addEventListener('click', () => openPrejoin(btn.dataset.url, btn.dataset.name));
         });
       } else {
         roomSection.style.display = 'none';
@@ -2843,19 +3488,108 @@
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner" style="border-color:rgba(255,255,255,.3);border-top-color:#fff;"></span>';
     try {
-      const data = await apiFetch('/api/meetings/create', { method: 'POST', body: JSON.stringify({}) });
-      joinHuddleRoom(data.url, data.name);
+      const data = await apiFetch('/api/meetings/create', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: document.getElementById('huddleRoomNameInput').value.trim(),
+          expiryMinutes: parseInt(document.getElementById('huddleExpirySelect').value),
+          waitingRoom: document.getElementById('huddleWaitingRoom').checked,
+          enableRecording: document.getElementById('huddleRecording').checked,
+        }),
+      });
+      openPrejoin(data.url, data.name);
     } catch (err) {
       toast(`Huddle error: ${err.message}`, 'error');
+    } finally {
       btn.disabled = false;
-      btn.textContent = '📹 Start New Daily Huddle';
+      btn.textContent = '📹 Start New Huddle';
     }
   }
 
-  function joinHuddleRoom(url, name) {
+  // openPrejoin: show pre-join name/settings before loading the iframe
+  // Called from both lobby and meetings view
+  function openPrejoin(url, roomName) {
+    prejoinPendingUrl = url;
+    prejoinPendingName = roomName;
+
+    // Open the huddle widget if not already open
+    if (!huddleOpen) {
+      huddleOpen = true;
+      document.getElementById('huddleWidget').classList.add('open');
+    }
+
+    document.getElementById('huddleLobby').style.display = 'none';
+    document.getElementById('huddleCreateOpts').style.display = 'none';
+    document.getElementById('huddleFrame').classList.remove('active');
+    document.getElementById('huddleCallBar').classList.remove('active');
+
+    document.getElementById('prejoinRoomLabel').textContent = `Room: ${escHtml(roomName || url.split('/').pop())}`;
+    document.getElementById('huddlePrejoin').style.display = '';
+    document.getElementById('prejoinName').focus();
+  }
+
+  async function confirmPrejoin() {
+    if (!prejoinPendingUrl) return;
+
+    const userName = document.getElementById('prejoinName').value.trim();
+    const startAudioOff = document.getElementById('prejoinMicOff').checked;
+    const startVideoOff = document.getElementById('prejoinCamOff').checked;
+    const btn = document.getElementById('prejoinJoinBtn');
+    btn.disabled = true;
+    btn.textContent = 'Joining…';
+
+    // Extract room name from URL
+    const rawRoomName = prejoinPendingName || prejoinPendingUrl.split('/').pop().split('?')[0];
+    let finalUrl = prejoinPendingUrl;
+    let secured = false;
+
+    try {
+      // Attempt to get a meeting token for secure access
+      const tokenData = await apiFetch('/api/meetings/token', {
+        method: 'POST',
+        body: JSON.stringify({
+          roomName: rawRoomName,
+          userName: userName || undefined,
+          startAudioOff,
+          startVideoOff,
+        }),
+      });
+      if (tokenData.token) {
+        const baseUrl = prejoinPendingUrl.split('?')[0];
+        finalUrl = `${baseUrl}?t=${encodeURIComponent(tokenData.token)}`;
+        secured = true;
+      }
+    } catch {
+      // Token unavailable — join without token (Daily.co configured but token API failed)
+      // Still set user name via URL param if supported
+      if (userName) {
+        const sep = finalUrl.includes('?') ? '&' : '?';
+        finalUrl = `${finalUrl}${sep}userName=${encodeURIComponent(userName)}`;
+      }
+    }
+
+    joinHuddleRoomFinal(finalUrl, rawRoomName, secured);
+    btn.disabled = false;
+    btn.textContent = '🚀 Join Meeting';
+  }
+
+  function cancelPrejoin() {
+    prejoinPendingUrl = null;
+    prejoinPendingName = null;
+    document.getElementById('huddlePrejoin').style.display = 'none';
+    document.getElementById('huddleLobby').style.display = '';
+    document.getElementById('huddleCreateOpts').style.display = '';
+  }
+
+  function joinHuddleRoomFinal(url, name, secured) {
     if (!url) return;
     currentHuddleUrl = url;
+    currentHuddleRoomName = name;
     huddleInCall = true;
+    prejoinPendingUrl = null;
+    prejoinPendingName = null;
+
+    document.getElementById('huddlePrejoin').style.display = 'none';
 
     const frame = document.getElementById('huddleFrame');
     frame.src = url;
@@ -2865,25 +3599,31 @@
     document.getElementById('huddleCallBar').classList.add('active');
     document.getElementById('huddleRoomLabel').textContent = name ? `Room: ${escHtml(name)}` : 'In a huddle';
 
-    // Re-enable start button for next time
+    const secureBadge = document.getElementById('huddleSecureBadge');
+    secureBadge.style.display = secured ? '' : 'none';
+
     const startBtn = document.getElementById('huddleStartBtn');
     startBtn.disabled = false;
-    startBtn.textContent = '📹 Start New Daily Huddle';
+    startBtn.textContent = '📹 Start New Huddle';
 
-    saveHuddleState();
+    saveHuddleState(secured);
     toast(`Joined huddle: ${name || url}`, 'success');
   }
 
   function leaveHuddle() {
     huddleInCall = false;
     currentHuddleUrl = null;
+    currentHuddleRoomName = null;
 
     const frame = document.getElementById('huddleFrame');
     frame.src = '';
     frame.classList.remove('active');
 
+    document.getElementById('huddlePrejoin').style.display = 'none';
     document.getElementById('huddleLobby').style.display = '';
+    document.getElementById('huddleCreateOpts').style.display = '';
     document.getElementById('huddleCallBar').classList.remove('active');
+    document.getElementById('huddleSecureBadge').style.display = 'none';
 
     sessionStorage.removeItem('cj_huddle');
     loadHuddleLobby();
@@ -2986,6 +3726,9 @@
   document.getElementById('huddleMeetBtn').addEventListener('click', openGoogleMeet);
   document.getElementById('huddleLeaveBtn').addEventListener('click', leaveHuddle);
   document.getElementById('huddlePipCallBtn').addEventListener('click', requestHuddlePiP);
+  document.getElementById('prejoinJoinBtn').addEventListener('click', confirmPrejoin);
+  document.getElementById('prejoinCancelBtn').addEventListener('click', cancelPrejoin);
+  document.getElementById('prejoinName').addEventListener('keydown', (e) => { if (e.key === 'Enter') confirmPrejoin(); });
 
   document.getElementById('fabTeam').addEventListener('click', toggleTeamChat);
   document.getElementById('fabAi').addEventListener('click', toggleAiChat);
