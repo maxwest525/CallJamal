@@ -1,10 +1,20 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
+const rateLimit = require('express-rate-limit');
 
 const router = express.Router();
 
 const VAULT_PATH = path.join(__dirname, '..', 'config', 'vault.json');
+
+// Strict rate limiter for vault write endpoint — prevent PIN brute-force
+const vaultWriteLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many vault save attempts. Please try again in 15 minutes.' },
+});
 
 // Groups of configurable env vars exposed through the vault UI
 const CONFIG_GROUPS = [
@@ -108,8 +118,10 @@ function writeVault(data) {
 
 function maskValue(val) {
   if (!val) return '';
-  if (val.length <= 4) return '••••';
-  return '•'.repeat(Math.min(val.length - 4, 12)) + val.slice(-4);
+  // Always use a fixed number of bullet dots regardless of actual length
+  // to avoid revealing secret length. Show only last 4 characters.
+  if (val.length <= 4) return '••••••••';
+  return '••••••••' + val.slice(-4);
 }
 
 function checkAdminPin(req, res) {
@@ -165,8 +177,10 @@ router.get('/', (req, res) => {
  * Saves one or more config values to the vault. Admin PIN required.
  * Body: { adminPin, updates: { VAR_NAME: "value", ... } }
  * Set a var to null or "" to clear it from the vault (env fallback remains).
+ *
+ * Rate-limited to 10 attempts per 15 minutes to prevent PIN brute-force.
  */
-router.post('/', (req, res) => {
+router.post('/', vaultWriteLimiter, (req, res) => {
   if (!checkAdminPin(req, res)) return;
 
   const { updates } = req.body;
@@ -183,7 +197,8 @@ router.post('/', (req, res) => {
       delete vault[key]; // clear from vault (env fallback takes over)
     } else {
       vault[key] = String(value).trim();
-      process.env[key] = String(value).trim(); // hot-reload into running process
+      // Hot-reload into the running process (session-only; persisted via vault file above)
+      process.env[key] = String(value).trim();
     }
     changed.push(key);
   }

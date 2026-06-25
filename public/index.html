@@ -3538,8 +3538,16 @@
     btn.disabled = true;
     btn.textContent = 'Joining…';
 
-    // Extract room name from URL
-    const rawRoomName = prejoinPendingName || prejoinPendingUrl.split('/').pop().split('?')[0];
+    // Extract room name from URL safely
+    let rawRoomName = prejoinPendingName;
+    if (!rawRoomName) {
+      try {
+        const parsedUrl = new URL(prejoinPendingUrl);
+        rawRoomName = parsedUrl.pathname.split('/').filter(Boolean).pop() || 'meeting';
+      } catch {
+        rawRoomName = 'meeting';
+      }
+    }
     let finalUrl = prejoinPendingUrl;
     let secured = false;
 
