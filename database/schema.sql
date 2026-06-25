@@ -221,5 +221,50 @@ CREATE TABLE IF NOT EXISTS internal_messages (
 CREATE INDEX IF NOT EXISTS idx_internal_messages_created_at ON internal_messages(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_internal_messages_sender ON internal_messages(sender_id);
 
-ALTER TABLE internal_messages ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Service role full access - internal_messages" ON internal_messages FOR ALL USING (auth.role() = 'service_role');
+-- ============================================================
+-- MESSAGE TEMPLATES TABLE
+-- Reusable named templates for email and SMS with {{variable}} interpolation
+-- ============================================================
+CREATE TABLE IF NOT EXISTS message_templates (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  type TEXT NOT NULL CHECK (type IN ('email', 'sms')),
+  subject TEXT,                   -- email only
+  body TEXT NOT NULL,
+  variables TEXT[] DEFAULT '{}',  -- e.g. ARRAY['client_name', 'appointment_date']
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_message_templates_type ON message_templates(type);
+CREATE INDEX IF NOT EXISTS idx_message_templates_name ON message_templates(name);
+
+ALTER TABLE message_templates ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Service role full access - message_templates" ON message_templates FOR ALL USING (auth.role() = 'service_role');
+
+CREATE TRIGGER update_message_templates_updated_at
+  BEFORE UPDATE ON message_templates
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- ============================================================
+-- BRAND SETTINGS TABLE
+-- Single-row configuration for company branding used in HTML emails
+-- ============================================================
+CREATE TABLE IF NOT EXISTS brand_settings (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  company_name TEXT NOT NULL DEFAULT '',
+  logo_url TEXT,
+  primary_color TEXT DEFAULT '#4F46E5',
+  secondary_color TEXT DEFAULT '#7C3AED',
+  tagline TEXT,
+  footer_text TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE brand_settings ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Service role full access - brand_settings" ON brand_settings FOR ALL USING (auth.role() = 'service_role');
+
+CREATE TRIGGER update_brand_settings_updated_at
+  BEFORE UPDATE ON brand_settings
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();

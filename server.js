@@ -16,6 +16,8 @@ const authRoutes = require('./routes/auth');
 const internalChatRoutes = require('./routes/internal-chat');
 const meetingsRoutes = require('./routes/meetings');
 const integrationsConfigRoutes = require('./routes/integrations-config');
+const templatesRoutes = require('./routes/templates');
+const brandRoutes = require('./routes/brand');
 const { authMiddleware } = require('./lib/auth');
 
 const app = express();
@@ -77,6 +79,8 @@ app.use('/api/webhooks', webhooksRoutes);
 app.use('/api/internal-chat', internalChatRoutes);
 app.use('/api/meetings', meetingsRoutes);
 app.use('/api/integrations-config', integrationsConfigRoutes);
+app.use('/api/templates', templatesRoutes);
+app.use('/api/brand', brandRoutes);
 
 // Auth routes (OAuth callbacks live outside /api/)
 app.use('/auth', authRoutes);
