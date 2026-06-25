@@ -1,9 +1,29 @@
+// ── Boot-time vault injection ────────────────────────────────────────────────
+// Load keys saved via the in-app Integrations vault BEFORE dotenv and before
+// any route file is required. This lets the server start without a .env file.
+const fs = require('fs');
+const path = require('path');
+const VAULT_PATH = path.join(__dirname, 'config', 'vault.json');
+try {
+  if (fs.existsSync(VAULT_PATH)) {
+    const vault = JSON.parse(fs.readFileSync(VAULT_PATH, 'utf8'));
+    for (const [k, v] of Object.entries(vault)) {
+      // Vault wins over env so saved UI keys always take effect
+      if (v !== null && v !== undefined && v !== '') process.env[k] = String(v);
+    }
+    console.log('✅ Vault loaded from config/vault.json');
+  }
+} catch (e) {
+  console.warn('⚠️  Could not load vault:', e.message);
+}
+// ────────────────────────────────────────────────────────────────────────────
+
 require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
-const path = require('path');
+// path already required above
 
 const smsRoutes = require('./routes/sms');
 const usersRoutes = require('./routes/users');
@@ -66,6 +86,21 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
     version: '1.0.0',
   });
+});
+
+// Guard routes that require a working Supabase connection.
+// If keys aren't configured yet the frontend will show a helpful message
+// instead of a cryptic 500 / unhandled-promise crash.
+const DB_ROUTES = ['/api/sms', '/api/users', '/api/clients', '/api/internal-chat', '/api/templates', '/api/brand'];
+app.use(DB_ROUTES, (req, res, next) => {
+  // Re-read lazily so vault-injected env is picked up after save
+  const { supabase } = require('./lib/supabase');
+  if (!supabase) {
+    return res.status(503).json({
+      error: 'Database not configured. Open the Integrations tab and add your Supabase URL and Service Role Key.',
+    });
+  }
+  next();
 });
 
 // API routes
