@@ -39,7 +39,9 @@ const integrationsConfigRoutes = require('./routes/integrations-config');
 const templatesRoutes = require('./routes/templates');
 const brandRoutes = require('./routes/brand');
 const activityRoutes = require('./routes/activity');
+const tenantsRoutes = require('./routes/tenants');
 const { authMiddleware } = require('./lib/auth');
+const { resolveTenant } = require('./lib/tenants');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -75,6 +77,9 @@ app.use('/api/clients/:id/sms', smsLimiter);
 
 // Optional Google Workspace auth middleware (non-blocking unless GOOGLE_AUTH_REQUIRED=true)
 app.use('/api/', authMiddleware);
+
+// Multi-tenant resolution (sets req.tenant from header, query param, or email)
+app.use('/api/', resolveTenant);
 
 // Serve static frontend files
 app.use(express.static(path.join(__dirname, 'public')));
@@ -118,6 +123,7 @@ app.use('/api/integrations-config', integrationsConfigRoutes);
 app.use('/api/templates', templatesRoutes);
 app.use('/api/brand', brandRoutes);
 app.use('/api/activity', activityRoutes);
+app.use('/api/tenants', tenantsRoutes);
 
 // Auth routes (OAuth callbacks live outside /api/)
 app.use('/auth', authRoutes);
