@@ -3,6 +3,7 @@ const rateLimit = require('express-rate-limit');
 const { google } = require('googleapis');
 const { getOAuth2Client, getAuthenticatedClient, setTokens, getTokens, SCOPES, extractBody, buildRawEmail, buildHtmlEmail } = require('../lib/gmail');
 const { supabase, logActivity } = require('../lib/supabase');
+const { triggerOutbound } = require('../lib/webhooks');
 
 const router = express.Router();
 
@@ -171,6 +172,8 @@ router.post('/send', async (req, res) => {
       details: { to, subject: subject.slice(0, 100) },
       ipAddress: req.ip,
     });
+
+    triggerOutbound('email_sent', { to, subject: subject.slice(0, 100), messageId: sendRes.data.id }).catch(() => {});
 
     res.json({ success: true, messageId: sendRes.data.id });
   } catch (err) {

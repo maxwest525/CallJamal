@@ -1863,6 +1863,32 @@
           </div>
         </div>
       </div>
+
+      <div style="margin-top:24px;">
+        <h3 style="font-size:1rem;font-weight:600;margin-bottom:12px;">🚀 Automation Recipes</h3>
+        <p style="font-size:0.8125rem;color:var(--color-gray-500);margin-bottom:12px;">
+          These events fire to your Zapier/n8n webhook URL automatically. Connect them to 7,000+ apps.
+        </p>
+        <div class="integrations-grid" id="automationRecipes"></div>
+      </div>
+
+      <div style="margin-top:24px;">
+        <h3 style="font-size:1rem;font-weight:600;margin-bottom:12px;">📡 Outbound Webhook Events</h3>
+        <div class="card">
+          <div class="card-body" style="padding:0;">
+            <table class="clients-table">
+              <thead><tr><th>Event</th><th>Fires When</th><th>Payload Fields</th></tr></thead>
+              <tbody>
+                <tr><td><code>sms_received</code></td><td>A client texts your shared number</td><td>from, clientName, clientId, messagePreview, conversationId</td></tr>
+                <tr><td><code>sms_sent</code></td><td>You send an SMS to a client</td><td>to, messagePreview, clientId, messageId</td></tr>
+                <tr><td><code>email_sent</code></td><td>You send an email via Gmail</td><td>to, subject, messageId</td></tr>
+                <tr><td><code>new_lead</code></td><td>Inbound webhook creates a client</td><td>name, phone, email, company</td></tr>
+                <tr><td><code>test_event</code></td><td>You click "Test Outbound Webhooks"</td><td>message, timestamp</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- ========== MEETINGS VIEW ========== -->
@@ -2239,6 +2265,12 @@
     <div class="modal-body">
       <div class="form-group">
         <label class="form-label">Message *</label>
+        <div class="ai-prompt-row">
+          <input class="form-control" id="clientSmsAiPrompt" placeholder="e.g. 'remind about appointment tomorrow at 2pm'" />
+          <button class="btn-ai-generate" id="clientSmsAiBtn" title="Generate with AI">
+            <span class="ai-sparkle">&#10024;</span> Draft
+          </button>
+        </div>
         <textarea class="form-control" id="smsClientBody" placeholder="Type your message…"></textarea>
       </div>
     </div>
@@ -3211,6 +3243,27 @@
   document.getElementById('createUserBtn').addEventListener('click', createUser);
   document.getElementById('sendClientSmsBtn').addEventListener('click', sendClientSms);
 
+  // Client SMS AI draft
+  document.getElementById('clientSmsAiBtn').addEventListener('click', async () => {
+    const btn = document.getElementById('clientSmsAiBtn');
+    const prompt = document.getElementById('clientSmsAiPrompt').value.trim();
+    if (!prompt) { toast('Describe what to say.', 'warning'); return; }
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner" style="width:14px;height:14px;border-width:2px;"></span>';
+    try {
+      const name = document.getElementById('smsClientName').textContent || '';
+      const result = await aiGenerate('sms', { purpose: prompt, recipientName: name });
+      document.getElementById('smsClientBody').value = result.body || '';
+      document.getElementById('clientSmsAiPrompt').value = '';
+      toast('Draft generated!', 'success');
+    } catch (err) {
+      toast(`AI error: ${err.message}`, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<span class="ai-sparkle">&#10024;</span> Draft';
+    }
+  });
+
   // Close buttons (data-close attribute)
   document.querySelectorAll('[data-close]').forEach(btn => {
     btn.addEventListener('click', () => closeModal(btn.dataset.close));
@@ -3589,6 +3642,38 @@
     grid.querySelectorAll('.integration-configure-btn').forEach(btn => {
       btn.addEventListener('click', () => openVaultModal(btn.dataset.group, btn.dataset.title));
     });
+
+    renderAutomationRecipes(data);
+  }
+
+  function renderAutomationRecipes(data) {
+    const hasWebhook = data.zapier?.configured || data.n8n?.configured;
+    const recipes = [
+      { icon: '📨', title: 'Auto-CRM on Inbound SMS', desc: 'When a client texts, create a HubSpot/Salesforce contact and notify your team on Slack.', trigger: 'sms_received', apps: 'Slack, HubSpot, Google Sheets' },
+      { icon: '🤖', title: 'AI Auto-Reply to Texts', desc: 'When a client texts after hours, auto-respond with a smart AI-generated message.', trigger: 'sms_received', apps: 'OpenAI, Slack, SMS' },
+      { icon: '📊', title: 'Log Emails to Spreadsheet', desc: 'Every sent email auto-logs to a Google Sheet with recipient, subject, and timestamp.', trigger: 'email_sent', apps: 'Google Sheets, Airtable' },
+      { icon: '🔔', title: 'Slack Alert on New Lead', desc: 'Post to a Slack channel whenever a new client is added from a web form or webhook.', trigger: 'new_lead', apps: 'Slack, Email, Discord' },
+      { icon: '📅', title: 'Follow-Up Reminders', desc: 'After sending an SMS, create a follow-up task in Todoist or Google Calendar.', trigger: 'sms_sent', apps: 'Google Calendar, Todoist, Asana' },
+      { icon: '💰', title: 'Invoice After Booking', desc: 'When a client confirms via text, auto-generate a Stripe invoice or QuickBooks entry.', trigger: 'sms_received', apps: 'Stripe, QuickBooks, PayPal' },
+    ];
+
+    const el = document.getElementById('automationRecipes');
+    el.innerHTML = recipes.map(r => `
+      <div class="integration-card" style="position:relative;">
+        <div class="integration-card-header">
+          <span class="integration-icon">${r.icon}</span>
+          <div style="flex:1;">
+            <div class="integration-title">${escHtml(r.title)}</div>
+            <span style="font-size:0.7rem;color:var(--color-gray-400);">Trigger: <code>${escHtml(r.trigger)}</code></span>
+          </div>
+        </div>
+        <div class="integration-desc">${escHtml(r.desc)}</div>
+        <div style="margin-top:8px;font-size:0.7rem;color:var(--color-gray-400);">Works with: ${escHtml(r.apps)}</div>
+        ${hasWebhook
+          ? '<div style="margin-top:8px;"><span class="status-badge connected">Ready</span></div>'
+          : '<div style="margin-top:8px;"><span class="status-badge disconnected">Configure Zapier or n8n first</span></div>'}
+      </div>
+    `).join('');
   }
 
   // ============================================================

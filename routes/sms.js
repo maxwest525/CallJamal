@@ -1,6 +1,7 @@
 const express = require('express');
 const { sendSms, sendBulkSms } = require('../lib/slicktext');
 const { supabase, logActivity, upsertConversation } = require('../lib/supabase');
+const { triggerOutbound } = require('../lib/webhooks');
 
 const router = express.Router();
 
@@ -54,6 +55,8 @@ router.post('/send-external', async (req, res) => {
       details: { to, messagePreview: message.slice(0, 50) },
       ipAddress: req.ip,
     });
+
+    triggerOutbound('sms_sent', { to, messagePreview: message.slice(0, 100), clientId, messageId: msg.id }).catch(() => {});
 
     res.json({ success: true, message: msg, slicktextResponse: slicktextResponse.data });
   } catch (err) {
@@ -221,6 +224,14 @@ router.post('/webhook', async (req, res) => {
       client_id: client?.id || null,
       slicktext_message_id: slicktextId || null,
     });
+
+    triggerOutbound('sms_received', {
+      from,
+      clientName: client?.name || null,
+      clientId: client?.id || null,
+      messagePreview: messageBody.slice(0, 100),
+      conversationId: conversation.id,
+    }).catch(() => {});
 
     res.json({ success: true });
   } catch (err) {
