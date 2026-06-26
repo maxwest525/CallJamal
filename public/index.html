@@ -978,6 +978,39 @@
     .fab-inbox { background: #1e293b; color: #fff; }
     .fab-ai { background: #D97706; color: #fff; }
 
+    .btn-ai-generate {
+      background: linear-gradient(135deg, #D97706, #F59E0B);
+      color: #fff;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: opacity .15s, transform .15s;
+    }
+    .btn-ai-generate:hover { opacity: .9; transform: scale(1.02); }
+    .btn-ai-generate:disabled { opacity: .5; cursor: wait; }
+    .btn-ai-generate .ai-sparkle { font-size: 0.9rem; }
+
+    .ai-prompt-row {
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+      margin-bottom: 8px;
+    }
+    .ai-prompt-row input {
+      flex: 1;
+      font-size: 0.85rem;
+    }
+    .ai-prompt-row .btn-ai-generate {
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
     .fab-label {
       position: absolute;
       right: 60px;
@@ -1654,6 +1687,12 @@
             </div>
             <div class="form-group">
               <label class="form-label">Message</label>
+              <div class="ai-prompt-row">
+                <input class="form-control" id="smsAiPrompt" placeholder="Describe what to say, e.g. 'appointment reminder for tomorrow'" />
+                <button class="btn-ai-generate" id="smsAiBtn" title="Generate with AI">
+                  <span class="ai-sparkle">&#10024;</span> Draft
+                </button>
+              </div>
               <textarea class="form-control" id="msgBody" placeholder="Type your message…"></textarea>
             </div>
             <button class="btn btn-primary" style="width:100%;" id="sendMsgBtn">
@@ -2228,6 +2267,12 @@
       </div>
       <div class="form-group">
         <label class="form-label">Message *</label>
+        <div class="ai-prompt-row">
+          <input class="form-control" id="gmailAiPrompt" placeholder="Describe what to write, e.g. 'follow up on proposal'" />
+          <button class="btn-ai-generate" id="gmailAiBtn" title="Generate with AI">
+            <span class="ai-sparkle">&#10024;</span> Draft
+          </button>
+        </div>
         <textarea class="form-control" id="gmailBody" placeholder="Write your email…" style="min-height:140px;"></textarea>
       </div>
     </div>
@@ -2330,9 +2375,17 @@
     <div class="modal-body" id="convThreadMessages" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:16px;">
       <div class="empty-state"><div class="icon">⏳</div><p>Loading…</p></div>
     </div>
-    <div style="flex-shrink:0;border-top:1px solid var(--color-gray-200);padding:12px 16px;display:flex;gap:8px;background:#fff;">
-      <textarea id="convThreadReplyInput" class="form-control" placeholder="Type your reply…" style="flex:1;min-height:60px;max-height:120px;resize:vertical;" maxlength="1600"></textarea>
-      <button class="btn btn-primary" id="convThreadSendBtn" style="align-self:flex-end;">Send</button>
+    <div style="flex-shrink:0;border-top:1px solid var(--color-gray-200);padding:12px 16px;background:#fff;">
+      <div class="ai-prompt-row" style="margin-bottom:6px;">
+        <input class="form-control" id="convReplyAiPrompt" placeholder="e.g. 'confirm appointment' or 'ask about availability'" style="font-size:0.8rem;" />
+        <button class="btn-ai-generate" id="convReplyAiBtn" title="Generate reply with AI" style="font-size:0.75rem;padding:4px 10px;">
+          <span class="ai-sparkle">&#10024;</span> Draft
+        </button>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <textarea id="convThreadReplyInput" class="form-control" placeholder="Type your reply…" style="flex:1;min-height:60px;max-height:120px;resize:vertical;" maxlength="1600"></textarea>
+        <button class="btn btn-primary" id="convThreadSendBtn" style="align-self:flex-end;">Send</button>
+      </div>
     </div>
   </div>
 </div>
@@ -2363,6 +2416,12 @@
       </div>
       <div class="form-group">
         <label class="form-label">Body <span style="color:var(--color-danger);">*</span></label>
+        <div class="ai-prompt-row">
+          <input class="form-control" id="templateAiPrompt" placeholder="Describe template, e.g. 'appointment confirmation with date and time'" />
+          <button class="btn-ai-generate" id="templateAiBtn" title="Generate template with AI">
+            <span class="ai-sparkle">&#10024;</span> Generate
+          </button>
+        </div>
         <textarea class="form-control" id="templateBody" placeholder="Use {{variable_name}} for dynamic values, e.g. Hello {{client_name}}!" style="min-height:120px;"></textarea>
         <p style="font-size:0.75rem;color:var(--color-gray-400);margin-top:4px;">Use <code>{{variable}}</code> placeholders — detected automatically.</p>
       </div>
@@ -2459,6 +2518,12 @@
       </div>
       <div class="form-group">
         <label class="form-label">Message</label>
+        <div class="ai-prompt-row">
+          <input class="form-control" id="gmailReplyAiPrompt" placeholder="e.g. 'confirm meeting time' or 'politely decline'" />
+          <button class="btn-ai-generate" id="gmailReplyAiBtn" title="Generate reply with AI">
+            <span class="ai-sparkle">&#10024;</span> Draft
+          </button>
+        </div>
         <textarea class="form-control" id="gmailReplyBody" style="min-height:140px;" placeholder="Write your reply…"></textarea>
       </div>
     </div>
@@ -4802,6 +4867,150 @@
   document.getElementById('saveTemplateBtn').addEventListener('click', saveTemplate);
   document.getElementById('templateSendPreviewBtn').addEventListener('click', previewTemplateSend);
   document.getElementById('templateSendConfirmBtn').addEventListener('click', sendTemplateSend);
+
+  // ============================================================
+  // AI Message Generation
+  // ============================================================
+
+  async function aiGenerate(type, context) {
+    const data = await apiFetch('/api/ai/generate', {
+      method: 'POST',
+      body: JSON.stringify({ type, context }),
+    });
+    return data.generated;
+  }
+
+  function getSelectedClientInfo() {
+    const sel = document.getElementById('msgClientSelect');
+    if (!sel || !sel.value) return {};
+    const opt = sel.options[sel.selectedIndex];
+    return { recipientName: opt?.dataset?.name || '', recipientCompany: '' };
+  }
+
+  // SMS compose AI
+  document.getElementById('smsAiBtn').addEventListener('click', async () => {
+    const btn = document.getElementById('smsAiBtn');
+    const prompt = document.getElementById('smsAiPrompt').value.trim();
+    if (!prompt) { toast('Describe what you want to say.', 'warning'); return; }
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner" style="width:14px;height:14px;border-width:2px;"></span>';
+    try {
+      const clientInfo = getSelectedClientInfo();
+      const result = await aiGenerate('sms', { purpose: prompt, ...clientInfo });
+      document.getElementById('msgBody').value = result.body || '';
+      document.getElementById('smsAiPrompt').value = '';
+      toast('Draft generated!', 'success');
+    } catch (err) {
+      toast(`AI error: ${err.message}`, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<span class="ai-sparkle">&#10024;</span> Draft';
+    }
+  });
+
+  // Gmail compose AI
+  document.getElementById('gmailAiBtn').addEventListener('click', async () => {
+    const btn = document.getElementById('gmailAiBtn');
+    const prompt = document.getElementById('gmailAiPrompt').value.trim();
+    if (!prompt) { toast('Describe what you want to write.', 'warning'); return; }
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner" style="width:14px;height:14px;border-width:2px;"></span>';
+    try {
+      const recipientName = document.getElementById('gmailTo').value.split('@')[0] || '';
+      const result = await aiGenerate('email', { purpose: prompt, recipientName });
+      if (result.subject && !document.getElementById('gmailSubject').value.trim()) {
+        document.getElementById('gmailSubject').value = result.subject;
+      }
+      document.getElementById('gmailBody').value = result.body || '';
+      document.getElementById('gmailAiPrompt').value = '';
+      toast('Email draft generated!', 'success');
+    } catch (err) {
+      toast(`AI error: ${err.message}`, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<span class="ai-sparkle">&#10024;</span> Draft';
+    }
+  });
+
+  // Gmail reply AI
+  document.getElementById('gmailReplyAiBtn').addEventListener('click', async () => {
+    const btn = document.getElementById('gmailReplyAiBtn');
+    const prompt = document.getElementById('gmailReplyAiPrompt').value.trim();
+    if (!prompt) { toast('Describe how you want to reply.', 'warning'); return; }
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner" style="width:14px;height:14px;border-width:2px;"></span>';
+    try {
+      const subject = document.getElementById('gmailReplySubject').value;
+      const recipientName = document.getElementById('gmailReplyToDisplay').value;
+      const result = await aiGenerate('email-reply', { purpose: prompt, subject, recipientName });
+      document.getElementById('gmailReplyBody').value = result.body || '';
+      document.getElementById('gmailReplyAiPrompt').value = '';
+      toast('Reply draft generated!', 'success');
+    } catch (err) {
+      toast(`AI error: ${err.message}`, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<span class="ai-sparkle">&#10024;</span> Draft';
+    }
+  });
+
+  // Conversation thread reply AI
+  document.getElementById('convReplyAiBtn').addEventListener('click', async () => {
+    const btn = document.getElementById('convReplyAiBtn');
+    const prompt = document.getElementById('convReplyAiPrompt').value.trim();
+    if (!prompt) { toast('Describe what to reply.', 'warning'); return; }
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner" style="width:12px;height:12px;border-width:2px;"></span>';
+    try {
+      // Gather recent conversation history from the thread
+      const msgs = document.querySelectorAll('#convThreadMessages .chat-bubble');
+      let history = '';
+      msgs.forEach(m => {
+        const parent = m.closest('div[style]');
+        const meta = parent?.querySelector('div')?.textContent || '';
+        history += `${meta}: ${m.textContent}\n`;
+      });
+      const result = await aiGenerate('sms', {
+        purpose: prompt,
+        conversationHistory: history.slice(-500),
+      });
+      document.getElementById('convThreadReplyInput').value = result.body || '';
+      document.getElementById('convReplyAiPrompt').value = '';
+      toast('Reply drafted!', 'success');
+    } catch (err) {
+      toast(`AI error: ${err.message}`, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<span class="ai-sparkle">&#10024;</span> Draft';
+    }
+  });
+
+  // Template AI generation
+  document.getElementById('templateAiBtn').addEventListener('click', async () => {
+    const btn = document.getElementById('templateAiBtn');
+    const prompt = document.getElementById('templateAiPrompt').value.trim();
+    if (!prompt) { toast('Describe the template you want.', 'warning'); return; }
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner" style="width:14px;height:14px;border-width:2px;"></span>';
+    try {
+      const templateType = document.getElementById('templateType').value;
+      const result = await aiGenerate('template', { templatePurpose: prompt, templateType });
+      if (result.name && !document.getElementById('templateName').value.trim()) {
+        document.getElementById('templateName').value = result.name;
+      }
+      if (result.subject && templateType === 'email') {
+        document.getElementById('templateSubject').value = result.subject;
+      }
+      document.getElementById('templateBody').value = result.body || '';
+      document.getElementById('templateAiPrompt').value = '';
+      toast('Template generated!', 'success');
+    } catch (err) {
+      toast(`AI error: ${err.message}`, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<span class="ai-sparkle">&#10024;</span> Generate';
+    }
+  });
 
   // ============================================================
   // Brand Settings
