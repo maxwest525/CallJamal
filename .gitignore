@@ -9,9 +9,14 @@ yarn-error.log*
 .env.local
 .env.*.local
 
+# Runtime vault (contains saved API keys)
+config/vault.json
+
 # Google service account key (contains credentials)
-*.json
+google-service-account-*.json
+*-key.json
 !package.json
+!vercel.json
 
 # Runtime
 *.log
