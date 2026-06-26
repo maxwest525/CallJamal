@@ -439,6 +439,52 @@
     }
 
     /* ============================================================
+       Avatar Contact Popover
+    ============================================================ */
+    .avatar-popover {
+      position: fixed;
+      z-index: 9000;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 8px 30px rgba(0,0,0,.18);
+      border: 1px solid var(--color-gray-200);
+      padding: 0;
+      min-width: 220px;
+      animation: popIn .12s ease-out;
+    }
+    @keyframes popIn { from { opacity:0; transform: scale(.95); } to { opacity:1; transform: scale(1); } }
+    .avatar-popover-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 14px 16px 10px;
+      border-bottom: 1px solid var(--color-gray-100);
+    }
+    .avatar-popover-header .pop-initials {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: var(--color-primary); color: #fff;
+      font-size: 0.875rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .avatar-popover-header img {
+      width: 38px; height: 38px; border-radius: 50%; object-fit: cover; flex-shrink: 0;
+    }
+    .avatar-popover-info { flex: 1; min-width: 0; }
+    .avatar-popover-info .pop-name { font-weight: 600; font-size: 0.875rem; color: var(--color-gray-900); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .avatar-popover-info .pop-role { font-size: 0.75rem; color: var(--color-gray-500); }
+    .avatar-popover-actions {
+      display: flex; flex-direction: column; padding: 6px 0;
+    }
+    .avatar-popover-actions button {
+      display: flex; align-items: center; gap: 10px;
+      width: 100%; padding: 9px 16px;
+      background: none; border: none; cursor: pointer;
+      font-size: 0.8125rem; color: var(--color-gray-700);
+      transition: background .1s;
+      text-align: left;
+    }
+    .avatar-popover-actions button:hover { background: var(--color-gray-50); }
+    .avatar-popover-actions button .pop-icon { width: 20px; text-align: center; flex-shrink: 0; }
+
+    /* ============================================================
        Clients View
     ============================================================ */
     .clients-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
@@ -2812,11 +2858,11 @@
         ? `<img src="${escAttr(u.avatar_url)}" alt="${escAttr(u.name)}" />`
         : `<div class="office-avatar-initials">${escHtml(initials)}</div>`;
       const tooltipParts = [u.name];
-      const title = u.job_title || u.role || u.department || '';
-      if (title) tooltipParts.push(title);
+      const roleLabel = u.job_title || u.role || u.department || '';
+      if (roleLabel) tooltipParts.push(roleLabel);
       if (u.extension) tooltipParts.push(`Ext. ${u.extension}`);
       return `
-        <div class="office-avatar js-status-avatar" data-user-id="${escAttr(u.id)}" data-status="${escAttr(u.status || 'offline')}" data-msg="${escAttr(u.status_message || '')}" title="${escAttr(tooltipParts.join(' – '))}" style="cursor:pointer;">
+        <div class="office-avatar js-avatar-click" data-user-id="${escAttr(u.id)}" data-status="${escAttr(status)}" data-msg="${escAttr(u.status_message || '')}" data-name="${escAttr(u.name || '')}" data-phone="${escAttr(u.phone || '')}" data-email="${escAttr(u.email || '')}" data-avatar="${escAttr(u.avatar_url || '')}" data-role="${escAttr(roleLabel)}" title="${escAttr(tooltipParts.join(' – '))}" style="cursor:pointer;">
           <div class="office-avatar-ring ${status}">${inner}</div>
           <div class="office-avatar-label">${escHtml((u.name || '').split(' ')[0])}</div>
         </div>`;
@@ -2850,11 +2896,10 @@
 
     el.innerHTML = `<div class="office-floor">${floorHtml}</div>${offlineHtml}`;
 
-    // Delegated click for status update
-    el.querySelectorAll('.js-status-avatar').forEach(avatar => {
-      avatar.addEventListener('click', () => {
-        const { userId, status, msg } = avatar.dataset;
-        openUserStatus(userId, status, msg);
+    el.querySelectorAll('.js-avatar-click').forEach(avatar => {
+      avatar.addEventListener('click', (e) => {
+        e.stopPropagation();
+        showAvatarPopover(avatar, avatar.dataset);
       });
     });
   }
@@ -4797,6 +4842,102 @@
   }
 
   document.getElementById('gmailReplySendBtn').addEventListener('click', sendGmailReply);
+
+  // ============================================================
+  // Avatar Contact Popover
+  // ============================================================
+  let _activePopover = null;
+
+  function closeAvatarPopover() {
+    if (_activePopover) { _activePopover.remove(); _activePopover = null; }
+  }
+
+  document.addEventListener('click', closeAvatarPopover);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeAvatarPopover(); });
+
+  function showAvatarPopover(anchorEl, data) {
+    closeAvatarPopover();
+    const { userId, name, phone, email, avatar, role, status, msg } = data;
+    const initials = (name || 'U').split(' ').map(s => s[0]).join('').slice(0, 2).toUpperCase();
+    const avatarHtml = avatar
+      ? `<img src="${escAttr(avatar)}" alt="${escAttr(name)}" />`
+      : `<div class="pop-initials">${escHtml(initials)}</div>`;
+
+    const pop = document.createElement('div');
+    pop.className = 'avatar-popover';
+    pop.addEventListener('click', (e) => e.stopPropagation());
+
+    let actionsHtml = '';
+    if (phone) {
+      actionsHtml += `<button data-action="sms"><span class="pop-icon">💬</span>Send SMS</button>`;
+    }
+    actionsHtml += `<button data-action="teamchat"><span class="pop-icon">📨</span>Message in Team Chat</button>`;
+    if (email) {
+      actionsHtml += `<button data-action="email"><span class="pop-icon">📧</span>Send Email</button>`;
+    }
+    actionsHtml += `<button data-action="status"><span class="pop-icon">🟢</span>Update Status</button>`;
+
+    pop.innerHTML = `
+      <div class="avatar-popover-header">
+        ${avatarHtml}
+        <div class="avatar-popover-info">
+          <div class="pop-name">${escHtml(name)}</div>
+          ${role ? `<div class="pop-role">${escHtml(role)}</div>` : ''}
+        </div>
+      </div>
+      <div class="avatar-popover-actions">
+        ${actionsHtml}
+      </div>`;
+
+    document.body.appendChild(pop);
+    _activePopover = pop;
+
+    // Position near the avatar
+    const rect = anchorEl.getBoundingClientRect();
+    let top = rect.bottom + 8;
+    let left = rect.left + rect.width / 2 - 110;
+    if (left < 8) left = 8;
+    if (left + 230 > window.innerWidth) left = window.innerWidth - 238;
+    if (top + 220 > window.innerHeight) top = rect.top - pop.offsetHeight - 8;
+    pop.style.top = top + 'px';
+    pop.style.left = left + 'px';
+
+    pop.querySelectorAll('button[data-action]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const action = btn.dataset.action;
+        closeAvatarPopover();
+        if (action === 'sms' && phone) {
+          navigate('messages');
+          setTimeout(() => {
+            document.getElementById('msgType').value = 'internal';
+            document.getElementById('msgType').dispatchEvent(new Event('change'));
+            document.getElementById('msgTo').value = phone;
+            document.getElementById('msgBody').value = '';
+            document.getElementById('msgBody').focus();
+          }, 100);
+        } else if (action === 'teamchat') {
+          const panel = document.getElementById('teamChatPanel');
+          if (!panel.classList.contains('open')) {
+            panel.classList.add('open');
+          }
+          const input = document.getElementById('teamChatInput');
+          const firstName = (name || '').split(' ')[0];
+          input.value = `@${firstName} `;
+          input.focus();
+        } else if (action === 'email' && email) {
+          openModal('gmailComposeModal');
+          setTimeout(() => {
+            document.getElementById('gmailTo').value = email;
+            document.getElementById('gmailSubject').value = '';
+            document.getElementById('gmailBody').value = '';
+            document.getElementById('gmailSubject').focus();
+          }, 100);
+        } else if (action === 'status') {
+          openUserStatus(userId, status, msg);
+        }
+      });
+    });
+  }
 
   // ============================================================
   // User Status Update
