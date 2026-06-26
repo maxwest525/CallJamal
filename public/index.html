@@ -817,6 +817,145 @@
       gap: 12px;
     }
 
+    .gmail-full-layout {
+      display: grid;
+      grid-template-columns: 200px 1fr 1.4fr;
+      gap: 0;
+      align-items: start;
+      border: 1px solid var(--color-gray-200);
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      min-height: 620px;
+    }
+
+    .gmail-sidebar {
+      background: var(--color-gray-50);
+      border-right: 1px solid var(--color-gray-200);
+      height: 100%;
+      overflow-y: auto;
+    }
+    .gmail-sidebar-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      padding: 9px 14px;
+      border: none;
+      background: transparent;
+      font-size: 0.8125rem;
+      cursor: pointer;
+      text-align: left;
+      color: var(--color-gray-700);
+      transition: background .12s;
+    }
+    .gmail-sidebar-btn:hover { background: var(--color-gray-100); }
+    .gmail-sidebar-btn.active { background: #e0e7ff; color: var(--color-primary); font-weight: 600; }
+    .gmail-sidebar-btn .badge-count {
+      margin-left: auto;
+      background: var(--color-primary);
+      color: #fff;
+      font-size: 0.6875rem;
+      padding: 1px 6px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+    .gmail-sidebar-divider {
+      height: 1px;
+      background: var(--color-gray-200);
+      margin: 6px 0;
+    }
+    .gmail-sidebar-heading {
+      padding: 8px 14px 4px;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      color: var(--color-gray-400);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+
+    .gmail-search-bar {
+      display: flex;
+      gap: 8px;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--color-gray-200);
+      background: #fff;
+    }
+    .gmail-search-bar input {
+      flex: 1;
+      border: 1px solid var(--color-gray-200);
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 0.8125rem;
+      outline: none;
+    }
+    .gmail-search-bar input:focus { border-color: var(--color-primary); }
+
+    .gmail-toolbar {
+      display: flex;
+      gap: 4px;
+      padding: 6px 12px;
+      border-bottom: 1px solid var(--color-gray-100);
+      background: var(--color-gray-50);
+      flex-wrap: wrap;
+    }
+    .gmail-toolbar button {
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      color: var(--color-gray-600);
+      transition: all .12s;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .gmail-toolbar button:hover { background: var(--color-gray-100); border-color: var(--color-gray-200); }
+
+    .gmail-item-star {
+      cursor: pointer;
+      font-size: 0.875rem;
+      flex-shrink: 0;
+      opacity: 0.3;
+      transition: opacity .12s;
+    }
+    .gmail-item-star:hover, .gmail-item-star.starred { opacity: 1; color: #F59E0B; }
+
+    .gmail-item-check {
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+      accent-color: var(--color-primary);
+      cursor: pointer;
+    }
+
+    .gmail-attachment-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--color-gray-100);
+      border: 1px solid var(--color-gray-200);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: background .12s;
+      margin: 4px 4px 0 0;
+    }
+    .gmail-attachment-chip:hover { background: var(--color-gray-200); }
+
+    .gmail-profile-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--color-gray-200);
+      font-size: 0.75rem;
+      color: var(--color-gray-500);
+      background: #fff;
+    }
+
     /* ============================================================
        Slack View
     ============================================================ */
@@ -1782,20 +1921,58 @@
         <a id="gmailConnectBtn" href="/auth/google" class="btn btn-primary btn-sm">Connect Gmail</a>
       </div>
 
-      <div class="gmail-layout">
-        <!-- Inbox list -->
-        <div class="card">
-          <div class="card-header">
-            <h3>📥 Inbox</h3>
-            <button class="btn btn-primary btn-sm" id="gmailComposeBtn">✉️ Compose</button>
+      <!-- Profile bar -->
+      <div class="gmail-profile-bar" id="gmailProfileBar" style="display:none;">
+        <span>📧</span>
+        <span id="gmailProfileEmail">Loading…</span>
+        <span style="margin-left:auto;display:flex;gap:8px;">
+          <button class="btn btn-sm" id="gmailSyncContactsBtn" style="font-size:0.75rem;">👥 Sync Contacts</button>
+          <button class="btn btn-primary btn-sm" id="gmailComposeBtn">✉️ Compose</button>
+        </span>
+      </div>
+
+      <!-- Search bar -->
+      <div class="gmail-search-bar" id="gmailSearchBar" style="display:none;">
+        <input type="text" id="gmailSearchInput" placeholder="Search emails… (e.g. from:john subject:invoice)" />
+        <button class="btn btn-sm" id="gmailSearchBtn">🔍</button>
+        <button class="btn btn-sm" id="gmailSearchClearBtn" style="display:none;">✕ Clear</button>
+      </div>
+
+      <div class="gmail-full-layout" id="gmailFullLayout" style="display:none;">
+        <!-- Label sidebar -->
+        <div class="gmail-sidebar" id="gmailSidebar">
+          <div style="padding:10px 14px;">
+            <button class="btn btn-primary btn-sm" style="width:100%;" id="gmailComposeBtn2">✉️ Compose</button>
           </div>
-          <div id="gmailInboxList" style="max-height:600px;overflow-y:auto;">
+          <button class="gmail-sidebar-btn active" data-label="INBOX" data-folder="inbox">📥 Inbox <span class="badge-count" id="gmailUnreadBadge" style="display:none;">0</span></button>
+          <button class="gmail-sidebar-btn" data-label="STARRED" data-folder="starred">⭐ Starred</button>
+          <button class="gmail-sidebar-btn" data-label="SENT" data-folder="sent">📤 Sent</button>
+          <button class="gmail-sidebar-btn" data-label="DRAFT" data-folder="drafts">📝 Drafts</button>
+          <button class="gmail-sidebar-btn" data-label="SPAM" data-folder="spam">🚫 Spam</button>
+          <button class="gmail-sidebar-btn" data-label="TRASH" data-folder="trash">🗑️ Trash</button>
+          <div class="gmail-sidebar-divider"></div>
+          <div class="gmail-sidebar-heading">Labels</div>
+          <div id="gmailCustomLabels"></div>
+          <button class="gmail-sidebar-btn" id="gmailCreateLabelBtn" style="color:var(--color-primary);">+ New Label</button>
+        </div>
+
+        <!-- Message list -->
+        <div style="border-right:1px solid var(--color-gray-200);display:flex;flex-direction:column;height:100%;overflow:hidden;">
+          <div class="gmail-toolbar" id="gmailToolbar">
+            <label style="display:flex;align-items:center;"><input type="checkbox" id="gmailSelectAll" class="gmail-item-check" title="Select all" /></label>
+            <button id="gmailRefreshBtn" title="Refresh">🔄 Refresh</button>
+            <button id="gmailArchiveBtn" title="Archive">📦 Archive</button>
+            <button id="gmailTrashBtn" title="Trash">🗑️ Delete</button>
+            <button id="gmailMarkReadBtn" title="Mark read">✉️ Read</button>
+            <button id="gmailLabelApplyBtn" title="Apply label">🏷️ Label</button>
+          </div>
+          <div id="gmailInboxList" style="flex:1;overflow-y:auto;">
             <div class="empty-state"><div class="icon">📧</div><p>Loading inbox…</p></div>
           </div>
         </div>
 
         <!-- Email thread viewer -->
-        <div class="gmail-thread" id="gmailThreadPane">
+        <div class="gmail-thread" id="gmailThreadPane" style="overflow-y:auto;height:100%;">
           <div class="empty-state"><div class="icon">📨</div><p>Select an email to read it</p></div>
         </div>
       </div>
@@ -2310,6 +2487,7 @@
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" data-close="gmailComposeModal">Cancel</button>
+      <button class="btn btn-secondary" id="gmailSaveDraftBtn">📝 Save Draft</button>
       <button class="btn btn-primary" id="gmailSendBtn">📤 Send</button>
     </div>
   </div>
@@ -3270,9 +3448,13 @@
   });
 
   // ============================================================
-  // Gmail
+  // Gmail — Full Email Client
   // ============================================================
   let gmailConnected = false;
+  let gmailCurrentFolder = 'INBOX';
+  let gmailLabels = [];
+  let gmailSearchActive = false;
+  let gmailOpenMessageId = null;
 
   async function loadGmail() {
     try {
@@ -3280,23 +3462,71 @@
       gmailConnected = status.connected;
       const banner = document.getElementById('gmailConnectBanner');
       banner.style.display = gmailConnected ? 'none' : 'flex';
-      if (gmailConnected) loadGmailInbox();
-      else document.getElementById('gmailInboxList').innerHTML = `<div class="empty-state"><div class="icon">📧</div><p>Connect Gmail to see your inbox</p></div>`;
+      document.getElementById('gmailFullLayout').style.display = gmailConnected ? 'grid' : 'none';
+      document.getElementById('gmailProfileBar').style.display = gmailConnected ? 'flex' : 'none';
+      document.getElementById('gmailSearchBar').style.display = gmailConnected ? 'flex' : 'none';
+      if (gmailConnected) {
+        loadGmailProfile();
+        loadGmailLabels();
+        loadGmailFolder('INBOX');
+      } else {
+        document.getElementById('gmailInboxList').innerHTML = `<div class="empty-state"><div class="icon">📧</div><p>Connect Gmail to see your inbox</p></div>`;
+      }
     } catch (err) {
       console.error('Gmail status error:', err.message);
     }
   }
 
-  async function loadGmailInbox() {
+  async function loadGmailProfile() {
+    try {
+      const p = await apiFetch('/api/gmail/profile');
+      document.getElementById('gmailProfileEmail').textContent = `${p.emailAddress} — ${p.messagesTotal || 0} messages`;
+    } catch (_) {}
+  }
+
+  async function loadGmailLabels() {
+    try {
+      const data = await apiFetch('/api/gmail/labels');
+      gmailLabels = data.labels || [];
+      const container = document.getElementById('gmailCustomLabels');
+      const custom = gmailLabels.filter(l => l.type === 'user');
+      container.innerHTML = custom.map(l =>
+        `<button class="gmail-sidebar-btn" data-label="${escAttr(l.id)}" data-folder="label">${escHtml(l.name)}</button>`
+      ).join('');
+      container.querySelectorAll('.gmail-sidebar-btn').forEach(btn => {
+        btn.addEventListener('click', () => loadGmailFolder(btn.dataset.label));
+      });
+      const inbox = gmailLabels.find(l => l.id === 'INBOX');
+      const badge = document.getElementById('gmailUnreadBadge');
+      if (inbox && inbox.messagesUnread > 0) {
+        badge.textContent = inbox.messagesUnread;
+        badge.style.display = '';
+      } else {
+        badge.style.display = 'none';
+      }
+    } catch (_) {}
+  }
+
+  async function loadGmailFolder(labelId) {
+    gmailCurrentFolder = labelId;
+    gmailSearchActive = false;
+    document.getElementById('gmailSearchClearBtn').style.display = 'none';
+    document.querySelectorAll('.gmail-sidebar-btn').forEach(b => b.classList.remove('active'));
+    const activeBtn = document.querySelector(`.gmail-sidebar-btn[data-label="${CSS.escape(labelId)}"]`);
+    if (activeBtn) activeBtn.classList.add('active');
+
+    if (labelId === 'DRAFT') return loadGmailDrafts();
+
     const list = document.getElementById('gmailInboxList');
     list.innerHTML = `<div class="empty-state"><div class="icon">⏳</div><p>Loading…</p></div>`;
     try {
-      const data = await apiFetch('/api/gmail/inbox?maxResults=25');
+      const data = await apiFetch(`/api/gmail/inbox?maxResults=30&labelIds=${encodeURIComponent(labelId)}`);
       renderGmailInbox(data.messages || []);
     } catch (err) {
       if (err.message.includes('not connected') || err.message.includes('needsAuth')) {
         gmailConnected = false;
         document.getElementById('gmailConnectBanner').style.display = 'flex';
+        document.getElementById('gmailFullLayout').style.display = 'none';
         list.innerHTML = `<div class="empty-state"><div class="icon">🔒</div><p>Connect Gmail to continue</p></div>`;
       } else {
         list.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>${escHtml(err.message)}</p></div>`;
@@ -3304,71 +3534,210 @@
     }
   }
 
+  async function loadGmailDrafts() {
+    const list = document.getElementById('gmailInboxList');
+    list.innerHTML = `<div class="empty-state"><div class="icon">⏳</div><p>Loading drafts…</p></div>`;
+    try {
+      const data = await apiFetch('/api/gmail/drafts?maxResults=30');
+      const drafts = data.drafts || [];
+      if (!drafts.length) {
+        list.innerHTML = `<div class="empty-state"><div class="icon">📝</div><p>No drafts</p></div>`;
+        return;
+      }
+      list.innerHTML = drafts.map(d => {
+        const date = d.date ? new Date(d.date).toLocaleDateString() : '';
+        return `
+          <div class="gmail-item" data-draft-id="${escAttr(d.draftId)}" data-message-id="${escAttr(d.messageId || '')}">
+            <input type="checkbox" class="gmail-item-check gmail-msg-check" data-id="${escAttr(d.draftId)}" />
+            <div class="gmail-item-info">
+              <div class="gmail-item-from">Draft to: ${escHtml(d.to || '(no recipient)')}</div>
+              <div class="gmail-item-subject">${escHtml(d.subject)}</div>
+              <div class="gmail-item-snippet">${escHtml(d.snippet)}</div>
+            </div>
+            <div class="gmail-item-date">${escHtml(date)}</div>
+          </div>`;
+      }).join('');
+      list.querySelectorAll('.gmail-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+          if (e.target.type === 'checkbox') return;
+          const mid = item.dataset.messageId;
+          if (mid) openGmailMessage(mid);
+        });
+      });
+    } catch (err) {
+      list.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>${escHtml(err.message)}</p></div>`;
+    }
+  }
+
+  async function gmailSearch() {
+    const q = document.getElementById('gmailSearchInput').value.trim();
+    if (!q) return;
+    gmailSearchActive = true;
+    document.getElementById('gmailSearchClearBtn').style.display = '';
+    document.querySelectorAll('.gmail-sidebar-btn').forEach(b => b.classList.remove('active'));
+
+    const list = document.getElementById('gmailInboxList');
+    list.innerHTML = `<div class="empty-state"><div class="icon">🔍</div><p>Searching…</p></div>`;
+    try {
+      const data = await apiFetch(`/api/gmail/search?q=${encodeURIComponent(q)}&maxResults=30`);
+      renderGmailInbox(data.messages || []);
+      if (!(data.messages || []).length) {
+        list.innerHTML = `<div class="empty-state"><div class="icon">🔍</div><p>No results for "${escHtml(q)}"</p></div>`;
+      }
+    } catch (err) {
+      list.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>${escHtml(err.message)}</p></div>`;
+    }
+  }
+
   function renderGmailInbox(messages) {
     const list = document.getElementById('gmailInboxList');
     if (!messages.length) {
-      list.innerHTML = `<div class="empty-state"><div class="icon">📭</div><p>Inbox is empty</p></div>`;
+      list.innerHTML = `<div class="empty-state"><div class="icon">📭</div><p>No messages</p></div>`;
       return;
     }
     list.innerHTML = messages.map(m => {
       const unread = m.unread ? 'unread' : '';
+      const starred = (m.labelIds || []).includes('STARRED');
       const date = m.date ? new Date(m.date).toLocaleDateString() : '';
+      const hasAttachment = (m.labelIds || []).includes('ATTACHMENT') ? '📎 ' : '';
       return `
         <div class="gmail-item ${unread}" data-id="${escAttr(m.id)}" data-thread="${escAttr(m.threadId)}">
+          <input type="checkbox" class="gmail-item-check gmail-msg-check" data-id="${escAttr(m.id)}" />
+          <span class="gmail-item-star ${starred ? 'starred' : ''}" data-id="${escAttr(m.id)}" title="Star">★</span>
           <div class="gmail-item-info">
             <div class="gmail-item-from">${escHtml(m.from)}</div>
-            <div class="gmail-item-subject">${escHtml(m.subject)}</div>
+            <div class="gmail-item-subject">${hasAttachment}${escHtml(m.subject)}</div>
             <div class="gmail-item-snippet">${escHtml(m.snippet)}</div>
           </div>
           <div class="gmail-item-date">${escHtml(date)}</div>
-        </div>
-      `;
+        </div>`;
     }).join('');
 
     list.querySelectorAll('.gmail-item').forEach(item => {
-      item.addEventListener('click', () => openGmailMessage(item.dataset.id));
+      item.addEventListener('click', (e) => {
+        if (e.target.type === 'checkbox' || e.target.classList.contains('gmail-item-star')) return;
+        openGmailMessage(item.dataset.id);
+      });
+    });
+
+    list.querySelectorAll('.gmail-item-star').forEach(star => {
+      star.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const id = star.dataset.id;
+        const isStarred = star.classList.contains('starred');
+        star.classList.toggle('starred');
+        try {
+          await apiFetch(`/api/gmail/message/${encodeURIComponent(id)}/star`, {
+            method: 'POST', body: JSON.stringify({ starred: !isStarred }),
+          });
+        } catch (_) { star.classList.toggle('starred'); }
+      });
     });
   }
 
+  function getSelectedGmailIds() {
+    return Array.from(document.querySelectorAll('.gmail-msg-check:checked')).map(cb => cb.dataset.id);
+  }
+
   async function openGmailMessage(id) {
+    gmailOpenMessageId = id;
     const pane = document.getElementById('gmailThreadPane');
-    pane.innerHTML = '';
+    pane.innerHTML = '<div class="empty-state"><div class="icon">⏳</div><p>Loading…</p></div>';
     try {
       const m = await apiFetch(`/api/gmail/message/${encodeURIComponent(id)}`);
-    const subjectEl = document.createElement('div');
-    subjectEl.className = 'gmail-thread-subject';
-    subjectEl.textContent = m.subject;
+      const starred = (m.labelIds || []).includes('STARRED');
+      const labels = (m.labelIds || []).filter(l => !['INBOX','UNREAD','SENT','DRAFT','STARRED','IMPORTANT','CATEGORY_PERSONAL','CATEGORY_SOCIAL','CATEGORY_UPDATES','CATEGORY_PROMOTIONS','CATEGORY_FORUMS','SPAM','TRASH'].includes(l));
 
-    const metaEl = document.createElement('div');
-    metaEl.className = 'gmail-thread-meta';
-    metaEl.innerHTML = `<strong>From:</strong> ${escHtml(m.from)}<br><strong>To:</strong> ${escHtml(m.to)}<br><strong>Date:</strong> ${escHtml(m.date)}`;
+      let html = `
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">
+          <div class="gmail-thread-subject">${escHtml(m.subject)}</div>
+          <div style="display:flex;gap:4px;flex-shrink:0;">
+            <button class="btn btn-sm" id="gmailMsgStarBtn" title="${starred ? 'Unstar' : 'Star'}">${starred ? '⭐' : '☆'}</button>
+            <button class="btn btn-sm" id="gmailMsgArchiveBtn" title="Archive">📦</button>
+            <button class="btn btn-sm" id="gmailMsgTrashBtn" title="Trash">🗑️</button>
+          </div>
+        </div>
+        <div class="gmail-thread-meta">
+          <strong>From:</strong> ${escHtml(m.from)}<br>
+          <strong>To:</strong> ${escHtml(m.to)}<br>
+          <strong>Date:</strong> ${escHtml(m.date)}
+          ${labels.length ? '<br><strong>Labels:</strong> ' + labels.map(l => `<span style="background:#E0E7FF;color:#4338CA;padding:1px 6px;border-radius:4px;font-size:0.6875rem;">${escHtml(l)}</span>`).join(' ') : ''}
+        </div>
+        <hr style="border:none;border-top:1px solid var(--color-gray-200);margin:12px 0;">
+        <div id="gmailMsgAttachments"></div>
+        <div class="gmail-thread-body">${escHtml(m.body)}</div>
+        <div style="margin-top:16px;display:flex;gap:8px;">
+          <button class="btn btn-primary btn-sm" id="gmailMsgReplyBtn">↩️ Reply</button>
+          <button class="btn btn-secondary btn-sm" id="gmailMsgFwdBtn">↪️ Forward</button>
+        </div>`;
+      pane.innerHTML = html;
 
-    const divider = document.createElement('hr');
-    divider.style.cssText = 'border:none;border-top:1px solid var(--color-gray-200);margin:12px 0;';
+      document.getElementById('gmailMsgReplyBtn').addEventListener('click', () =>
+        openGmailReply({ from: m.from, subject: m.subject, threadId: m.threadId, messageId: m.id }));
+      document.getElementById('gmailMsgFwdBtn').addEventListener('click', () => {
+        openModal('gmailComposeModal');
+        setTimeout(() => {
+          document.getElementById('gmailSubject').value = `Fwd: ${m.subject}`;
+          document.getElementById('gmailBody').value = `\n\n---------- Forwarded message ----------\nFrom: ${m.from}\nDate: ${m.date}\nSubject: ${m.subject}\n\n${m.body}`;
+        }, 50);
+      });
+      document.getElementById('gmailMsgStarBtn').addEventListener('click', async () => {
+        const btn = document.getElementById('gmailMsgStarBtn');
+        const nowStarred = btn.textContent.includes('⭐');
+        btn.textContent = nowStarred ? '☆' : '⭐';
+        await apiFetch(`/api/gmail/message/${encodeURIComponent(id)}/star`, {
+          method: 'POST', body: JSON.stringify({ starred: !nowStarred }),
+        }).catch(() => {});
+      });
+      document.getElementById('gmailMsgArchiveBtn').addEventListener('click', async () => {
+        await apiFetch(`/api/gmail/message/${encodeURIComponent(id)}/archive`, { method: 'POST' });
+        toast('Archived', 'success');
+        loadGmailFolder(gmailCurrentFolder);
+        pane.innerHTML = `<div class="empty-state"><div class="icon">📨</div><p>Message archived</p></div>`;
+      });
+      document.getElementById('gmailMsgTrashBtn').addEventListener('click', async () => {
+        await apiFetch(`/api/gmail/message/${encodeURIComponent(id)}/trash`, { method: 'POST' });
+        toast('Moved to trash', 'success');
+        loadGmailFolder(gmailCurrentFolder);
+        pane.innerHTML = `<div class="empty-state"><div class="icon">🗑️</div><p>Message deleted</p></div>`;
+      });
 
-    const bodyEl = document.createElement('div');
-    bodyEl.className = 'gmail-thread-body';
-    bodyEl.textContent = m.body;  // textContent prevents XSS
+      // Load attachments
+      try {
+        const attData = await apiFetch(`/api/gmail/message/${encodeURIComponent(id)}/attachments`);
+        if (attData.attachments?.length) {
+          const attContainer = document.getElementById('gmailMsgAttachments');
+          attContainer.innerHTML = `<div style="margin-bottom:12px;"><strong style="font-size:0.75rem;color:var(--color-gray-500);">📎 ${attData.attachments.length} attachment(s)</strong><div style="margin-top:4px;">` +
+            attData.attachments.map(a =>
+              `<span class="gmail-attachment-chip" data-msg-id="${escAttr(id)}" data-att-id="${escAttr(a.attachmentId)}" data-filename="${escAttr(a.filename)}" data-mime="${escAttr(a.mimeType)}">📄 ${escHtml(a.filename)} <span style="color:var(--color-gray-400);">(${(a.size / 1024).toFixed(0)}KB)</span></span>`
+            ).join('') + '</div></div>';
+          attContainer.querySelectorAll('.gmail-attachment-chip').forEach(chip => {
+            chip.addEventListener('click', () => downloadGmailAttachment(chip.dataset.msgId, chip.dataset.attId, chip.dataset.filename, chip.dataset.mime));
+          });
+        }
+      } catch (_) {}
 
-    pane.appendChild(subjectEl);
-    pane.appendChild(metaEl);
-    pane.appendChild(divider);
-    pane.appendChild(bodyEl);
-
-    // Reply button
-    const replyBtn = document.createElement('button');
-    replyBtn.className = 'btn btn-secondary';
-    replyBtn.style.cssText = 'margin-top:16px;';
-    replyBtn.textContent = '↩️ Reply';
-    replyBtn.addEventListener('click', () => openGmailReply({ from: m.from, subject: m.subject }));
-    pane.appendChild(replyBtn);
-      // Mark as read in background
       apiFetch(`/api/gmail/message/${encodeURIComponent(id)}/read`, { method: 'PATCH' }).catch(() => {});
-      // Remove unread styling from list item
       const item = document.querySelector(`.gmail-item[data-id="${CSS.escape(id)}"]`);
       if (item) item.classList.remove('unread');
     } catch (err) {
       pane.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>${escHtml(err.message)}</p></div>`;
+    }
+  }
+
+  async function downloadGmailAttachment(msgId, attId, filename, mimeType) {
+    try {
+      const data = await apiFetch(`/api/gmail/message/${encodeURIComponent(msgId)}/attachments/${encodeURIComponent(attId)}`);
+      const byteChars = atob(data.data);
+      const byteArray = new Uint8Array(byteChars.length);
+      for (let i = 0; i < byteChars.length; i++) byteArray[i] = byteChars.charCodeAt(i);
+      const blob = new Blob([byteArray], { type: mimeType || 'application/octet-stream' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = filename; a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      toast(`Download failed: ${err.message}`, 'error');
     }
   }
 
@@ -3387,12 +3756,39 @@
       toast('Email sent!', 'success');
       closeModal('gmailComposeModal');
       ['gmailTo','gmailSubject','gmailBody'].forEach(id => { document.getElementById(id).value = ''; });
+      if (gmailConnected) loadGmailFolder(gmailCurrentFolder);
     } catch (err) {
       toast(`Error: ${err.message}`, 'error');
     } finally {
       btn.disabled = false;
       btn.textContent = '📤 Send';
     }
+  }
+
+  async function saveGmailDraft() {
+    const to = document.getElementById('gmailTo').value.trim();
+    const subject = document.getElementById('gmailSubject').value.trim();
+    const body = document.getElementById('gmailBody').value.trim();
+    if (!to || !subject || !body) { toast('Fill in all fields to save a draft.', 'warning'); return; }
+    const btn = document.getElementById('gmailSaveDraftBtn');
+    btn.disabled = true; btn.textContent = 'Saving…';
+    try {
+      await apiFetch('/api/gmail/drafts', { method: 'POST', body: JSON.stringify({ to, subject, body }) });
+      toast('Draft saved!', 'success');
+      closeModal('gmailComposeModal');
+      ['gmailTo','gmailSubject','gmailBody'].forEach(id => { document.getElementById(id).value = ''; });
+    } catch (err) { toast(`Error: ${err.message}`, 'error'); }
+    finally { btn.disabled = false; btn.textContent = '📝 Save Draft'; }
+  }
+
+  async function syncGoogleContacts() {
+    const btn = document.getElementById('gmailSyncContactsBtn');
+    btn.disabled = true; btn.textContent = 'Syncing…';
+    try {
+      const data = await apiFetch('/api/gmail/contacts/sync', { method: 'POST' });
+      toast(`Imported ${data.imported} contacts (${data.skipped} skipped)`, 'success');
+    } catch (err) { toast(`Sync failed: ${err.message}`, 'error'); }
+    finally { btn.disabled = false; btn.textContent = '👥 Sync Contacts'; }
   }
 
   // Check for Gmail OAuth callback success/error in URL
@@ -4604,7 +5000,71 @@
   // New event listeners
   // ============================================================
   document.getElementById('gmailComposeBtn').addEventListener('click', () => openModal('gmailComposeModal'));
+  document.getElementById('gmailComposeBtn2').addEventListener('click', () => openModal('gmailComposeModal'));
   document.getElementById('gmailSendBtn').addEventListener('click', sendGmail);
+  document.getElementById('gmailSaveDraftBtn').addEventListener('click', saveGmailDraft);
+  document.getElementById('gmailSyncContactsBtn').addEventListener('click', syncGoogleContacts);
+  document.getElementById('gmailSearchBtn').addEventListener('click', gmailSearch);
+  document.getElementById('gmailSearchInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') gmailSearch(); });
+  document.getElementById('gmailSearchClearBtn').addEventListener('click', () => {
+    document.getElementById('gmailSearchInput').value = '';
+    loadGmailFolder(gmailCurrentFolder || 'INBOX');
+  });
+  document.getElementById('gmailRefreshBtn').addEventListener('click', () => loadGmailFolder(gmailCurrentFolder));
+
+  // Sidebar folder navigation
+  document.querySelectorAll('.gmail-sidebar-btn[data-label]').forEach(btn => {
+    btn.addEventListener('click', () => loadGmailFolder(btn.dataset.label));
+  });
+
+  // Create label
+  document.getElementById('gmailCreateLabelBtn').addEventListener('click', async () => {
+    const name = prompt('Enter label name:');
+    if (!name) return;
+    try {
+      await apiFetch('/api/gmail/labels', { method: 'POST', body: JSON.stringify({ name }) });
+      toast(`Label "${name}" created`, 'success');
+      loadGmailLabels();
+    } catch (err) { toast(`Error: ${err.message}`, 'error'); }
+  });
+
+  // Toolbar bulk actions
+  document.getElementById('gmailSelectAll').addEventListener('change', (e) => {
+    document.querySelectorAll('.gmail-msg-check').forEach(cb => { cb.checked = e.target.checked; });
+  });
+  document.getElementById('gmailArchiveBtn').addEventListener('click', async () => {
+    const ids = getSelectedGmailIds();
+    if (!ids.length) { toast('Select messages first', 'warning'); return; }
+    for (const id of ids) { await apiFetch(`/api/gmail/message/${encodeURIComponent(id)}/archive`, { method: 'POST' }).catch(() => {}); }
+    toast(`${ids.length} message(s) archived`, 'success');
+    loadGmailFolder(gmailCurrentFolder);
+  });
+  document.getElementById('gmailTrashBtn').addEventListener('click', async () => {
+    const ids = getSelectedGmailIds();
+    if (!ids.length) { toast('Select messages first', 'warning'); return; }
+    for (const id of ids) { await apiFetch(`/api/gmail/message/${encodeURIComponent(id)}/trash`, { method: 'POST' }).catch(() => {}); }
+    toast(`${ids.length} message(s) deleted`, 'success');
+    loadGmailFolder(gmailCurrentFolder);
+  });
+  document.getElementById('gmailMarkReadBtn').addEventListener('click', async () => {
+    const ids = getSelectedGmailIds();
+    if (!ids.length) { toast('Select messages first', 'warning'); return; }
+    for (const id of ids) { await apiFetch(`/api/gmail/message/${encodeURIComponent(id)}/read`, { method: 'PATCH' }).catch(() => {}); }
+    toast(`${ids.length} message(s) marked as read`, 'success');
+    loadGmailFolder(gmailCurrentFolder);
+  });
+  document.getElementById('gmailLabelApplyBtn').addEventListener('click', async () => {
+    const ids = getSelectedGmailIds();
+    if (!ids.length) { toast('Select messages first', 'warning'); return; }
+    const custom = gmailLabels.filter(l => l.type === 'user');
+    if (!custom.length) { toast('Create a label first', 'warning'); return; }
+    const labelName = prompt('Apply label:\n' + custom.map((l, i) => `${i + 1}. ${l.name}`).join('\n') + '\n\nEnter number:');
+    const idx = parseInt(labelName) - 1;
+    if (isNaN(idx) || idx < 0 || idx >= custom.length) return;
+    const labelId = custom[idx].id;
+    for (const id of ids) { await apiFetch(`/api/gmail/message/${encodeURIComponent(id)}/labels`, { method: 'POST', body: JSON.stringify({ addLabelIds: [labelId] }) }).catch(() => {}); }
+    toast(`Label applied to ${ids.length} message(s)`, 'success');
+  });
 
   document.getElementById('slackSendBtn').addEventListener('click', sendSlackMessage);
   document.getElementById('slackComposeInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') sendSlackMessage(); });
@@ -5267,13 +5727,15 @@
   // ============================================================
   // Gmail Reply
   // ============================================================
+  let _gmailReplyThreadId = null;
+
   function openGmailReply(messageData) {
     const from = messageData.from || '';
-    // Extract just the email address from "Name <email@example.com>"
     const emailMatch = from.match(/<([^>]+)>/) || [null, from];
     const replyTo = emailMatch[1] || from;
     const subject = messageData.subject || '';
     const replySubject = subject.toLowerCase().startsWith('re:') ? subject : `Re: ${subject}`;
+    _gmailReplyThreadId = messageData.threadId || null;
 
     document.getElementById('gmailReplyTo').value = replyTo;
     document.getElementById('gmailReplyToDisplay').value = from;
@@ -5293,9 +5755,14 @@
     btn.disabled = true;
     btn.textContent = 'Sending…';
     try {
-      await apiFetch('/api/gmail/send', { method: 'POST', body: JSON.stringify({ to, subject, body }) });
+      if (_gmailReplyThreadId) {
+        await apiFetch('/api/gmail/reply', { method: 'POST', body: JSON.stringify({ to, subject, body, threadId: _gmailReplyThreadId }) });
+      } else {
+        await apiFetch('/api/gmail/send', { method: 'POST', body: JSON.stringify({ to, subject, body }) });
+      }
       toast('Reply sent!', 'success');
       closeModal('gmailReplyModal');
+      if (gmailConnected) loadGmailFolder(gmailCurrentFolder);
     } catch (err) {
       toast(`Error: ${err.message}`, 'error');
     } finally {
