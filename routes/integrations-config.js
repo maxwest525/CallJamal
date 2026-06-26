@@ -97,6 +97,16 @@ const CONFIG_GROUPS = [
       { name: 'SMS_WEBHOOK_SECRET', label: 'Inbound Webhook Secret', type: 'password' },
     ],
   },
+  {
+    key: 'twilio',
+    title: 'Twilio (Personal Numbers)',
+    icon: '📱',
+    vars: [
+      { name: 'TWILIO_ACCOUNT_SID', label: 'Account SID', type: 'text' },
+      { name: 'TWILIO_AUTH_TOKEN', label: 'Auth Token', type: 'password' },
+      { name: 'APP_BASE_URL', label: 'App Base URL (for webhooks)', type: 'url' },
+    ],
+  },
 ];
 
 // Allowed var names (whitelist)

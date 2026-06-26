@@ -1811,7 +1811,14 @@
               <label class="form-label">Type</label>
               <select class="form-control" id="msgType">
                 <option value="external">Send to Client</option>
+                <option value="personal">Send from My Number</option>
                 <option value="broadcast">Broadcast (All Clients)</option>
+              </select>
+            </div>
+            <div class="form-group" id="sendFromGroup" style="display:none;">
+              <label class="form-label">Send From</label>
+              <select class="form-control" id="msgSendFrom">
+                <option value="">Loading numbers…</option>
               </select>
             </div>
             <div class="form-group" id="toGroup">
@@ -1848,6 +1855,47 @@
           <div class="message-list" id="messageList">
             <div class="empty-state"><div class="icon">💬</div><p>No messages yet</p></div>
           </div>
+        </div>
+      </div>
+
+      <!-- Phone Numbers Manager -->
+      <div class="card" style="margin-top:24px;" id="phoneNumbersSection">
+        <div class="card-header">
+          <h3>📱 Personal Phone Numbers</h3>
+          <button class="btn btn-primary btn-sm" id="searchNumbersBtn">+ Get a Number</button>
+        </div>
+        <div class="card-body">
+          <p style="font-size:0.8125rem;color:var(--color-gray-500);margin-bottom:12px;">
+            Give each team member their own phone number so clients see a consistent, personal number.
+            Powered by Twilio (~$1.15/mo per number).
+          </p>
+          <div id="phoneNumbersList">
+            <div class="empty-state"><div class="icon">📱</div><p>Loading…</p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search & Provision Number Panel (hidden by default) -->
+      <div class="card" style="margin-top:16px;display:none;" id="provisionNumberPanel">
+        <div class="card-header">
+          <h3>🔍 Find Available Numbers</h3>
+          <button class="btn btn-sm" id="closeProvisionPanel">✕</button>
+        </div>
+        <div class="card-body">
+          <div class="grid-2" style="margin-bottom:12px;">
+            <div class="form-group">
+              <label class="form-label">Area Code (optional)</label>
+              <input class="form-control" id="provisionAreaCode" type="text" placeholder="e.g. 212" maxlength="3" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Assign To</label>
+              <select class="form-control" id="provisionAssignTo">
+                <option value="">Select team member…</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-secondary btn-sm" id="searchAvailableBtn" style="margin-bottom:12px;">🔍 Search</button>
+          <div id="availableNumbersList"></div>
         </div>
       </div>
     </div>
@@ -2922,7 +2970,7 @@
   function refreshCurrentView() { loadView(currentView); }
 
   function loadView(view) {
-    if (view === 'messages') { loadMessages(); loadStats(); loadClientOptions(); }
+    if (view === 'messages') { loadMessages(); loadStats(); loadClientOptions(); loadPhoneNumbers(); }
     else if (view === 'conversations') loadConversations();
     else if (view === 'users') loadTeam();
     else if (view === 'clients') loadClients();
@@ -3036,14 +3084,13 @@
     const type = document.getElementById('msgType').value;
     const toGroup = document.getElementById('toGroup');
     const clientSelectGroup = document.getElementById('clientSelectGroup');
+    const sendFromGroup = document.getElementById('sendFromGroup');
 
-    if (type === 'external') {
-      toGroup.style.display = 'block';
-      clientSelectGroup.style.display = 'block';
-    } else {
-      toGroup.style.display = 'none';
-      clientSelectGroup.style.display = 'none';
-    }
+    toGroup.style.display = (type === 'external' || type === 'personal') ? 'block' : 'none';
+    clientSelectGroup.style.display = (type === 'external' || type === 'personal') ? 'block' : 'none';
+    sendFromGroup.style.display = type === 'personal' ? 'block' : 'none';
+
+    if (type === 'personal') loadUserPhoneOptions();
   }
 
   document.getElementById('msgClientSelect').addEventListener('change', function () {
@@ -3061,13 +3108,17 @@
     if (!body) { toast('Please enter a message.', 'warning'); return; }
     if (type !== 'broadcast' && !to) { toast('Please enter a phone number.', 'warning'); return; }
 
-    const btn = document.querySelector('#view-messages .btn-primary');
+    const btn = document.getElementById('sendMsgBtn');
     const btnText = document.getElementById('sendBtnText');
     btn.disabled = true;
     btnText.innerHTML = '<span class="spinner"></span>';
 
     try {
-      if (type === 'external') {
+      if (type === 'personal') {
+        const sendFrom = document.getElementById('msgSendFrom').value;
+        if (!sendFrom) { toast('Select which number to send from.', 'warning'); return; }
+        await apiFetch('/api/phone-numbers/send', { method: 'POST', body: JSON.stringify({ to, message: body, userId: sendFrom, clientId }) });
+      } else if (type === 'external') {
         await apiFetch('/api/sms/send-external', { method: 'POST', body: JSON.stringify({ to, message: body, clientId }) });
       } else if (type === 'internal') {
         await apiFetch('/api/sms/send-internal', { method: 'POST', body: JSON.stringify({ to, message: body }) });
@@ -3804,6 +3855,123 @@
   })();
 
   // ============================================================
+  // Phone Numbers (Twilio)
+  // ============================================================
+  let userPhoneNumbers = [];
+
+  async function loadPhoneNumbers() {
+    try {
+      const data = await apiFetch('/api/phone-numbers');
+      userPhoneNumbers = data.numbers || [];
+      renderPhoneNumbers();
+    } catch (err) {
+      document.getElementById('phoneNumbersList').innerHTML =
+        `<div class="empty-state"><div class="icon">📱</div><p>${err.message.includes('relation') ? 'Run the phone_numbers.sql migration first.' : escHtml(err.message)}</p></div>`;
+    }
+  }
+
+  function renderPhoneNumbers() {
+    const el = document.getElementById('phoneNumbersList');
+    if (!userPhoneNumbers.length) {
+      el.innerHTML = `<div class="empty-state"><div class="icon">📱</div><p>No personal numbers yet. Click "Get a Number" to provision one.</p></div>`;
+      return;
+    }
+    el.innerHTML = `<table class="clients-table"><thead><tr><th>Number</th><th>Assigned To</th><th>Label</th><th>Status</th><th></th></tr></thead><tbody>` +
+      userPhoneNumbers.map(n => `
+        <tr>
+          <td><strong>${escHtml(n.phone_number)}</strong></td>
+          <td>${escHtml(n.user?.name || '(unassigned)')}</td>
+          <td>${escHtml(n.label || '')}</td>
+          <td><span class="badge ${n.is_active ? 'badge-success' : 'badge-gray'}">${n.is_active ? 'Active' : 'Inactive'}</span></td>
+          <td><button class="btn btn-sm" style="color:#DC2626;" data-release="${escAttr(n.id)}" title="Release number">🗑️</button></td>
+        </tr>
+      `).join('') + '</tbody></table>';
+    el.querySelectorAll('[data-release]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!confirm('Release this phone number? It cannot be undone.')) return;
+        try {
+          await apiFetch(`/api/phone-numbers/${btn.dataset.release}`, { method: 'DELETE' });
+          toast('Number released', 'success');
+          loadPhoneNumbers();
+        } catch (err) { toast(`Error: ${err.message}`, 'error'); }
+      });
+    });
+  }
+
+  async function loadUserPhoneOptions() {
+    const select = document.getElementById('msgSendFrom');
+    try {
+      const data = await apiFetch('/api/phone-numbers');
+      const nums = data.numbers || [];
+      select.innerHTML = '<option value="">– Select sender –</option>' +
+        nums.filter(n => n.is_active).map(n =>
+          `<option value="${escAttr(n.user_id)}">${escHtml(n.user?.name || 'User')} — ${escHtml(n.phone_number)}</option>`
+        ).join('');
+    } catch (_) {
+      select.innerHTML = '<option value="">No numbers available</option>';
+    }
+  }
+
+  async function loadAvailableNumbers() {
+    const areaCode = document.getElementById('provisionAreaCode').value.trim();
+    const el = document.getElementById('availableNumbersList');
+    el.innerHTML = '<div style="font-size:0.8125rem;color:var(--color-gray-400);padding:8px;">Searching…</div>';
+    try {
+      const data = await apiFetch(`/api/phone-numbers/available?areaCode=${encodeURIComponent(areaCode)}&limit=10`);
+      const nums = data.numbers || [];
+      if (!nums.length) {
+        el.innerHTML = '<div style="font-size:0.8125rem;color:var(--color-gray-400);padding:8px;">No numbers found. Try a different area code.</div>';
+        return;
+      }
+      el.innerHTML = nums.map(n => `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--color-gray-100);">
+          <div>
+            <strong style="font-size:0.875rem;">${escHtml(n.phoneNumber)}</strong>
+            <span style="font-size:0.75rem;color:var(--color-gray-400);margin-left:8px;">${escHtml(n.locality || '')}${n.region ? ', ' + escHtml(n.region) : ''}</span>
+          </div>
+          <button class="btn btn-primary btn-sm" data-provision="${escAttr(n.phoneNumber)}">📱 Get This Number</button>
+        </div>
+      `).join('');
+      el.querySelectorAll('[data-provision]').forEach(btn => {
+        btn.addEventListener('click', () => provisionPhoneNumber(btn.dataset.provision));
+      });
+    } catch (err) {
+      el.innerHTML = `<div style="font-size:0.8125rem;color:#DC2626;padding:8px;">${escHtml(err.message)}</div>`;
+    }
+  }
+
+  async function provisionPhoneNumber(phoneNumber) {
+    const userId = document.getElementById('provisionAssignTo').value;
+    if (!userId) { toast('Select a team member to assign this number to.', 'warning'); return; }
+    try {
+      await apiFetch('/api/phone-numbers/provision', { method: 'POST', body: JSON.stringify({ phoneNumber, userId }) });
+      toast(`${phoneNumber} provisioned!`, 'success');
+      document.getElementById('provisionNumberPanel').style.display = 'none';
+      loadPhoneNumbers();
+    } catch (err) { toast(`Error: ${err.message}`, 'error'); }
+  }
+
+  async function loadProvisionUserOptions() {
+    const select = document.getElementById('provisionAssignTo');
+    try {
+      const data = await apiFetch('/api/users');
+      const users = data.users || [];
+      select.innerHTML = '<option value="">Select team member…</option>' +
+        users.map(u => `<option value="${escAttr(u.id)}">${escHtml(u.name)} (${escHtml(u.email)})</option>`).join('');
+    } catch (_) {}
+  }
+
+  document.getElementById('searchNumbersBtn').addEventListener('click', () => {
+    const panel = document.getElementById('provisionNumberPanel');
+    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    loadProvisionUserOptions();
+  });
+  document.getElementById('closeProvisionPanel').addEventListener('click', () => {
+    document.getElementById('provisionNumberPanel').style.display = 'none';
+  });
+  document.getElementById('searchAvailableBtn').addEventListener('click', loadAvailableNumbers);
+
+  // ============================================================
   // Slack
   // ============================================================
   let slackChannels = [];
@@ -3933,21 +4101,23 @@
     'Daily.co Huddles': 'daily',
     'Supabase': 'supabase',
     'SlickText SMS': 'slicktext',
+    'Twilio (Personal Numbers)': 'twilio',
   };
 
   async function loadIntegrations() {
     try {
-      const [webhookData, slackStatus, aiStatus, meetingsStatus, smsStatus] = await Promise.all([
+      const [webhookData, slackStatus, aiStatus, meetingsStatus, smsStatus, twilioStatus] = await Promise.all([
         apiFetch('/api/webhooks/status'),
         apiFetch('/api/slack/status').catch(() => ({ connected: false })),
         apiFetch('/api/ai/status').catch(() => ({ configured: false })),
         apiFetch('/api/meetings/status').catch(() => ({ configured: false })),
         apiFetch('/api/sms/status').catch(() => ({ configured: false })),
+        apiFetch('/api/phone-numbers/status').catch(() => ({ configured: false })),
       ]);
       slackIsConnected = slackStatus.connected;
       aiIsConfigured = aiStatus.configured;
       huddleIsConfigured = meetingsStatus.configured;
-      renderIntegrationCards({ ...webhookData, sms: smsStatus });
+      renderIntegrationCards({ ...webhookData, sms: smsStatus, twilio: twilioStatus });
       document.getElementById('inboundWebhookUrl').textContent = webhookData.inboundUrl || '';
     } catch (err) {
       console.error('Integrations load error:', err.message);
@@ -4013,9 +4183,16 @@
       {
         icon: '💬',
         title: 'SlickText SMS',
-        desc: 'Send and receive SMS with clients.',
+        desc: 'Send and receive SMS with clients via shared number.',
         connected: Boolean(data.sms?.configured),
         groupKey: 'slicktext',
+      },
+      {
+        icon: '📱',
+        title: 'Twilio (Personal Numbers)',
+        desc: 'Give each team member their own phone number for personal client texting.',
+        connected: Boolean(data.twilio?.configured),
+        groupKey: 'twilio',
       },
     ];
 
