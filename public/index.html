@@ -1253,6 +1253,27 @@
       border: 2px solid #fff;
     }
 
+    .inbox-filter-bar {
+      display: flex; align-items: center; gap: 0;
+      border-bottom: 1px solid var(--color-gray-100);
+      padding: 0 8px;
+      background: #fff;
+    }
+    .inbox-filter-btn {
+      padding: 7px 10px; font-size: 0.7rem; font-weight: 600;
+      color: var(--color-gray-500); background: none; border: none;
+      border-bottom: 2px solid transparent; margin-bottom: -1px;
+      cursor: pointer; transition: color .15s;
+    }
+    .inbox-filter-btn:hover { color: var(--color-gray-900); }
+    .inbox-filter-btn.active { color: var(--color-primary); border-bottom-color: var(--color-primary); }
+    .inbox-mine-toggle {
+      margin-left: auto; font-size: 0.7rem; font-weight: 600;
+      color: var(--color-gray-500); display: flex; align-items: center; gap: 4px;
+      cursor: pointer; padding: 7px 4px; user-select: none;
+    }
+    .inbox-mine-toggle input { width: 14px; height: 14px; cursor: pointer; }
+
     .inbox-item {
       display: flex; align-items: flex-start; gap: 10px;
       padding: 12px 14px;
@@ -1260,6 +1281,7 @@
       cursor: pointer; transition: background .1s;
     }
     .inbox-item:hover { background: var(--color-gray-50); }
+    .inbox-item.unread { background: #f0f7ff; }
     .inbox-item-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 2px; }
     .inbox-item-body { flex: 1; min-width: 0; }
     .inbox-item-title { font-size: 0.8125rem; font-weight: 600; color: var(--color-gray-900); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -2364,11 +2386,19 @@
   </div>
 </div>
 
-<!-- Incoming Comms Inbox Panel -->
+<!-- Unified Inbox Panel -->
 <div class="chat-panel chat-panel-inbox" id="inboxPanel">
   <div class="chat-panel-header" style="background:#1e293b;">
-    <h4>📥 Inbox</h4>
+    <h4>📥 Unified Inbox</h4>
     <button class="chat-panel-close" id="closeInbox">✕</button>
+  </div>
+  <div class="inbox-filter-bar">
+    <button class="inbox-filter-btn active" data-inbox-filter="all">All</button>
+    <button class="inbox-filter-btn" data-inbox-filter="sms">SMS</button>
+    <button class="inbox-filter-btn" data-inbox-filter="email">Email</button>
+    <label class="inbox-mine-toggle" title="Show only my messages">
+      <input type="checkbox" id="inboxMineOnly" checked /> Mine
+    </label>
   </div>
   <div class="chat-panel-messages" id="inboxMessages" style="padding:0;">
     <div class="empty-state" style="padding:32px 16px;"><div class="icon">📥</div><p>No new messages</p></div>
@@ -2959,7 +2989,7 @@
       const initials = (u.name || 'U').split(' ').map(s => s[0]).join('').slice(0, 2).toUpperCase();
       const title = u.job_title || u.role || '';
       return `
-        <button class="login-team-btn" data-id="${escAttr(u.id)}" data-name="${escAttr(u.name)}">
+        <button class="login-team-btn" data-id="${escAttr(u.id)}" data-name="${escAttr(u.name)}" data-email="${escAttr(u.email || '')}">
           <div class="login-team-avatar">${escHtml(initials)}</div>
           <div>
             <div>${escHtml(u.name)}</div>
@@ -2969,7 +2999,7 @@
     }).join('');
     list.querySelectorAll('.login-team-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        const user = { id: btn.dataset.id, name: btn.dataset.name };
+        const user = { id: btn.dataset.id, name: btn.dataset.name, email: btn.dataset.email || null };
         storeUser(user);
         applyCurrentUser(user);
         loadView('messages');
@@ -4781,10 +4811,11 @@
   }
 
   // ============================================================
-  // Incoming Comms Inbox (floating widget)
+  // Unified Inbox (floating widget)
   // ============================================================
   let inboxOpen = false;
-  let inboxPollInterval = null;
+  let inboxTypeFilter = 'all'; // 'all' | 'sms' | 'email'
+  let inboxAllItems = [];
 
   function toggleInbox() {
     inboxOpen = !inboxOpen;
@@ -4794,61 +4825,93 @@
 
   async function loadInboxFeed() {
     const container = document.getElementById('inboxMessages');
-    const items = [];
+    const mineOnly = document.getElementById('inboxMineOnly').checked;
+    inboxAllItems = [];
 
-    try {
-      const smsData = await apiFetch('/api/sms/messages?direction=inbound&limit=15').catch(() => null);
-      if (smsData?.messages) {
-        smsData.messages.forEach(m => {
-          items.push({
-            type: 'sms',
-            icon: '💬',
-            title: m.client?.name || m.from_number || 'Unknown',
-            preview: m.body || '',
-            time: m.created_at,
-            action: () => navigate('conversations'),
+    // Fetch SMS conversations assigned to current user (or all)
+    if (inboxTypeFilter === 'all' || inboxTypeFilter === 'sms') {
+      try {
+        let smsUrl = '/api/clients/conversations/all?limit=20';
+        if (mineOnly && currentUser?.id) smsUrl += `&assignedTo=${currentUser.id}`;
+        const convData = await apiFetch(smsUrl).catch(() => null);
+        if (convData?.conversations) {
+          convData.conversations.forEach(c => {
+            inboxAllItems.push({
+              type: 'sms',
+              icon: '💬',
+              title: c.client?.name || c.phone_number,
+              preview: c.last_message || 'No messages yet',
+              time: c.last_message_at,
+              unread: c.unread_count > 0,
+              badge: c.unread_count || 0,
+              convData: c,
+              action: () => { toggleInbox(); navigate('conversations'); },
+            });
           });
-        });
-      }
-    } catch {}
+        }
+      } catch {}
+    }
 
-    try {
-      const gmailData = await apiFetch('/api/gmail/inbox?limit=10').catch(() => null);
-      if (gmailData?.emails) {
-        gmailData.emails.forEach(e => {
-          items.push({
-            type: 'email',
-            icon: '📧',
-            title: e.from || 'Unknown',
-            preview: e.subject || e.snippet || '',
-            time: e.date,
-            action: () => navigate('gmail'),
+    // Fetch Gmail — filtered by user's email via the Gmail inbox endpoint
+    if (inboxTypeFilter === 'all' || inboxTypeFilter === 'email') {
+      try {
+        const gmailData = await apiFetch('/api/gmail/inbox?limit=15').catch(() => null);
+        if (gmailData?.emails) {
+          gmailData.emails.forEach(e => {
+            const toAddr = (e.to || '').toLowerCase();
+            const userEmail = (currentUser?.email || '').toLowerCase();
+            if (mineOnly && userEmail && !toAddr.includes(userEmail)) return;
+            inboxAllItems.push({
+              type: 'email',
+              icon: '📧',
+              title: e.from || 'Unknown',
+              preview: e.subject || e.snippet || '',
+              time: e.date,
+              unread: !e.isRead,
+              badge: 0,
+              emailId: e.id,
+              action: () => { toggleInbox(); navigate('gmail'); },
+            });
           });
-        });
-      }
-    } catch {}
+        }
+      } catch {}
+    }
 
-    items.sort((a, b) => new Date(b.time || 0) - new Date(a.time || 0));
+    inboxAllItems.sort((a, b) => new Date(b.time || 0) - new Date(a.time || 0));
 
+    // Update badge count (unread items only)
+    const unreadCount = inboxAllItems.filter(i => i.unread).length;
     const badge = document.getElementById('inboxBadge');
-    if (items.length > 0) {
-      badge.textContent = items.length;
+    if (unreadCount > 0) {
+      badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
       badge.style.display = 'flex';
     } else {
       badge.style.display = 'none';
     }
 
+    renderInboxItems();
+  }
+
+  function renderInboxItems() {
+    const container = document.getElementById('inboxMessages');
+    const items = inboxAllItems;
+
     if (!items.length) {
-      container.innerHTML = '<div class="empty-state" style="padding:32px 16px;"><div class="icon">📥</div><p>No recent messages</p></div>';
+      const msg = inboxTypeFilter === 'sms' ? 'No SMS conversations'
+        : inboxTypeFilter === 'email' ? 'No emails'
+        : 'No recent messages';
+      container.innerHTML = `<div class="empty-state" style="padding:32px 16px;"><div class="icon">📥</div><p>${msg}</p></div>`;
       return;
     }
 
-    container.innerHTML = items.slice(0, 20).map(item => {
+    container.innerHTML = items.slice(0, 25).map(item => {
       const timeStr = item.time ? new Date(item.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
-      return `<div class="inbox-item" data-type="${escAttr(item.type)}">
+      const unreadClass = item.unread ? ' unread' : '';
+      const badgeHtml = item.badge > 0 ? `<span class="conv-unread" style="font-size:0.6rem;width:16px;height:16px;margin-left:4px;">${item.badge}</span>` : '';
+      return `<div class="inbox-item${unreadClass}" data-type="${escAttr(item.type)}">
         <span class="inbox-item-icon">${item.icon}</span>
         <div class="inbox-item-body">
-          <div class="inbox-item-title">${escHtml(item.title)}</div>
+          <div class="inbox-item-title">${escHtml(item.title)}${badgeHtml}</div>
           <div class="inbox-item-preview">${escHtml(item.preview)}</div>
         </div>
         <span class="inbox-item-time">${escHtml(timeStr)}</span>
@@ -4858,10 +4921,20 @@
     container.querySelectorAll('.inbox-item').forEach((el, i) => {
       el.addEventListener('click', () => {
         if (items[i]?.action) items[i].action();
-        toggleInbox();
       });
     });
   }
+
+  // Inbox filter tab handlers
+  document.querySelectorAll('.inbox-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.inbox-filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      inboxTypeFilter = btn.dataset.inboxFilter;
+      loadInboxFeed();
+    });
+  });
+  document.getElementById('inboxMineOnly').addEventListener('change', () => loadInboxFeed());
 
   // Poll inbox every 30 seconds
   setInterval(() => {
