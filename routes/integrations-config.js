@@ -98,6 +98,18 @@ const CONFIG_GROUPS = [
     ],
   },
   {
+    key: 'ringcentral',
+    title: 'RingCentral',
+    icon: '📞',
+    vars: [
+      { name: 'RINGCENTRAL_CLIENT_ID', label: 'Client ID (App)', type: 'text' },
+      { name: 'RINGCENTRAL_CLIENT_SECRET', label: 'Client Secret', type: 'password' },
+      { name: 'RINGCENTRAL_JWT_TOKEN', label: 'JWT Token (Service Auth)', type: 'password' },
+      { name: 'RINGCENTRAL_MAIN_NUMBER', label: 'Main Company Number', type: 'tel' },
+      { name: 'RINGCENTRAL_SANDBOX', label: 'Sandbox Mode (true/false)', type: 'text' },
+    ],
+  },
+  {
     key: 'twilio',
     title: 'Twilio (Personal Numbers)',
     icon: '📱',

@@ -41,6 +41,7 @@ const brandRoutes = require('./routes/brand');
 const activityRoutes = require('./routes/activity');
 const tenantsRoutes = require('./routes/tenants');
 const phoneNumbersRoutes = require('./routes/phone-numbers');
+const ringcentralRoutes = require('./routes/ringcentral');
 const { authMiddleware } = require('./lib/auth');
 const { resolveTenant } = require('./lib/tenants');
 
@@ -133,6 +134,7 @@ app.use('/api/brand', brandRoutes);
 app.use('/api/activity', activityRoutes);
 app.use('/api/tenants', tenantsRoutes);
 app.use('/api/phone-numbers', phoneNumbersRoutes);
+app.use('/api/ringcentral', ringcentralRoutes);
 
 // Auth routes (OAuth callbacks live outside /api/)
 app.use('/auth', authRoutes);
