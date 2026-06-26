@@ -1,0 +1,4846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CallJamal – Virtual Office</title>
+  <style>
+    /* ============================================================
+       CSS Reset & Variables
+    ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --color-primary: #4f46e5;
+      --color-primary-dark: #4338ca;
+      --color-primary-light: #e0e7ff;
+      --color-success: #10b981;
+      --color-warning: #f59e0b;
+      --color-danger: #ef4444;
+      --color-gray-50: #f9fafb;
+      --color-gray-100: #f3f4f6;
+      --color-gray-200: #e5e7eb;
+      --color-gray-300: #d1d5db;
+      --color-gray-400: #9ca3af;
+      --color-gray-500: #6b7280;
+      --color-gray-600: #4b5563;
+      --color-gray-700: #374151;
+      --color-gray-800: #1f2937;
+      --color-gray-900: #111827;
+      --sidebar-width: 240px;
+      --header-height: 60px;
+      --border-radius: 8px;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,.05);
+      --shadow: 0 1px 3px rgba(0,0,0,.1), 0 1px 2px rgba(0,0,0,.06);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -1px rgba(0,0,0,.06);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+      background: var(--color-gray-50);
+      color: var(--color-gray-800);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ============================================================
+       Sidebar
+    ============================================================ */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--color-gray-900);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      height: 100vh;
+    }
+
+    .sidebar-logo {
+      padding: 20px 16px;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+
+    .sidebar-logo h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.5px;
+    }
+
+    .sidebar-logo p {
+      font-size: 0.75rem;
+      color: var(--color-gray-400);
+      margin-top: 2px;
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 12px 8px;
+      overflow-y: auto;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      font-size: 0.875rem;
+      color: var(--color-gray-300);
+      transition: all .15s ease;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      margin-bottom: 2px;
+    }
+
+    .nav-item:hover { background: rgba(255,255,255,.08); color: #fff; }
+    .nav-item.active { background: var(--color-primary); color: #fff; }
+
+    .nav-item .nav-icon { font-size: 1.1rem; width: 20px; text-align: center; }
+
+    .sidebar-footer {
+      padding: 12px 8px;
+      border-top: 1px solid rgba(255,255,255,.1);
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: var(--border-radius);
+      background: rgba(255,255,255,.05);
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--color-success);
+      flex-shrink: 0;
+    }
+
+    .status-dot.away { background: var(--color-warning); }
+    .status-dot.busy { background: var(--color-danger); }
+    .status-dot.offline { background: var(--color-gray-500); }
+
+    .status-info { flex: 1; min-width: 0; }
+    .status-name { font-size: 0.8125rem; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .status-label { font-size: 0.7rem; color: var(--color-gray-400); }
+
+    /* ============================================================
+       Main Content
+    ============================================================ */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .header {
+      height: var(--header-height);
+      background: #fff;
+      border-bottom: 1px solid var(--color-gray-200);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+
+    .header-title { font-size: 1.125rem; font-weight: 600; flex: 1; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: var(--border-radius);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all .15s ease;
+    }
+
+    .btn-primary { background: var(--color-primary); color: #fff; }
+    .btn-primary:hover { background: var(--color-primary-dark); }
+    .btn-secondary { background: var(--color-gray-100); color: var(--color-gray-700); border: 1px solid var(--color-gray-200); }
+    .btn-secondary:hover { background: var(--color-gray-200); }
+    .btn-danger { background: var(--color-danger); color: #fff; }
+    .btn-danger:hover { background: #dc2626; }
+    .btn-sm { padding: 5px 10px; font-size: 0.8125rem; }
+
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+    }
+
+    /* ============================================================
+       Tabs (views)
+    ============================================================ */
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* ============================================================
+       Cards & Panels
+    ============================================================ */
+    .card {
+      background: #fff;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--color-gray-200);
+    }
+
+    .card-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--color-gray-200);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .card-header h3 { font-size: 0.9375rem; font-weight: 600; flex: 1; }
+    .card-body { padding: 20px; }
+
+    /* ============================================================
+       Form Elements
+    ============================================================ */
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; font-size: 0.8125rem; font-weight: 500; color: var(--color-gray-700); margin-bottom: 6px; }
+
+    .form-control {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid var(--color-gray-300);
+      border-radius: var(--border-radius);
+      font-size: 0.875rem;
+      color: var(--color-gray-800);
+      background: #fff;
+      transition: border-color .15s ease, box-shadow .15s ease;
+      outline: none;
+    }
+
+    .form-control:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(79,70,229,.15);
+    }
+
+    textarea.form-control { resize: vertical; min-height: 80px; }
+
+    select.form-control { cursor: pointer; }
+
+    /* ============================================================
+       Grid layouts
+    ============================================================ */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+    /* ============================================================
+       Messages View
+    ============================================================ */
+    .messages-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .message-list {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .message-item {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--color-gray-100);
+      font-size: 0.875rem;
+    }
+
+    .message-item:last-child { border-bottom: none; }
+
+    .message-item .meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .message-item .sender { font-weight: 600; font-size: 0.8125rem; }
+    .message-item .timestamp { font-size: 0.75rem; color: var(--color-gray-400); }
+    .message-item .body { color: var(--color-gray-600); }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-external { background: var(--color-primary-light); color: var(--color-primary-dark); }
+    .badge-internal { background: #dcfce7; color: #15803d; }
+    .badge-broadcast { background: #fef3c7; color: #92400e; }
+    .badge-inbound { background: #f3f4f6; color: var(--color-gray-600); }
+
+    /* ============================================================
+       Users / Virtual Office Floor Plan
+    ============================================================ */
+    .team-grid { display: block; }
+
+    .office-floor {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 12px;
+      padding: 16px;
+      background: #e8eaf0;
+      border-radius: 14px;
+      border: 1px solid var(--color-gray-300);
+    }
+
+    .office-room {
+      background: #fff;
+      border-radius: 10px;
+      padding: 16px 18px 18px;
+      border: 2px solid var(--color-gray-200);
+      min-height: 150px;
+      transition: border-color .15s, box-shadow .15s;
+    }
+
+    .office-room:hover {
+      border-color: var(--color-primary-light);
+      box-shadow: var(--shadow);
+    }
+
+    .room-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--color-gray-100);
+    }
+
+    .room-icon { font-size: 1rem; line-height: 1; }
+    .room-name {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--color-gray-600);
+      text-transform: uppercase;
+      letter-spacing: .6px;
+    }
+    .room-count {
+      margin-left: auto;
+      font-size: 0.75rem;
+      color: var(--color-gray-400);
+      font-weight: 500;
+    }
+
+    .room-avatars {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .office-avatar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      cursor: default;
+    }
+
+    .office-avatar-ring {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      padding: 3px;
+      background: var(--color-gray-300);
+      transition: transform .15s;
+    }
+
+    .office-avatar:hover .office-avatar-ring { transform: scale(1.1); }
+
+    .office-avatar-ring.online  { background: #22c55e; }
+    .office-avatar-ring.away    { background: #f59e0b; }
+    .office-avatar-ring.busy    { background: #ef4444; }
+    .office-avatar-ring.offline { background: var(--color-gray-300); }
+
+    .office-avatar-ring img {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+      border: 2px solid #fff;
+    }
+
+    .office-avatar-initials {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #fff;
+    }
+
+    .office-avatar-label {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      color: var(--color-gray-700);
+      text-align: center;
+      max-width: 62px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .room-empty {
+      font-size: 0.8125rem;
+      color: var(--color-gray-300);
+      font-style: italic;
+    }
+
+    .offline-row {
+      margin-top: 14px;
+      padding: 12px 16px;
+      background: var(--color-gray-100);
+      border-radius: 8px;
+      border: 1px solid var(--color-gray-200);
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .offline-row-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--color-gray-400);
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      white-space: nowrap;
+      margin-right: 4px;
+    }
+
+    /* ============================================================
+       Clients View
+    ============================================================ */
+    .clients-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+    .clients-table th { padding: 10px 16px; text-align: left; background: var(--color-gray-50); border-bottom: 1px solid var(--color-gray-200); font-weight: 600; font-size: 0.8125rem; color: var(--color-gray-600); }
+    .clients-table td { padding: 12px 16px; border-bottom: 1px solid var(--color-gray-100); vertical-align: middle; }
+    .clients-table tr:last-child td { border-bottom: none; }
+    .clients-table tr:hover td { background: var(--color-gray-50); }
+
+    /* ============================================================
+       Conversations View
+    ============================================================ */
+    .conversation-list { display: flex; flex-direction: column; gap: 0; }
+
+    .conversation-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--color-gray-100);
+      cursor: pointer;
+      transition: background .1s;
+    }
+
+    .conversation-item:hover { background: var(--color-gray-50); }
+
+    .conv-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .conv-info { flex: 1; min-width: 0; }
+    .conv-name { font-weight: 600; font-size: 0.9375rem; }
+    .conv-preview { font-size: 0.8125rem; color: var(--color-gray-500); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .conv-meta { text-align: right; flex-shrink: 0; }
+    .conv-time { font-size: 0.75rem; color: var(--color-gray-400); }
+    .conv-unread {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    /* ============================================================
+       Search bar
+    ============================================================ */
+    .search-bar {
+      position: relative;
+    }
+
+    .search-bar input {
+      padding-left: 36px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--color-gray-400);
+      font-size: 1rem;
+      pointer-events: none;
+    }
+
+    /* ============================================================
+       Stat Cards
+    ============================================================ */
+    .stat-card {
+      background: #fff;
+      border: 1px solid var(--color-gray-200);
+      border-radius: var(--border-radius);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .stat-label { font-size: 0.8125rem; color: var(--color-gray-500); margin-bottom: 4px; }
+    .stat-value { font-size: 1.75rem; font-weight: 700; color: var(--color-gray-900); }
+    .stat-change { font-size: 0.8125rem; color: var(--color-success); margin-top: 4px; }
+
+    /* ============================================================
+       Modal
+    ============================================================ */
+    /* ============================================================
+       Login Gate (who-are-you modal — first load)
+    ============================================================ */
+    #loginGate {
+      position: fixed;
+      inset: 0;
+      background: var(--color-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .login-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 40px 36px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.25);
+      text-align: center;
+    }
+
+    .login-card h1 { font-size: 1.75rem; font-weight: 800; color: var(--color-gray-900); margin-bottom: 4px; }
+    .login-card p { font-size: 0.9375rem; color: var(--color-gray-500); margin-bottom: 28px; }
+
+    .login-team-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .login-team-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border: 2px solid var(--color-gray-200);
+      border-radius: 10px;
+      background: var(--color-gray-50);
+      cursor: pointer;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--color-gray-800);
+      transition: border-color .15s, background .15s;
+      text-align: left;
+    }
+
+    .login-team-btn:hover { border-color: var(--color-primary); background: var(--color-primary-light); }
+
+    .login-team-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--color-primary); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.875rem; font-weight: 700; flex-shrink: 0;
+    }
+
+    .login-or {
+      font-size: 0.8125rem; color: var(--color-gray-400);
+      text-align: center; margin: 12px 0;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .login-or::before, .login-or::after { content: ''; flex: 1; height: 1px; background: var(--color-gray-200); }
+
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.5);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-backdrop.open { display: flex; }
+
+    .modal {
+      background: #fff;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+    }
+
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--color-gray-200);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-header h3 { font-size: 1rem; font-weight: 600; }
+    .modal-close { background: none; border: none; font-size: 1.25rem; cursor: pointer; color: var(--color-gray-400); }
+    .modal-close:hover { color: var(--color-gray-700); }
+    .modal-body { padding: 20px; }
+    .modal-footer { padding: 12px 20px; border-top: 1px solid var(--color-gray-200); display: flex; gap: 8px; justify-content: flex-end; }
+
+    /* ============================================================
+       Toast
+    ============================================================ */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 200;
+    }
+
+    .toast {
+      padding: 12px 16px;
+      border-radius: var(--border-radius);
+      background: var(--color-gray-900);
+      color: #fff;
+      font-size: 0.875rem;
+      box-shadow: var(--shadow-md);
+      animation: slideIn .2s ease;
+      max-width: 320px;
+    }
+
+    .toast.success { background: var(--color-success); }
+    .toast.error { background: var(--color-danger); }
+    .toast.warning { background: var(--color-warning); color: var(--color-gray-900); }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* ============================================================
+       Loading spinner
+    ============================================================ */
+    .spinner {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255,255,255,.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--color-gray-400);
+    }
+
+    .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
+    .empty-state p { font-size: 0.9375rem; }
+
+    /* ============================================================
+       Responsive
+    ============================================================ */
+    @media (max-width: 768px) {
+      .sidebar { width: 60px; }
+      .sidebar-logo h1, .sidebar-logo p, .nav-item span, .status-info { display: none; }
+      .sidebar-width { --sidebar-width: 60px; }
+      .messages-layout { grid-template-columns: 1fr; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+
+    /* ============================================================
+       Gmail View
+    ============================================================ */
+    .gmail-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .gmail-item {
+      display: flex;
+      gap: 12px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--color-gray-100);
+      cursor: pointer;
+      transition: background .1s;
+      font-size: 0.875rem;
+    }
+
+    .gmail-item:hover { background: var(--color-gray-50); }
+    .gmail-item.unread { background: #eef2ff; }
+    .gmail-item.unread:hover { background: #e0e7ff; }
+
+    .gmail-item-info { flex: 1; min-width: 0; }
+    .gmail-item-from { font-weight: 600; font-size: 0.8125rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .gmail-item.unread .gmail-item-from { color: var(--color-gray-900); }
+    .gmail-item-subject { font-size: 0.8125rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--color-gray-700); }
+    .gmail-item-snippet { font-size: 0.75rem; color: var(--color-gray-400); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .gmail-item-date { font-size: 0.75rem; color: var(--color-gray-400); flex-shrink: 0; }
+
+    .gmail-thread {
+      background: #fff;
+      border: 1px solid var(--color-gray-200);
+      border-radius: var(--border-radius);
+      padding: 20px;
+      min-height: 300px;
+    }
+
+    .gmail-thread-subject { font-size: 1rem; font-weight: 600; margin-bottom: 8px; }
+    .gmail-thread-meta { font-size: 0.8125rem; color: var(--color-gray-500); margin-bottom: 16px; }
+    .gmail-thread-body { font-size: 0.875rem; line-height: 1.7; white-space: pre-wrap; word-break: break-word; }
+
+    .gmail-connect-banner {
+      background: var(--color-primary-light);
+      border: 1px solid var(--color-primary);
+      border-radius: var(--border-radius);
+      padding: 16px 20px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* ============================================================
+       Slack View
+    ============================================================ */
+    .slack-layout {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 16px;
+      height: calc(100vh - var(--header-height) - 48px);
+    }
+
+    .slack-channels {
+      background: #fff;
+      border: 1px solid var(--color-gray-200);
+      border-radius: var(--border-radius);
+      overflow-y: auto;
+    }
+
+    .slack-channel-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      color: var(--color-gray-600);
+      border-bottom: 1px solid var(--color-gray-100);
+      transition: background .1s;
+    }
+
+    .slack-channel-item:hover { background: var(--color-gray-50); }
+    .slack-channel-item.active { background: var(--color-primary-light); color: var(--color-primary-dark); font-weight: 600; }
+
+    .slack-messages-pane {
+      background: #fff;
+      border: 1px solid var(--color-gray-200);
+      border-radius: var(--border-radius);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .slack-msg-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .slack-msg {
+      display: flex;
+      gap: 10px;
+      font-size: 0.875rem;
+    }
+
+    .slack-msg-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      background: var(--color-primary);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .slack-msg-content { flex: 1; min-width: 0; }
+    .slack-msg-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 2px; }
+    .slack-msg-user { font-weight: 600; font-size: 0.8125rem; }
+    .slack-msg-time { font-size: 0.75rem; color: var(--color-gray-400); }
+    .slack-msg-body { line-height: 1.5; }
+
+    .slack-compose {
+      padding: 12px 16px;
+      border-top: 1px solid var(--color-gray-200);
+      display: flex;
+      gap: 8px;
+    }
+
+    /* ============================================================
+       Integrations View
+    ============================================================ */
+    .integrations-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .integration-card {
+      background: #fff;
+      border: 1px solid var(--color-gray-200);
+      border-radius: var(--border-radius);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .integration-card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .integration-icon { font-size: 1.75rem; }
+
+    .integration-title { font-size: 0.9375rem; font-weight: 600; }
+    .integration-desc { font-size: 0.8125rem; color: var(--color-gray-500); margin-bottom: 4px; }
+    .integration-url { font-size: 0.75rem; color: var(--color-gray-400); font-family: monospace; word-break: break-all; }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .status-badge.connected { background: #dcfce7; color: #15803d; }
+    .status-badge.disconnected { background: var(--color-gray-100); color: var(--color-gray-500); }
+
+    /* ============================================================
+       Floating Chat Widgets
+    ============================================================ */
+    .fab-group {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 12px;
+      z-index: 300;
+    }
+
+    .fab {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      font-size: 1.4rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,.2);
+      transition: transform .15s, box-shadow .15s;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .fab:hover { transform: scale(1.08); box-shadow: 0 6px 16px rgba(0,0,0,.25); }
+
+    .fab-team { background: var(--color-success); color: #fff; }
+    .fab-ai { background: var(--color-primary); color: #fff; }
+
+    .fab-label {
+      position: absolute;
+      right: 60px;
+      white-space: nowrap;
+      background: var(--color-gray-900);
+      color: #fff;
+      font-size: 0.75rem;
+      padding: 4px 8px;
+      border-radius: 4px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .15s;
+    }
+
+    .fab:hover .fab-label { opacity: 1; }
+
+    .chat-panel {
+      position: fixed;
+      bottom: 90px;
+      right: 24px;
+      width: 340px;
+      height: 460px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 8px 30px rgba(0,0,0,.18);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 299;
+      transition: opacity .2s, transform .2s;
+      opacity: 0;
+      transform: translateY(12px) scale(.97);
+      pointer-events: none;
+    }
+
+    .chat-panel.open {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .chat-panel-ai { right: 90px; }
+
+    .chat-panel-header {
+      padding: 12px 16px;
+      background: var(--color-gray-900);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .chat-panel-header h4 { font-size: 0.875rem; font-weight: 600; }
+    .chat-panel-close { background: none; border: none; color: rgba(255,255,255,.6); cursor: pointer; font-size: 1.1rem; line-height: 1; }
+    .chat-panel-close:hover { color: #fff; }
+
+    .chat-panel-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .chat-bubble {
+      max-width: 85%;
+      padding: 8px 12px;
+      border-radius: 12px;
+      font-size: 0.8125rem;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+
+    .chat-bubble.theirs {
+      background: var(--color-gray-100);
+      color: var(--color-gray-800);
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+
+    .chat-bubble.mine {
+      background: var(--color-primary);
+      color: #fff;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+
+    .chat-bubble.ai-bubble {
+      background: var(--color-gray-100);
+      color: var(--color-gray-800);
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+      white-space: pre-wrap;
+    }
+
+    .chat-bubble-meta {
+      font-size: 0.7rem;
+      color: var(--color-gray-400);
+      margin-bottom: 2px;
+    }
+
+    .chat-panel-compose {
+      padding: 10px 12px;
+      border-top: 1px solid var(--color-gray-200);
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .chat-panel-compose input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid var(--color-gray-300);
+      border-radius: 20px;
+      font-size: 0.8125rem;
+      outline: none;
+    }
+
+    .chat-panel-compose input:focus { border-color: var(--color-primary); }
+
+    .chat-send-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: none;
+      background: var(--color-primary);
+      color: #fff;
+      cursor: pointer;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background .15s;
+    }
+
+    .chat-send-btn:hover { background: var(--color-primary-dark); }
+    .chat-send-btn:disabled { background: var(--color-gray-300); cursor: not-allowed; }
+
+    .ai-thinking {
+      align-self: flex-start;
+      background: var(--color-gray-100);
+      border-radius: 12px;
+      border-bottom-left-radius: 4px;
+      padding: 8px 14px;
+      font-size: 0.8125rem;
+      color: var(--color-gray-500);
+    }
+
+    @media (max-width: 480px) {
+      .chat-panel { width: calc(100vw - 24px); right: 12px; }
+      .chat-panel-ai { right: 12px; bottom: 160px; }
+    }
+
+    /* ============================================================
+       Huddle Widget (floating video call)
+    ============================================================ */
+    .huddle-widget {
+      position: fixed;
+      bottom: 160px;
+      right: 24px;
+      width: 360px;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 10px 40px rgba(0,0,0,.25);
+      z-index: 310;
+      transition: opacity .2s, transform .2s;
+      opacity: 0;
+      transform: translateY(14px) scale(.97);
+      pointer-events: none;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .huddle-widget.open {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .huddle-widget.minimized .huddle-body { display: none; }
+
+    .huddle-header {
+      padding: 10px 14px;
+      background: #1e1e2e;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: grab;
+      user-select: none;
+      flex-shrink: 0;
+      border-radius: 14px 14px 0 0;
+    }
+
+    .huddle-header:active { cursor: grabbing; }
+    .huddle-header h4 { font-size: 0.875rem; font-weight: 600; flex: 1; margin: 0; }
+
+    .huddle-header-btns { display: flex; gap: 2px; }
+
+    .huddle-icon-btn {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,.55);
+      cursor: pointer;
+      font-size: 1rem;
+      line-height: 1;
+      padding: 3px 6px;
+      border-radius: 4px;
+      transition: background .1s, color .1s;
+    }
+
+    .huddle-icon-btn:hover { background: rgba(255,255,255,.12); color: #fff; }
+
+    .huddle-body { display: flex; flex-direction: column; }
+
+    .huddle-lobby { padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+
+    .huddle-lobby-note {
+      font-size: 0.8rem;
+      color: var(--color-gray-500);
+      background: var(--color-gray-50);
+      border: 1px solid var(--color-gray-200);
+      border-radius: var(--border-radius);
+      padding: 10px 12px;
+    }
+
+    .huddle-meet-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 9px 14px;
+      border-radius: var(--border-radius);
+      background: #1a73e8;
+      color: #fff;
+      font-size: 0.875rem;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      transition: background .15s;
+      text-decoration: none;
+    }
+
+    .huddle-meet-btn:hover { background: #1557b0; }
+
+    .huddle-rooms-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--color-gray-400);
+      text-transform: uppercase;
+      letter-spacing: .6px;
+    }
+
+    .huddle-room-list { display: flex; flex-direction: column; gap: 6px; max-height: 130px; overflow-y: auto; }
+
+    .huddle-room-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 6px;
+      background: var(--color-gray-50);
+      border: 1px solid var(--color-gray-200);
+      font-size: 0.8125rem;
+    }
+
+    .huddle-room-item-name { flex: 1; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    .huddle-call-frame {
+      width: 100%;
+      height: 280px;
+      border: none;
+      display: none;
+      background: #000;
+    }
+
+    .huddle-call-frame.active { display: block; }
+
+    .huddle-call-bar {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-top: 1px solid var(--color-gray-200);
+      background: var(--color-gray-50);
+    }
+
+    .huddle-call-bar.active { display: flex; }
+
+    .fab-huddle { background: #7c3aed; color: #fff; }
+
+    /* ============================================================
+       Huddle Pre-join Panel
+    ============================================================ */
+    .huddle-prejoin {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .huddle-prejoin h5 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin: 0 0 4px;
+      color: var(--color-gray-800);
+    }
+
+    .huddle-prejoin .prejoin-room-label {
+      font-size: 0.75rem;
+      color: var(--color-gray-500);
+      margin-bottom: 8px;
+    }
+
+    .huddle-prejoin .prejoin-toggles {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .huddle-prejoin .prejoin-toggles label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8125rem;
+      color: var(--color-gray-700);
+      cursor: pointer;
+    }
+
+    .huddle-prejoin .prejoin-toggles input[type="checkbox"] {
+      width: 15px;
+      height: 15px;
+      cursor: pointer;
+    }
+
+    .huddle-prejoin .prejoin-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .huddle-prejoin .prejoin-actions .btn { flex: 1; justify-content: center; }
+
+    /* ============================================================
+       Huddle Room Creation Options
+    ============================================================ */
+    .huddle-create-opts {
+      padding: 0 16px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .huddle-create-opts-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--color-gray-400);
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      margin-bottom: 2px;
+    }
+
+    .huddle-create-opts .opt-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .huddle-create-opts .opt-row label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      color: var(--color-gray-600);
+      cursor: pointer;
+      flex: 1;
+    }
+
+    .huddle-secure-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.7rem;
+      color: #15803d;
+      background: #dcfce7;
+      padding: 2px 7px;
+      border-radius: 9999px;
+      font-weight: 600;
+    }
+
+    /* ============================================================
+       Meetings View
+    ============================================================ */
+    .meetings-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .meetings-rooms-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .meeting-room-card {
+      background: #fff;
+      border: 1px solid var(--color-gray-200);
+      border-radius: var(--border-radius);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .meeting-room-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .meeting-room-icon { font-size: 1.5rem; }
+
+    .meeting-room-name {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      flex: 1;
+      word-break: break-all;
+    }
+
+    .meeting-room-meta {
+      font-size: 0.75rem;
+      color: var(--color-gray-400);
+      margin-bottom: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .meeting-room-meta span {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .meeting-room-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    /* ============================================================
+       Vault / Integrations Configure UI
+    ============================================================ */
+    .integration-configure-btn {
+      margin-top: 12px;
+      width: 100%;
+    }
+
+    .vault-modal .modal { max-width: 520px; }
+
+    .vault-field-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .vault-masked-value {
+      font-family: monospace;
+      font-size: 0.8rem;
+      color: var(--color-gray-400);
+      background: var(--color-gray-50);
+      border: 1px solid var(--color-gray-200);
+      border-radius: 4px;
+      padding: 3px 8px;
+      flex: 1;
+    }
+
+    .vault-source-badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 9999px;
+    }
+
+    .vault-source-badge.vault { background: #ede9fe; color: #6d28d9; }
+    .vault-source-badge.env { background: #fef3c7; color: #92400e; }
+    .vault-source-badge.none { background: var(--color-gray-100); color: var(--color-gray-500); }
+
+    .vault-pin-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+      padding-top: 12px;
+      border-top: 1px solid var(--color-gray-200);
+    }
+
+    .vault-pin-row label { font-size: 0.8125rem; font-weight: 500; white-space: nowrap; }
+    .vault-pin-row input { flex: 1; }
+
+  </style>
+</head>
+<body>
+
+<!-- ============================================================
+     LOGIN GATE (shown until user identifies themselves)
+============================================================ -->
+<div id="loginGate" style="display:none;">
+  <div class="login-card">
+    <h1>📞 CallJamal</h1>
+    <p>Who are you? Pick your name to get started.</p>
+    <div class="login-team-list" id="loginTeamList">
+      <div style="color:var(--color-gray-400);font-size:0.875rem;padding:8px;">Loading team…</div>
+    </div>
+    <div class="login-or">or type your name</div>
+    <div style="display:flex;gap:8px;">
+      <input class="form-control" type="text" id="loginNameInput" placeholder="Your name" maxlength="50" style="flex:1;" />
+      <button class="btn btn-primary" id="loginNameBtn">Go →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SIDEBAR
+============================================================ -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <h1>📞 CallJamal</h1>
+    <p>Virtual Office</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <button class="nav-item active" data-view="messages">
+      <span class="nav-icon">💬</span>
+      <span>Messages</span>
+    </button>
+    <button class="nav-item" data-view="conversations">
+      <span class="nav-icon">🗂️</span>
+      <span>Conversations</span>
+    </button>
+    <button class="nav-item" data-view="users">
+      <span class="nav-icon">👥</span>
+      <span>Team</span>
+    </button>
+    <button class="nav-item" data-view="clients">
+      <span class="nav-icon">📋</span>
+      <span>Clients</span>
+    </button>
+    <button class="nav-item" data-view="gmail">
+      <span class="nav-icon">📧</span>
+      <span>Gmail</span>
+    </button>
+    <button class="nav-item" data-view="slack">
+      <span class="nav-icon">💼</span>
+      <span>Slack</span>
+    </button>
+    <button class="nav-item" data-view="integrations">
+      <span class="nav-icon">🔌</span>
+      <span>Integrations</span>
+    </button>
+    <button class="nav-item" data-view="meetings">
+      <span class="nav-icon">📹</span>
+      <span>Meetings</span>
+    </button>
+    <button class="nav-item" data-view="templates">
+      <span class="nav-icon">📝</span>
+      <span>Templates</span>
+    </button>
+    <button class="nav-item" data-view="brand">
+      <span class="nav-icon">🎨</span>
+      <span>Brand</span>
+    </button>
+    <button class="nav-item" data-view="activity">
+      <span class="nav-icon">📋</span>
+      <span>Activity</span>
+    </button>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="status-indicator">
+      <div class="status-dot" id="myStatusDot"></div>
+      <div class="status-info" style="flex:1;min-width:0;">
+        <div class="status-name" id="myStatusName">You</div>
+        <div class="status-label" id="myStatusLabel">Online</div>
+      </div>
+      <button id="switchUserBtn" title="Switch user" style="background:none;border:none;cursor:pointer;color:var(--color-gray-400);font-size:0.8rem;padding:4px 6px;border-radius:4px;flex-shrink:0;" onclick="localStorage.removeItem('cj_current_user');location.reload();">↩ Switch</button>
+    </div>
+  </div>
+</aside>
+
+<!-- ============================================================
+     MAIN CONTENT
+============================================================ -->
+<main class="main">
+  <header class="header">
+    <span class="header-title" id="headerTitle">Messages</span>
+    <button class="btn btn-secondary btn-sm" id="refreshBtn">🔄 Refresh</button>
+  </header>
+
+  <div class="content">
+
+    <!-- ========== MESSAGES VIEW ========== -->
+    <div class="view active" id="view-messages">
+      <div class="grid-3" style="margin-bottom:24px;">
+        <div class="stat-card">
+          <div class="stat-label">Messages Today</div>
+          <div class="stat-value" id="statMsgToday">–</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Active Conversations</div>
+          <div class="stat-value" id="statConvActive">–</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Clients</div>
+          <div class="stat-value" id="statClients">–</div>
+        </div>
+      </div>
+
+      <div class="messages-layout">
+        <!-- Send SMS Form -->
+        <div class="card">
+          <div class="card-header">
+            <h3>📤 Send SMS</h3>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <label class="form-label">Type</label>
+              <select class="form-control" id="msgType">
+                <option value="external">External (to Client)</option>
+                <option value="internal">Internal (to Team Member)</option>
+                <option value="broadcast">Broadcast (to All Clients)</option>
+              </select>
+            </div>
+            <div class="form-group" id="toGroup">
+              <label class="form-label">To Phone Number</label>
+              <input class="form-control" id="msgTo" type="tel" placeholder="+15551234567" />
+            </div>
+            <div class="form-group" id="clientSelectGroup" style="display:none;">
+              <label class="form-label">Select Client</label>
+              <select class="form-control" id="msgClientSelect">
+                <option value="">Loading clients…</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Message</label>
+              <textarea class="form-control" id="msgBody" placeholder="Type your message…"></textarea>
+            </div>
+            <button class="btn btn-primary" style="width:100%;" id="sendMsgBtn">
+              <span id="sendBtnText">Send Message</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Recent Messages -->
+        <div class="card">
+          <div class="card-header">
+            <h3>📨 Recent Messages</h3>
+          </div>
+          <div class="message-list" id="messageList">
+            <div class="empty-state"><div class="icon">💬</div><p>No messages yet</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== CONVERSATIONS VIEW ========== -->
+    <div class="view" id="view-conversations">
+      <div class="card">
+        <div class="card-header">
+          <h3>🗂️ SMS Conversations</h3>
+          <div class="search-bar" style="width:240px;">
+            <span class="search-icon">🔍</span>
+            <input class="form-control" id="convSearchInput" type="text" placeholder="Search…" />
+          </div>
+        </div>
+        <div class="conversation-list" id="conversationList">
+          <div class="empty-state"><div class="icon">💬</div><p>No conversations yet</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== USERS / TEAM VIEW ========== -->
+    <div class="view" id="view-users">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+        <h2 style="font-size:1.125rem; font-weight:600;">Team Members</h2>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-secondary btn-sm" id="syncGwBtn">🔄 Sync Google Workspace</button>
+          <button class="btn btn-primary btn-sm" id="addUserBtn">+ Add Member</button>
+        </div>
+      </div>
+      <div class="team-grid" id="teamGrid">
+        <div class="empty-state"><div class="icon">👥</div><p>No team members yet</p></div>
+      </div>
+    </div>
+
+    <!-- ========== CLIENTS VIEW ========== -->
+    <div class="view" id="view-clients">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+        <div class="search-bar" style="width:280px;">
+          <span class="search-icon">🔍</span>
+          <input class="form-control" id="clientSearchInput" type="text" placeholder="Search clients…" />
+        </div>
+        <button class="btn btn-primary btn-sm" id="addClientBtn">+ Add Client</button>
+      </div>
+      <div class="card">
+        <table class="clients-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Company</th>
+              <th>Phone</th>
+              <th>Email</th>
+              <th>Last Contacted</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="clientTableBody">
+            <tr><td colspan="6" style="text-align:center; padding:32px; color:#9ca3af;">Loading clients…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ========== GMAIL VIEW ========== -->
+    <div class="view" id="view-gmail">
+      <div id="gmailConnectBanner" class="gmail-connect-banner" style="display:none;">
+        <span style="font-size:1.5rem;">📧</span>
+        <div style="flex:1;">
+          <strong>Connect Gmail</strong>
+          <div style="font-size:0.8125rem;color:var(--color-gray-600);margin-top:2px;">Authorize Gmail access to read and send emails from within the app.</div>
+        </div>
+        <a id="gmailConnectBtn" href="/auth/google" class="btn btn-primary btn-sm">Connect Gmail</a>
+      </div>
+
+      <div class="gmail-layout">
+        <!-- Inbox list -->
+        <div class="card">
+          <div class="card-header">
+            <h3>📥 Inbox</h3>
+            <button class="btn btn-primary btn-sm" id="gmailComposeBtn">✉️ Compose</button>
+          </div>
+          <div id="gmailInboxList" style="max-height:600px;overflow-y:auto;">
+            <div class="empty-state"><div class="icon">📧</div><p>Loading inbox…</p></div>
+          </div>
+        </div>
+
+        <!-- Email thread viewer -->
+        <div class="gmail-thread" id="gmailThreadPane">
+          <div class="empty-state"><div class="icon">📨</div><p>Select an email to read it</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== SLACK VIEW ========== -->
+    <div class="view" id="view-slack">
+      <div id="slackNotConfigured" style="display:none;">
+        <div class="gmail-connect-banner">
+          <span style="font-size:1.5rem;">💼</span>
+          <div style="flex:1;">
+            <strong>Configure Slack</strong>
+            <div style="font-size:0.8125rem;color:var(--color-gray-600);margin-top:2px;">Set <code>SLACK_BOT_TOKEN</code> in your .env file to connect your Slack workspace.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slack-layout" id="slackLayout">
+        <!-- Channels sidebar -->
+        <div class="slack-channels">
+          <div style="padding:12px 14px;font-size:0.8125rem;font-weight:600;color:var(--color-gray-500);border-bottom:1px solid var(--color-gray-100);">CHANNELS</div>
+          <div id="slackChannelList">
+            <div style="padding:16px;font-size:0.8125rem;color:var(--color-gray-400);">Loading…</div>
+          </div>
+        </div>
+
+        <!-- Messages pane -->
+        <div class="slack-messages-pane">
+          <div class="card-header" style="flex-shrink:0;">
+            <h3 id="slackChannelHeader">Select a channel</h3>
+          </div>
+          <div class="slack-msg-list" id="slackMsgList">
+            <div class="empty-state"><div class="icon">💼</div><p>Select a channel to view messages</p></div>
+          </div>
+          <div class="slack-compose">
+            <input class="form-control" id="slackComposeInput" placeholder="Message…" maxlength="1000" />
+            <button class="btn btn-primary btn-sm" id="slackSendBtn">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== INTEGRATIONS VIEW ========== -->
+    <div class="view" id="view-integrations">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <h2 style="font-size:1.125rem;font-weight:600;">Integrations &amp; Webhooks</h2>
+        <button class="btn btn-secondary btn-sm" id="testWebhookBtn">🔥 Test Outbound Webhooks</button>
+      </div>
+
+      <div class="integrations-grid" id="integrationsGrid">
+        <!-- Cards rendered by JS -->
+        <div class="empty-state"><div class="icon">🔌</div><p>Loading…</p></div>
+      </div>
+
+      <div style="margin-top:24px;" class="card">
+        <div class="card-header"><h3>📥 Inbound Webhook</h3></div>
+        <div class="card-body">
+          <p style="font-size:0.875rem;color:var(--color-gray-600);margin-bottom:12px;">
+            Point your Zapier Zap or n8n workflow to this URL to push data into CallJamal automatically.
+            Send a JSON POST with a <code>type</code> field (e.g. <code>new_lead</code>, <code>new_client</code>).
+          </p>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <code id="inboundWebhookUrl" style="flex:1;background:var(--color-gray-100);padding:8px 12px;border-radius:var(--border-radius);font-size:0.8125rem;word-break:break-all;"></code>
+            <button class="btn btn-secondary btn-sm" id="copyWebhookUrlBtn">📋 Copy</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== MEETINGS VIEW ========== -->
+    <div class="view" id="view-meetings">
+      <div class="meetings-header-row">
+        <h2 style="font-size:1.125rem;font-weight:600;">📹 Meetings &amp; Huddle Rooms</h2>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-secondary btn-sm" id="refreshRoomsBtn">🔄 Refresh</button>
+          <button class="btn btn-primary btn-sm" id="newMeetingBtn">+ New Meeting</button>
+        </div>
+      </div>
+
+      <div id="meetingsNotConfigured" style="display:none;" class="card" style="margin-bottom:16px;">
+        <div class="card-body">
+          <p style="font-size:0.875rem;color:var(--color-gray-600);">
+            Daily.co is not configured. Go to <strong>Integrations</strong> → Daily.co and enter your API key and domain to enable video meetings.
+          </p>
+        </div>
+      </div>
+
+      <div class="meetings-rooms-grid" id="meetingsRoomsGrid">
+        <div class="empty-state"><div class="icon">📹</div><p>Loading rooms…</p></div>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         TEMPLATES VIEW
+    ============================================================ -->
+    <div class="view" id="view-templates">
+      <div class="meetings-header-row">
+        <h2 style="font-size:1.125rem;font-weight:600;">📝 Message Templates</h2>
+        <button class="btn btn-primary btn-sm" id="newTemplateBtn">+ New Template</button>
+      </div>
+      <div class="card">
+        <div class="card-body" style="padding:0;">
+          <table class="clients-table" id="templatesTable">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Subject / Preview</th>
+                <th>Variables</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="templateTableBody">
+              <tr><td colspan="5" style="text-align:center;padding:32px;color:#9ca3af;">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         BRAND SETTINGS VIEW
+    ============================================================ -->
+    <div class="view" id="view-brand">
+      <div class="meetings-header-row">
+        <h2 style="font-size:1.125rem;font-weight:600;">🎨 Brand Settings</h2>
+        <button class="btn btn-primary btn-sm" id="saveBrandBtn">💾 Save</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:900px;">
+        <div class="card">
+          <div class="card-header">Company Identity</div>
+          <div class="card-body">
+            <div class="form-group">
+              <label class="form-label">Company Name</label>
+              <input class="form-control" id="brandCompanyName" type="text" placeholder="Acme Corp" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Logo URL</label>
+              <input class="form-control" id="brandLogoUrl" type="url" placeholder="https://example.com/logo.png" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Tagline</label>
+              <input class="form-control" id="brandTagline" type="text" placeholder="Your trusted partner" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email Footer Text</label>
+              <input class="form-control" id="brandFooterText" type="text" placeholder="© 2025 Acme Corp. All rights reserved." />
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">Email Colors &amp; Preview</div>
+          <div class="card-body">
+            <div class="form-group">
+              <label class="form-label">Primary Color</label>
+              <div style="display:flex;gap:8px;align-items:center;">
+                <input class="form-control" id="brandPrimaryColor" type="text" placeholder="#4F46E5" style="flex:1;" />
+                <input type="color" id="brandPrimaryColorPicker" value="#4F46E5" style="width:40px;height:38px;padding:2px;border:1px solid var(--color-gray-300);border-radius:6px;cursor:pointer;" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Secondary Color</label>
+              <div style="display:flex;gap:8px;align-items:center;">
+                <input class="form-control" id="brandSecondaryColor" type="text" placeholder="#7C3AED" style="flex:1;" />
+                <input type="color" id="brandSecondaryColorPicker" value="#7C3AED" style="width:40px;height:38px;padding:2px;border:1px solid var(--color-gray-300);border-radius:6px;cursor:pointer;" />
+              </div>
+            </div>
+            <div id="brandEmailPreview" style="margin-top:16px;border:1px solid var(--color-gray-200);border-radius:8px;overflow:hidden;font-size:0.8125rem;">
+              <div id="brandPreviewHeader" style="background:#4F46E5;color:#fff;padding:16px 20px;text-align:center;">
+                <div id="brandPreviewName" style="font-weight:700;font-size:1rem;">Company Name</div>
+                <div id="brandPreviewTagline" style="font-size:0.75rem;opacity:0.85;margin-top:2px;">Your tagline</div>
+              </div>
+              <div style="padding:16px 20px;color:#374151;font-size:0.8125rem;">Your email body will appear here.</div>
+              <div id="brandPreviewFooter" style="background:#f9fafb;border-top:1px solid #e5e7eb;padding:10px 20px;text-align:center;font-size:0.75rem;color:#6b7280;">Footer text</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         ACTIVITY LOG VIEW
+    ============================================================ -->
+    <div class="view" id="view-activity">
+      <div class="meetings-header-row">
+        <h2 style="font-size:1.125rem;font-weight:600;">📋 Activity Log</h2>
+        <button class="btn btn-secondary btn-sm" id="refreshActivityBtn">🔄 Refresh</button>
+      </div>
+      <div class="card">
+        <div class="card-body" style="padding:0;">
+          <table class="clients-table">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>User</th>
+                <th>Action</th>
+                <th>Entity</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody id="activityTableBody">
+              <tr><td colspan="5" style="text-align:center;padding:32px;color:#9ca3af;">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</main>
+
+<!-- ============================================================
+     FLOATING CHAT WIDGETS
+============================================================ -->
+
+<!-- FAB Buttons -->
+<div class="fab-group">
+  <button class="fab fab-huddle" id="fabHuddle" title="Huddle">
+    📹
+    <span class="fab-label">Huddle</span>
+  </button>
+  <button class="fab fab-ai" id="fabAi" title="AI Assistant">
+    🤖
+    <span class="fab-label">AI Assistant</span>
+  </button>
+  <button class="fab fab-team" id="fabTeam" title="Team Chat">
+    💬
+    <span class="fab-label">Team Chat</span>
+  </button>
+</div>
+
+<!-- Internal Team Chat Panel -->
+<div class="chat-panel" id="teamChatPanel">
+  <div class="chat-panel-header">
+    <h4>💬 Team Chat</h4>
+    <button class="chat-panel-close" id="closeTeamChat">✕</button>
+  </div>
+  <div class="chat-panel-messages" id="teamChatMessages">
+    <div class="empty-state" style="padding:32px 16px;"><div class="icon">💬</div><p>No messages yet</p></div>
+  </div>
+  <div class="chat-panel-compose">
+    <input type="text" id="teamChatInput" placeholder="Message your team…" maxlength="500" />
+    <button class="chat-send-btn" id="teamChatSend">➤</button>
+  </div>
+</div>
+
+<!-- AI Assistant Chat Panel -->
+<div class="chat-panel chat-panel-ai" id="aiChatPanel">
+  <div class="chat-panel-header">
+    <h4>🤖 AI Assistant</h4>
+    <button class="chat-panel-close" id="closeAiChat">✕</button>
+  </div>
+  <div class="chat-panel-messages" id="aiChatMessages">
+    <div class="chat-bubble theirs">Hi! I'm your AI assistant. Ask me anything about your work, clients, or team.</div>
+  </div>
+  <div class="chat-panel-compose">
+    <input type="text" id="aiChatInput" placeholder="Ask AI…" maxlength="1000" />
+    <button class="chat-send-btn" id="aiChatSend">➤</button>
+  </div>
+</div>
+
+<!-- Huddle Widget -->
+<div class="huddle-widget" id="huddleWidget">
+  <div class="huddle-header" id="huddleHeader">
+    <h4>📹 Huddle</h4>
+    <div style="display:flex;align-items:center;gap:6px;flex:1;">
+      <span class="huddle-secure-badge" id="huddleSecureBadge" style="display:none;">🔒 Secured</span>
+    </div>
+    <div class="huddle-header-btns">
+      <button class="huddle-icon-btn" id="huddlePipBtn" title="Pop out">⧉</button>
+      <button class="huddle-icon-btn" id="huddleMinimizeBtn" title="Minimize">−</button>
+      <button class="huddle-icon-btn" id="huddleCloseBtn" title="Close">✕</button>
+    </div>
+  </div>
+  <div class="huddle-body" id="huddleBody">
+    <!-- Lobby -->
+    <div class="huddle-lobby" id="huddleLobby">
+      <div class="huddle-lobby-note" id="huddleNote">Start a video huddle with your team or jump into Google Meet.</div>
+      <button class="btn btn-primary" style="width:100%;" id="huddleStartBtn">📹 Start New Huddle</button>
+      <button class="huddle-meet-btn" id="huddleMeetBtn">🎥 Open Google Meet</button>
+      <div id="huddleRoomSection" style="display:none;">
+        <div class="huddle-rooms-label">Active Rooms</div>
+        <div class="huddle-room-list" id="huddleRoomList"></div>
+      </div>
+    </div>
+    <!-- Room creation options (collapsible) -->
+    <div class="huddle-create-opts" id="huddleCreateOpts" style="display:none;">
+      <div class="huddle-create-opts-label">Room Settings</div>
+      <div class="form-group" style="margin-bottom:8px;">
+        <label class="form-label" style="font-size:0.75rem;">Room Name (optional)</label>
+        <input class="form-control" id="huddleRoomNameInput" placeholder="e.g. team-standup" maxlength="40" style="font-size:0.8125rem;padding:6px 10px;" />
+      </div>
+      <div class="opt-row">
+        <select class="form-control" id="huddleExpirySelect" style="font-size:0.8rem;padding:5px 8px;">
+          <option value="30">30 min</option>
+          <option value="60" selected>1 hour</option>
+          <option value="120">2 hours</option>
+          <option value="240">4 hours</option>
+          <option value="480">8 hours</option>
+        </select>
+        <span style="font-size:0.75rem;color:var(--color-gray-500);white-space:nowrap;">room duration</span>
+      </div>
+      <div class="opt-row">
+        <label><input type="checkbox" id="huddleWaitingRoom"> 🚪 Waiting room</label>
+      </div>
+      <div class="opt-row">
+        <label><input type="checkbox" id="huddleRecording"> ⏺ Enable recording</label>
+      </div>
+    </div>
+    <!-- Pre-join panel -->
+    <div class="huddle-prejoin" id="huddlePrejoin" style="display:none;">
+      <h5>Ready to join?</h5>
+      <div class="prejoin-room-label" id="prejoinRoomLabel">Room: —</div>
+      <div class="form-group" style="margin-bottom:8px;">
+        <label class="form-label" style="font-size:0.75rem;">Your display name</label>
+        <input class="form-control" id="prejoinName" placeholder="Enter your name" maxlength="50" style="font-size:0.8125rem;padding:6px 10px;" />
+      </div>
+      <div class="prejoin-toggles">
+        <label><input type="checkbox" id="prejoinMicOff"> 🎤 Start with mic muted</label>
+        <label><input type="checkbox" id="prejoinCamOff"> 📷 Start with camera off</label>
+      </div>
+      <div class="prejoin-actions">
+        <button class="btn btn-secondary btn-sm" id="prejoinCancelBtn">Cancel</button>
+        <button class="btn btn-primary btn-sm" id="prejoinJoinBtn">🚀 Join Meeting</button>
+      </div>
+    </div>
+    <!-- Active call frame -->
+    <iframe id="huddleFrame" class="huddle-call-frame"
+      allow="camera; microphone; fullscreen; display-capture; autoplay; picture-in-picture"
+      allowfullscreen></iframe>
+    <!-- Call controls bar -->
+    <div class="huddle-call-bar" id="huddleCallBar">
+      <span style="flex:1;font-size:0.8125rem;color:var(--color-gray-600);" id="huddleRoomLabel">In a huddle</span>
+      <button class="btn btn-secondary btn-sm" id="huddlePipCallBtn">⧉ Pop out</button>
+      <button class="btn btn-danger btn-sm" id="huddleLeaveBtn">📵 Leave</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     MODALS
+============================================================ -->
+
+<!-- Add Client Modal -->
+<div class="modal-backdrop" id="addClientModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Add New Client</h3>
+      <button class="modal-close" data-close="addClientModal">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Name *</label>
+        <input class="form-control" id="newClientName" placeholder="Full name" />
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">Company</label>
+          <input class="form-control" id="newClientCompany" placeholder="Company name" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone *</label>
+          <input class="form-control" id="newClientPhone" type="tel" placeholder="+15551234567" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-control" id="newClientEmail" type="email" placeholder="email@example.com" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes</label>
+        <textarea class="form-control" id="newClientNotes" placeholder="Optional notes…"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-close="addClientModal">Cancel</button>
+      <button class="btn btn-primary" id="createClientBtn">Create Client</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add User Modal -->
+<div class="modal-backdrop" id="addUserModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Add Team Member</h3>
+      <button class="modal-close" data-close="addUserModal">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">First Name</label>
+          <input class="form-control" id="newUserFirstName" placeholder="First name" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name</label>
+          <input class="form-control" id="newUserLastName" placeholder="Last name" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email *</label>
+        <input class="form-control" id="newUserEmail" type="email" placeholder="user@company.com" />
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">Phone</label>
+          <input class="form-control" id="newUserPhone" type="tel" placeholder="+15551234567" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Job Title</label>
+          <input class="form-control" id="newUserTitle" placeholder="e.g. Account Manager" />
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-close="addUserModal">Cancel</button>
+      <button class="btn btn-primary" id="createUserBtn">Add Member</button>
+    </div>
+  </div>
+</div>
+
+<!-- Send SMS to Client Modal -->
+<div class="modal-backdrop" id="sendClientSmsModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Send SMS to <span id="smsClientName"></span></h3>
+      <button class="modal-close" data-close="sendClientSmsModal">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Message *</label>
+        <textarea class="form-control" id="smsClientBody" placeholder="Type your message…"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-close="sendClientSmsModal">Cancel</button>
+      <button class="btn btn-primary" id="sendClientSmsBtn">Send SMS</button>
+    </div>
+  </div>
+</div>
+
+<!-- Gmail Compose Modal -->
+<div class="modal-backdrop" id="gmailComposeModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>✉️ Compose Email</h3>
+      <button class="modal-close" data-close="gmailComposeModal">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">To *</label>
+        <input class="form-control" id="gmailTo" type="email" placeholder="recipient@example.com" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Subject *</label>
+        <input class="form-control" id="gmailSubject" placeholder="Subject" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Message *</label>
+        <textarea class="form-control" id="gmailBody" placeholder="Write your email…" style="min-height:140px;"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-close="gmailComposeModal">Cancel</button>
+      <button class="btn btn-primary" id="gmailSendBtn">📤 Send</button>
+    </div>
+  </div>
+</div>
+
+<!-- Vault Configure Modal -->
+<div class="modal-backdrop vault-modal" id="vaultConfigModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="vaultModalTitle">⚙️ Configure Integration</h3>
+      <button class="modal-close" id="vaultModalClose">✕</button>
+    </div>
+    <div class="modal-body" id="vaultModalBody">
+      <!-- Fields injected by JS -->
+    </div>
+    <div class="modal-footer">
+      <div class="vault-pin-row" style="flex:1;">
+        <label>🔑 Admin PIN</label>
+        <input class="form-control" type="password" id="vaultAdminPin" placeholder="Enter admin PIN to save" autocomplete="off" />
+      </div>
+      <button class="btn btn-secondary" id="vaultCancelBtn">Cancel</button>
+      <button class="btn btn-primary" id="vaultSaveBtn">💾 Save to Vault</button>
+    </div>
+  </div>
+</div>
+
+<!-- New Meeting Modal -->
+<div class="modal-backdrop" id="newMeetingModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>📹 Create New Meeting Room</h3>
+      <button class="modal-close" id="closeMeetingModalBtn">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Room Name <span style="color:var(--color-gray-400);font-weight:400;">(optional)</span></label>
+        <input class="form-control" id="newMeetingName" placeholder="e.g. team-standup, sales-call" maxlength="40" />
+        <p style="font-size:0.75rem;color:var(--color-gray-400);margin-top:4px;">Leave blank for an auto-generated name.</p>
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">Duration</label>
+          <select class="form-control" id="newMeetingExpiry">
+            <option value="30">30 minutes</option>
+            <option value="60" selected>1 hour</option>
+            <option value="120">2 hours</option>
+            <option value="240">4 hours</option>
+            <option value="480">8 hours</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Max Participants</label>
+          <input class="form-control" id="newMeetingMaxParticipants" type="number" min="2" max="50" placeholder="Unlimited" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" style="margin-bottom:8px;">Options</label>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.875rem;cursor:pointer;">
+            <input type="checkbox" id="newMeetingWaitingRoom" />
+            🚪 Waiting room (approve participants before they join)
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.875rem;cursor:pointer;">
+            <input type="checkbox" id="newMeetingRecording" />
+            ⏺ Enable cloud recording
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.875rem;cursor:pointer;">
+            <input type="checkbox" id="newMeetingAudioOff" />
+            🎤 Participants start muted
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.875rem;cursor:pointer;">
+            <input type="checkbox" id="newMeetingVideoOff" />
+            📷 Participants start with camera off
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="cancelMeetingModalBtn">Cancel</button>
+      <button class="btn btn-primary" id="createMeetingRoomBtn">📹 Create Room &amp; Join</button>
+    </div>
+  </div>
+</div>
+
+<!-- Conversation Thread Modal -->
+<div class="modal-backdrop" id="conversationThreadModal">
+  <div class="modal" style="max-width:640px;display:flex;flex-direction:column;height:80vh;max-height:700px;">
+    <div class="modal-header" style="flex-shrink:0;">
+      <div>
+        <h3 id="convThreadTitle">Conversation</h3>
+        <div id="convThreadPhone" style="font-size:0.75rem;color:var(--color-gray-500);margin-top:2px;"></div>
+      </div>
+      <button class="modal-close" data-close="conversationThreadModal">✕</button>
+    </div>
+    <div class="modal-body" id="convThreadMessages" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:16px;">
+      <div class="empty-state"><div class="icon">⏳</div><p>Loading…</p></div>
+    </div>
+    <div style="flex-shrink:0;border-top:1px solid var(--color-gray-200);padding:12px 16px;display:flex;gap:8px;background:#fff;">
+      <textarea id="convThreadReplyInput" class="form-control" placeholder="Type your reply…" style="flex:1;min-height:60px;max-height:120px;resize:vertical;" maxlength="1600"></textarea>
+      <button class="btn btn-primary" id="convThreadSendBtn" style="align-self:flex-end;">Send</button>
+    </div>
+  </div>
+</div>
+
+<!-- Template Create/Edit Modal -->
+<div class="modal-backdrop" id="templateModal">
+  <div class="modal" style="max-width:560px;">
+    <div class="modal-header">
+      <h3 id="templateModalTitle">📝 New Template</h3>
+      <button class="modal-close" data-close="templateModal">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="templateEditId" />
+      <div class="form-group">
+        <label class="form-label">Template Name <span style="color:var(--color-danger);">*</span></label>
+        <input class="form-control" id="templateName" placeholder="e.g. Welcome Message" maxlength="100" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Type <span style="color:var(--color-danger);">*</span></label>
+        <select class="form-control" id="templateType">
+          <option value="sms">SMS</option>
+          <option value="email">Email</option>
+        </select>
+      </div>
+      <div class="form-group" id="templateSubjectGroup">
+        <label class="form-label">Subject <span style="color:var(--color-danger);">*</span></label>
+        <input class="form-control" id="templateSubject" placeholder="Subject line" maxlength="200" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Body <span style="color:var(--color-danger);">*</span></label>
+        <textarea class="form-control" id="templateBody" placeholder="Use {{variable_name}} for dynamic values, e.g. Hello {{client_name}}!" style="min-height:120px;"></textarea>
+        <p style="font-size:0.75rem;color:var(--color-gray-400);margin-top:4px;">Use <code>{{variable}}</code> placeholders — detected automatically.</p>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-close="templateModal">Cancel</button>
+      <button class="btn btn-primary" id="saveTemplateBtn">💾 Save Template</button>
+    </div>
+  </div>
+</div>
+
+<!-- Template Send Modal -->
+<div class="modal-backdrop" id="templateSendModal">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-header">
+      <h3 id="templateSendTitle">📤 Send Template</h3>
+      <button class="modal-close" data-close="templateSendModal">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group" id="templateSendToGroup">
+        <label class="form-label">Recipient</label>
+        <select class="form-control" id="templateSendClient">
+          <option value="">– Select a client –</option>
+        </select>
+      </div>
+      <div id="templateSendVars"></div>
+      <div id="templateSendPreview" style="display:none;background:var(--color-gray-50);border:1px solid var(--color-gray-200);border-radius:6px;padding:12px;font-size:0.875rem;margin-top:8px;">
+        <div style="font-weight:600;margin-bottom:4px;font-size:0.75rem;color:var(--color-gray-500);text-transform:uppercase;letter-spacing:.05em;">Preview</div>
+        <div id="templateSendPreviewBody" style="color:var(--color-gray-700);white-space:pre-wrap;"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="templateSendPreviewBtn">👁 Preview</button>
+      <button class="btn btn-primary" id="templateSendConfirmBtn">📤 Send</button>
+    </div>
+  </div>
+</div>
+
+<!-- Client Edit Modal -->
+<div class="modal-backdrop" id="editClientModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>✏️ Edit Client</h3>
+      <button class="modal-close" data-close="editClientModal">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editClientId" />
+      <div class="form-group">
+        <label class="form-label">Full Name <span style="color:var(--color-danger);">*</span></label>
+        <input class="form-control" id="editClientName" placeholder="Full name" />
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">Company</label>
+          <input class="form-control" id="editClientCompany" placeholder="Company name" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone <span style="color:var(--color-danger);">*</span></label>
+          <input class="form-control" id="editClientPhone" type="tel" placeholder="+15551234567" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-control" id="editClientEmail" type="email" placeholder="email@example.com" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes</label>
+        <textarea class="form-control" id="editClientNotes" placeholder="Optional notes…"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-close="editClientModal">Cancel</button>
+      <button class="btn btn-primary" id="saveEditClientBtn">💾 Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Gmail Reply Modal -->
+<div class="modal-backdrop" id="gmailReplyModal">
+  <div class="modal" style="max-width:540px;">
+    <div class="modal-header">
+      <h3>↩️ Reply</h3>
+      <button class="modal-close" data-close="gmailReplyModal">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="gmailReplyTo" />
+      <div class="form-group">
+        <label class="form-label">To</label>
+        <input class="form-control" id="gmailReplyToDisplay" type="text" readonly style="background:var(--color-gray-50);" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Subject</label>
+        <input class="form-control" id="gmailReplySubject" type="text" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Message</label>
+        <textarea class="form-control" id="gmailReplyBody" style="min-height:140px;" placeholder="Write your reply…"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-close="gmailReplyModal">Cancel</button>
+      <button class="btn btn-primary" id="gmailReplySendBtn">📤 Send Reply</button>
+    </div>
+  </div>
+</div>
+
+<!-- User Status Modal -->
+<div class="modal-backdrop" id="userStatusModal">
+  <div class="modal" style="max-width:380px;">
+    <div class="modal-header">
+      <h3>🟢 Update Your Status</h3>
+      <button class="modal-close" data-close="userStatusModal">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="statusUserId" />
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:6px;border:1px solid var(--color-gray-200);">
+            <input type="radio" name="statusPick" value="online" /> <span style="width:8px;height:8px;border-radius:50%;background:var(--color-success);display:inline-block;"></span> Online
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:6px;border:1px solid var(--color-gray-200);">
+            <input type="radio" name="statusPick" value="away" /> <span style="width:8px;height:8px;border-radius:50%;background:var(--color-warning);display:inline-block;"></span> Away
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:6px;border:1px solid var(--color-gray-200);">
+            <input type="radio" name="statusPick" value="busy" /> <span style="width:8px;height:8px;border-radius:50%;background:var(--color-danger);display:inline-block;"></span> Busy
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:6px;border:1px solid var(--color-gray-200);">
+            <input type="radio" name="statusPick" value="offline" /> <span style="width:8px;height:8px;border-radius:50%;background:var(--color-gray-400);display:inline-block;"></span> Offline
+          </label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Status Message <span style="color:var(--color-gray-400);font-weight:400;">(optional)</span></label>
+        <input class="form-control" id="statusMessage" placeholder="e.g. In a meeting until 3pm" maxlength="100" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-close="userStatusModal">Cancel</button>
+      <button class="btn btn-primary" id="saveStatusBtn">✅ Update Status</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ============================================================
+     JAVASCRIPT
+============================================================ -->
+<script>
+  const API = '';  // Same origin
+  let currentView = 'messages';
+  let allClients = [];
+  let allConversations = [];
+  let selectedClientForSms = null;
+  let currentUserName = 'You'; // set by login gate
+
+  // ============================================================
+  // Login Gate — identify who is using this session
+  // ============================================================
+  let currentUser = null; // { id, name, initials }
+
+  function getStoredUser() {
+    try { return JSON.parse(localStorage.getItem('cj_current_user') || 'null'); } catch { return null; }
+  }
+
+  function storeUser(user) {
+    localStorage.setItem('cj_current_user', JSON.stringify(user));
+  }
+
+  function applyCurrentUser(user) {
+    currentUser = user;
+    currentUserName = user.name;
+    document.getElementById('myStatusName').textContent = user.name;
+    document.getElementById('loginGate').style.display = 'none';
+    document.querySelector('body > aside').style.display = '';
+    document.querySelector('body > main').style.display = '';
+    // Set initial status to online
+    if (user.id) {
+      apiFetch(`/api/users/${user.id}/status`, { method: 'PATCH', body: JSON.stringify({ status: 'online' }) })
+        .catch(() => {});
+    }
+  }
+
+  async function showLoginGate() {
+    // Hide main app until logged in
+    document.querySelector('body > aside').style.display = 'none';
+    document.querySelector('body > main').style.display = 'none';
+    document.getElementById('loginGate').style.display = 'flex';
+
+    // Try to populate with real team members
+    try {
+      const data = await apiFetch('/api/users/team');
+      const team = (data.team || []).map(tm => ({ ...tm.user, role: tm.role, extension: tm.extension }));
+      renderLoginTeamList(team);
+    } catch {
+      // If DB not configured yet show manual entry only
+      document.getElementById('loginTeamList').innerHTML =
+        '<div style="color:var(--color-gray-400);font-size:0.8125rem;padding:4px 0;">No team members yet — type your name below.</div>';
+    }
+  }
+
+  function renderLoginTeamList(team) {
+    const list = document.getElementById('loginTeamList');
+    if (!team.length) {
+      list.innerHTML = '<div style="color:var(--color-gray-400);font-size:0.8125rem;padding:4px 0;">No team members yet — type your name below.</div>';
+      return;
+    }
+    list.innerHTML = team.map(u => {
+      const initials = (u.name || 'U').split(' ').map(s => s[0]).join('').slice(0, 2).toUpperCase();
+      const title = u.job_title || u.role || '';
+      return `
+        <button class="login-team-btn" data-id="${escAttr(u.id)}" data-name="${escAttr(u.name)}">
+          <div class="login-team-avatar">${escHtml(initials)}</div>
+          <div>
+            <div>${escHtml(u.name)}</div>
+            ${title ? `<div style="font-size:0.75rem;font-weight:400;color:var(--color-gray-500);">${escHtml(title)}</div>` : ''}
+          </div>
+        </button>`;
+    }).join('');
+    list.querySelectorAll('.login-team-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const user = { id: btn.dataset.id, name: btn.dataset.name };
+        storeUser(user);
+        applyCurrentUser(user);
+        loadView('messages');
+      });
+    });
+  }
+
+  document.getElementById('loginNameBtn').addEventListener('click', () => {
+    const name = document.getElementById('loginNameInput').value.trim();
+    if (!name) { document.getElementById('loginNameInput').focus(); return; }
+    const user = { id: null, name };
+    storeUser(user);
+    applyCurrentUser(user);
+    loadView('messages');
+  });
+  document.getElementById('loginNameInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('loginNameBtn').click();
+  });
+
+  // ── Boot: check for stored user, else show gate ──────────────────────────
+  (function boot() {
+    const stored = getStoredUser();
+    if (stored && stored.name) {
+      applyCurrentUser(stored);
+      loadView('messages');
+    } else {
+      showLoginGate();
+    }
+  })();
+  // Virtual office floor plan rooms (status → room mapping)
+  const OFFICE_ROOMS = [
+    { icon: '🏢', name: 'Main Office',  statuses: ['online'] },
+    { icon: '📅', name: 'Conference',   statuses: ['busy'] },
+    { icon: '☕', name: 'Break Room',   statuses: ['away'] },
+  ];
+
+  // ============================================================
+  // Navigation
+  // ============================================================
+  document.querySelectorAll('.nav-item').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const view = btn.dataset.view;
+      navigate(view);
+    });
+  });
+
+  function navigate(view) {
+    currentView = view;
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.dataset.view === view));
+    document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === `view-${view}`));
+
+    const titles = { messages: 'Messages', conversations: 'Conversations', users: 'Team', clients: 'Clients', gmail: 'Gmail', slack: 'Slack', integrations: 'Integrations', meetings: 'Meetings', templates: 'Templates', brand: 'Brand Settings', activity: 'Activity Log' };
+    document.getElementById('headerTitle').textContent = titles[view] || view;
+
+    loadView(view);
+  }
+
+  function refreshCurrentView() { loadView(currentView); }
+
+  function loadView(view) {
+    if (view === 'messages') { loadMessages(); loadStats(); loadClientOptions(); }
+    else if (view === 'conversations') loadConversations();
+    else if (view === 'users') loadTeam();
+    else if (view === 'clients') loadClients();
+    else if (view === 'gmail') loadGmail();
+    else if (view === 'slack') loadSlack();
+    else if (view === 'integrations') loadIntegrations();
+    else if (view === 'meetings') loadMeetingsView();
+    else if (view === 'templates') loadTemplates();
+    else if (view === 'brand') loadBrand();
+    else if (view === 'activity') loadActivity();
+  }
+
+  // ============================================================
+  // Toast
+  // ============================================================
+  function toast(message, type = 'default', duration = 4000) {
+    const el = document.createElement('div');
+    el.className = `toast ${type}`;
+    el.textContent = message;
+    document.getElementById('toastContainer').appendChild(el);
+    setTimeout(() => el.remove(), duration);
+  }
+
+  // ============================================================
+  // API helpers
+  // ============================================================
+  async function apiFetch(path, options = {}) {
+    const res = await fetch(API + path, {
+      headers: { 'Content-Type': 'application/json', ...options.headers },
+      ...options,
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+    return data;
+  }
+
+  // ============================================================
+  // Stats
+  // ============================================================
+  async function loadStats() {
+    try {
+      const [msgData, convData, clientData] = await Promise.all([
+        apiFetch('/api/sms/messages?limit=200'),
+        apiFetch('/api/clients/conversations/all?limit=200'),
+        apiFetch('/api/clients?limit=1000'),
+      ]);
+
+      const today = new Date().toDateString();
+      const msgToday = (msgData.messages || []).filter(m => new Date(m.created_at).toDateString() === today).length;
+
+      document.getElementById('statMsgToday').textContent = msgToday;
+      document.getElementById('statConvActive').textContent = (convData.conversations || []).length;
+      document.getElementById('statClients').textContent = (clientData.clients || []).length;
+    } catch (err) {
+      console.error('Stats error:', err.message);
+    }
+  }
+
+  // ============================================================
+  // Messages
+  // ============================================================
+  async function loadMessages() {
+    try {
+      const data = await apiFetch('/api/sms/messages?limit=30');
+      renderMessages(data.messages || []);
+    } catch (err) {
+      console.error('Load messages error:', err.message);
+    }
+  }
+
+  function renderMessages(messages) {
+    const el = document.getElementById('messageList');
+    if (!messages.length) {
+      el.innerHTML = `<div class="empty-state"><div class="icon">💬</div><p>No messages yet</p></div>`;
+      return;
+    }
+    el.innerHTML = messages.map(m => {
+      const sender = m.sender?.name || m.from_number || 'Unknown';
+      const time = new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const date = new Date(m.created_at).toLocaleDateString();
+      const typeClass = m.direction === 'inbound' ? 'badge-inbound' : `badge-${m.message_type}`;
+      const typeLabel = m.direction === 'inbound' ? 'Inbound' : m.message_type;
+      return `
+        <div class="message-item">
+          <div class="meta">
+            <span class="sender">${escHtml(sender)}</span>
+            <div style="display:flex;gap:6px;align-items:center;">
+              <span class="badge ${typeClass}">${typeLabel}</span>
+              <span class="timestamp">${date} ${time}</span>
+            </div>
+          </div>
+          <div class="body">${escHtml(m.body)}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  async function loadClientOptions() {
+    try {
+      const data = await apiFetch('/api/clients?limit=500');
+      allClients = data.clients || [];
+      const select = document.getElementById('msgClientSelect');
+      select.innerHTML = '<option value="">– Select a client –</option>' +
+        allClients.map(c => `<option value="${c.id}" data-phone="${escAttr(c.phone)}">${escHtml(c.name)} (${escHtml(c.phone)})</option>`).join('');
+    } catch (err) {
+      console.error('Load client options error:', err.message);
+    }
+  }
+
+  function handleMsgTypeChange() {
+    const type = document.getElementById('msgType').value;
+    const toGroup = document.getElementById('toGroup');
+    const clientSelectGroup = document.getElementById('clientSelectGroup');
+
+    if (type === 'external') {
+      toGroup.style.display = 'block';
+      clientSelectGroup.style.display = 'block';
+    } else if (type === 'internal') {
+      toGroup.style.display = 'block';
+      clientSelectGroup.style.display = 'none';
+    } else {
+      toGroup.style.display = 'none';
+      clientSelectGroup.style.display = 'none';
+    }
+  }
+
+  document.getElementById('msgClientSelect').addEventListener('change', function () {
+    const opt = this.options[this.selectedIndex];
+    const phone = opt.dataset.phone || '';
+    if (phone) document.getElementById('msgTo').value = phone;
+  });
+
+  async function sendMessage() {
+    const type = document.getElementById('msgType').value;
+    const to = document.getElementById('msgTo').value.trim();
+    const body = document.getElementById('msgBody').value.trim();
+    const clientId = document.getElementById('msgClientSelect').value || undefined;
+
+    if (!body) { toast('Please enter a message.', 'warning'); return; }
+    if (type !== 'broadcast' && !to) { toast('Please enter a phone number.', 'warning'); return; }
+
+    const btn = document.querySelector('#view-messages .btn-primary');
+    const btnText = document.getElementById('sendBtnText');
+    btn.disabled = true;
+    btnText.innerHTML = '<span class="spinner"></span>';
+
+    try {
+      if (type === 'external') {
+        await apiFetch('/api/sms/send-external', { method: 'POST', body: JSON.stringify({ to, message: body, clientId }) });
+      } else if (type === 'internal') {
+        await apiFetch('/api/sms/send-internal', { method: 'POST', body: JSON.stringify({ to, message: body }) });
+      } else {
+        await apiFetch('/api/sms/broadcast', { method: 'POST', body: JSON.stringify({ message: body }) });
+      }
+
+      toast('Message sent successfully!', 'success');
+      document.getElementById('msgBody').value = '';
+      document.getElementById('msgTo').value = '';
+      loadMessages();
+      loadStats();
+    } catch (err) {
+      toast(`Error: ${err.message}`, 'error');
+    } finally {
+      btn.disabled = false;
+      btnText.textContent = 'Send Message';
+    }
+  }
+
+  // ============================================================
+  // Conversations
+  // ============================================================
+  async function loadConversations() {
+    try {
+      const data = await apiFetch('/api/clients/conversations/all?limit=50');
+      allConversations = data.conversations || [];
+      renderConversations(allConversations);
+    } catch (err) {
+      console.error('Load conversations error:', err.message);
+    }
+  }
+
+  function renderConversations(conversations) {
+    const el = document.getElementById('conversationList');
+    if (!conversations.length) {
+      el.innerHTML = `<div class="empty-state"><div class="icon">💬</div><p>No conversations yet</p></div>`;
+      return;
+    }
+    el.innerHTML = conversations.map(c => {
+      const name = c.client?.name || c.phone_number;
+      const initials = name.slice(0, 2).toUpperCase();
+      const time = c.last_message_at ? new Date(c.last_message_at).toLocaleDateString() : '';
+      const preview = c.last_message || 'No messages yet';
+      const unread = c.unread_count > 0 ? `<div class="conv-unread">${c.unread_count}</div>` : '';
+      return `
+        <div class="conversation-item" data-conv-id="${escAttr(c.id)}" style="cursor:pointer;">
+          <div class="conv-avatar">${escHtml(initials)}</div>
+          <div class="conv-info">
+            <div class="conv-name">${escHtml(name)}</div>
+            <div class="conv-preview">${escHtml(preview)}</div>
+          </div>
+          <div class="conv-meta">
+            <div class="conv-time">${escHtml(time)}</div>
+            ${unread}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function filterConversations(query) {
+    const q = query.toLowerCase();
+    const filtered = allConversations.filter(c =>
+      (c.client?.name || c.phone_number).toLowerCase().includes(q) ||
+      (c.last_message || '').toLowerCase().includes(q)
+    );
+    renderConversations(filtered);
+  }
+
+  // ============================================================
+  // Team / Users
+  // ============================================================
+  async function loadTeam() {
+    try {
+      const data = await apiFetch('/api/users/team');
+      const team = data.team || [];
+
+      if (!team.length) {
+        // Fallback: try getting all users
+        const usersData = await apiFetch('/api/users');
+        renderUsers(usersData.users || []);
+        return;
+      }
+
+      const users = team.map(tm => ({ ...tm.user, role: tm.role, extension: tm.extension, employee_number: tm.employee_number }));
+      renderUsers(users);
+    } catch (err) {
+      console.error('Load team error:', err.message);
+      try {
+        const data = await apiFetch('/api/users');
+        renderUsers(data.users || []);
+      } catch (e) { /* ignore */ }
+    }
+  }
+
+  function renderUsers(users) {
+    const el = document.getElementById('teamGrid');
+    if (!users.length) {
+      el.innerHTML = `<div class="empty-state"><div class="icon">👥</div><p>No team members yet. Add members or sync from Google Workspace.</p></div>`;
+      return;
+    }
+
+    function officeAvatarHtml(u) {
+      const status = u.status || 'offline';
+      const initials = (u.name || 'U').split(' ').map(s => s[0]).join('').slice(0, 2).toUpperCase();
+      const inner = u.avatar_url
+        ? `<img src="${escAttr(u.avatar_url)}" alt="${escAttr(u.name)}" />`
+        : `<div class="office-avatar-initials">${escHtml(initials)}</div>`;
+      const tooltipParts = [u.name];
+      const title = u.job_title || u.role || u.department || '';
+      if (title) tooltipParts.push(title);
+      if (u.extension) tooltipParts.push(`Ext. ${u.extension}`);
+      return `
+        <div class="office-avatar js-status-avatar" data-user-id="${escAttr(u.id)}" data-status="${escAttr(u.status || 'offline')}" data-msg="${escAttr(u.status_message || '')}" title="${escAttr(tooltipParts.join(' – '))}" style="cursor:pointer;">
+          <div class="office-avatar-ring ${status}">${inner}</div>
+          <div class="office-avatar-label">${escHtml((u.name || '').split(' ')[0])}</div>
+        </div>`;
+    }
+
+    const rooms = OFFICE_ROOMS;
+
+    const offlineUsers = users.filter(u => (u.status || 'offline') === 'offline');
+
+    const floorHtml = rooms.map(room => {
+      const roomUsers = users.filter(u => room.statuses.includes(u.status || 'offline'));
+      const count = roomUsers.length;
+      return `
+        <div class="office-room">
+          <div class="room-header">
+            <span class="room-icon">${room.icon}</span>
+            <span class="room-name">${room.name}</span>
+            ${count ? `<span class="room-count">${count} ${count === 1 ? 'person' : 'people'}</span>` : ''}
+          </div>
+          <div class="room-avatars">
+            ${count ? roomUsers.map(officeAvatarHtml).join('') : '<span class="room-empty">Empty</span>'}
+          </div>
+        </div>`;
+    }).join('');
+
+    const offlineHtml = offlineUsers.length ? `
+      <div class="offline-row">
+        <span class="offline-row-label">Offline</span>
+        ${offlineUsers.map(officeAvatarHtml).join('')}
+      </div>` : '';
+
+    el.innerHTML = `<div class="office-floor">${floorHtml}</div>${offlineHtml}`;
+
+    // Delegated click for status update
+    el.querySelectorAll('.js-status-avatar').forEach(avatar => {
+      avatar.addEventListener('click', () => {
+        const { userId, status, msg } = avatar.dataset;
+        openUserStatus(userId, status, msg);
+      });
+    });
+  }
+
+  async function syncGoogleWorkspace() {
+    try {
+      const data = await apiFetch('/api/users/sync', { method: 'POST' });
+      toast(`Synced ${data.synced} users from Google Workspace.`, 'success');
+      loadTeam();
+    } catch (err) {
+      toast(`Sync failed: ${err.message}`, 'error');
+    }
+  }
+
+  // ============================================================
+  // Clients
+  // ============================================================
+  async function loadClients(search = '') {
+    const path = search ? `/api/clients?search=${encodeURIComponent(search)}&limit=100` : '/api/clients?limit=100';
+    try {
+      const data = await apiFetch(path);
+      allClients = data.clients || [];
+      renderClients(allClients);
+    } catch (err) {
+      console.error('Load clients error:', err.message);
+    }
+  }
+
+  function renderClients(clients) {
+    const tbody = document.getElementById('clientTableBody');
+    if (!clients.length) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:32px;color:#9ca3af;">No clients found</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = clients.map(c => {
+      const lastContacted = c.last_contacted_at ? new Date(c.last_contacted_at).toLocaleDateString() : '–';
+      return `
+        <tr>
+          <td><strong>${escHtml(c.name)}</strong></td>
+          <td>${escHtml(c.company || '–')}</td>
+          <td><a href="tel:${escAttr(c.phone)}">${escHtml(c.phone)}</a></td>
+          <td>${c.email ? `<a href="mailto:${escAttr(c.email)}">${escHtml(c.email)}</a>` : '–'}</td>
+          <td>${lastContacted}</td>
+          <td>
+            <button class="btn btn-primary btn-sm js-sms-btn" data-id="${escAttr(c.id)}" data-name="${escAttr(c.name)}">💬 SMS</button>
+            <button class="btn btn-secondary btn-sm js-edit-client-btn" data-id="${escAttr(c.id)}">✏️</button>
+            <button class="btn btn-secondary btn-sm js-del-btn" data-id="${escAttr(c.id)}" data-name="${escAttr(c.name)}">🗑️</button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    // Attach event handlers via data attributes to avoid inline onclick security concerns
+    tbody.querySelectorAll('.js-sms-btn').forEach(btn => {
+      btn.addEventListener('click', () => openSendClientSms(btn.dataset.id, btn.dataset.name));
+    });
+    tbody.querySelectorAll('.js-edit-client-btn').forEach(btn => {
+      btn.addEventListener('click', () => openEditClient(btn.dataset.id));
+    });
+    tbody.querySelectorAll('.js-del-btn').forEach(btn => {
+      btn.addEventListener('click', () => deleteClient(btn.dataset.id, btn.dataset.name));
+    });
+  }
+
+  function searchClients(query) {
+    loadClients(query);
+  }
+
+  async function createClient() {
+    const name = document.getElementById('newClientName').value.trim();
+    const phone = document.getElementById('newClientPhone').value.trim();
+    const company = document.getElementById('newClientCompany').value.trim();
+    const email = document.getElementById('newClientEmail').value.trim();
+    const notes = document.getElementById('newClientNotes').value.trim();
+
+    if (!name || !phone) { toast('Name and phone are required.', 'warning'); return; }
+
+    try {
+      await apiFetch('/api/clients', { method: 'POST', body: JSON.stringify({ name, phone, company, email, notes }) });
+      toast('Client created!', 'success');
+      closeModal('addClientModal');
+      loadClients();
+      loadClientOptions();
+      loadStats();
+      // Reset form
+      ['newClientName','newClientPhone','newClientCompany','newClientEmail','newClientNotes'].forEach(id => { document.getElementById(id).value = ''; });
+    } catch (err) {
+      toast(`Error: ${err.message}`, 'error');
+    }
+  }
+
+  async function deleteClient(id, name) {
+    if (!confirm(`Remove ${name} from the client directory?`)) return;
+    try {
+      await apiFetch(`/api/clients/${id}`, { method: 'DELETE' });
+      toast(`${name} removed.`, 'success');
+      loadClients();
+      loadStats();
+    } catch (err) {
+      toast(`Error: ${err.message}`, 'error');
+    }
+  }
+
+  function openSendClientSms(clientId, clientName) {
+    selectedClientForSms = clientId;
+    document.getElementById('smsClientName').textContent = clientName;
+    document.getElementById('smsClientBody').value = '';
+    openModal('sendClientSmsModal');
+  }
+
+  async function sendClientSms() {
+    const body = document.getElementById('smsClientBody').value.trim();
+    if (!body) { toast('Please enter a message.', 'warning'); return; }
+
+    try {
+      await apiFetch(`/api/clients/${selectedClientForSms}/sms`, { method: 'POST', body: JSON.stringify({ message: body }) });
+      toast('SMS sent!', 'success');
+      closeModal('sendClientSmsModal');
+      loadMessages();
+      loadStats();
+    } catch (err) {
+      toast(`Error: ${err.message}`, 'error');
+    }
+  }
+
+  // ============================================================
+  // Users
+  // ============================================================
+  async function createUser() {
+    const email = document.getElementById('newUserEmail').value.trim();
+    const firstName = document.getElementById('newUserFirstName').value.trim();
+    const lastName = document.getElementById('newUserLastName').value.trim();
+    const phone = document.getElementById('newUserPhone').value.trim();
+    const jobTitle = document.getElementById('newUserTitle').value.trim();
+    const name = [firstName, lastName].filter(Boolean).join(' ') || email;
+
+    if (!email) { toast('Email is required.', 'warning'); return; }
+
+    try {
+      await apiFetch('/api/users', { method: 'POST', body: JSON.stringify({ email, name, firstName, lastName, phone, jobTitle }) });
+      toast('Team member added!', 'success');
+      closeModal('addUserModal');
+      loadTeam();
+      ['newUserEmail','newUserFirstName','newUserLastName','newUserPhone','newUserTitle'].forEach(id => { document.getElementById(id).value = ''; });
+    } catch (err) {
+      toast(`Error: ${err.message}`, 'error');
+    }
+  }
+
+  // ============================================================
+  // Modals
+  // ============================================================
+  function openModal(id) { document.getElementById(id).classList.add('open'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+  function openAddClientModal() { openModal('addClientModal'); }
+  function openAddUserModal() { openModal('addUserModal'); }
+
+  // Close modal on backdrop click
+  document.querySelectorAll('.modal-backdrop').forEach(backdrop => {
+    backdrop.addEventListener('click', (e) => {
+      if (e.target === backdrop) backdrop.classList.remove('open');
+    });
+  });
+
+  // ============================================================
+  // Security helpers
+  // ============================================================
+  function escHtml(str) {
+    if (str == null) return '';
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+  }
+
+  function escAttr(str) {
+    if (str == null) return '';
+    return String(str).replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+  }
+
+  // ============================================================
+  // Init — wire up all event listeners here
+  // ============================================================
+  document.getElementById('refreshBtn').addEventListener('click', refreshCurrentView);
+  document.getElementById('msgType').addEventListener('change', handleMsgTypeChange);
+  document.getElementById('sendMsgBtn').addEventListener('click', sendMessage);
+  document.getElementById('convSearchInput').addEventListener('input', (e) => filterConversations(e.target.value));
+  document.getElementById('clientSearchInput').addEventListener('input', (e) => searchClients(e.target.value));
+  document.getElementById('addClientBtn').addEventListener('click', () => openModal('addClientModal'));
+  document.getElementById('addUserBtn').addEventListener('click', () => openModal('addUserModal'));
+  document.getElementById('syncGwBtn').addEventListener('click', syncGoogleWorkspace);
+  document.getElementById('createClientBtn').addEventListener('click', createClient);
+  document.getElementById('createUserBtn').addEventListener('click', createUser);
+  document.getElementById('sendClientSmsBtn').addEventListener('click', sendClientSms);
+
+  // Close buttons (data-close attribute)
+  document.querySelectorAll('[data-close]').forEach(btn => {
+    btn.addEventListener('click', () => closeModal(btn.dataset.close));
+  });
+
+  // ============================================================
+  // Gmail
+  // ============================================================
+  let gmailConnected = false;
+
+  async function loadGmail() {
+    try {
+      const status = await apiFetch('/api/gmail/status');
+      gmailConnected = status.connected;
+      const banner = document.getElementById('gmailConnectBanner');
+      banner.style.display = gmailConnected ? 'none' : 'flex';
+      if (gmailConnected) loadGmailInbox();
+      else document.getElementById('gmailInboxList').innerHTML = `<div class="empty-state"><div class="icon">📧</div><p>Connect Gmail to see your inbox</p></div>`;
+    } catch (err) {
+      console.error('Gmail status error:', err.message);
+    }
+  }
+
+  async function loadGmailInbox() {
+    const list = document.getElementById('gmailInboxList');
+    list.innerHTML = `<div class="empty-state"><div class="icon">⏳</div><p>Loading…</p></div>`;
+    try {
+      const data = await apiFetch('/api/gmail/inbox?maxResults=25');
+      renderGmailInbox(data.messages || []);
+    } catch (err) {
+      if (err.message.includes('not connected') || err.message.includes('needsAuth')) {
+        gmailConnected = false;
+        document.getElementById('gmailConnectBanner').style.display = 'flex';
+        list.innerHTML = `<div class="empty-state"><div class="icon">🔒</div><p>Connect Gmail to continue</p></div>`;
+      } else {
+        list.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>${escHtml(err.message)}</p></div>`;
+      }
+    }
+  }
+
+  function renderGmailInbox(messages) {
+    const list = document.getElementById('gmailInboxList');
+    if (!messages.length) {
+      list.innerHTML = `<div class="empty-state"><div class="icon">📭</div><p>Inbox is empty</p></div>`;
+      return;
+    }
+    list.innerHTML = messages.map(m => {
+      const unread = m.unread ? 'unread' : '';
+      const date = m.date ? new Date(m.date).toLocaleDateString() : '';
+      return `
+        <div class="gmail-item ${unread}" data-id="${escAttr(m.id)}" data-thread="${escAttr(m.threadId)}">
+          <div class="gmail-item-info">
+            <div class="gmail-item-from">${escHtml(m.from)}</div>
+            <div class="gmail-item-subject">${escHtml(m.subject)}</div>
+            <div class="gmail-item-snippet">${escHtml(m.snippet)}</div>
+          </div>
+          <div class="gmail-item-date">${escHtml(date)}</div>
+        </div>
+      `;
+    }).join('');
+
+    list.querySelectorAll('.gmail-item').forEach(item => {
+      item.addEventListener('click', () => openGmailMessage(item.dataset.id));
+    });
+  }
+
+  async function openGmailMessage(id) {
+    const pane = document.getElementById('gmailThreadPane');
+    pane.innerHTML = '';
+    try {
+      const m = await apiFetch(`/api/gmail/message/${encodeURIComponent(id)}`);
+    const subjectEl = document.createElement('div');
+    subjectEl.className = 'gmail-thread-subject';
+    subjectEl.textContent = m.subject;
+
+    const metaEl = document.createElement('div');
+    metaEl.className = 'gmail-thread-meta';
+    metaEl.innerHTML = `<strong>From:</strong> ${escHtml(m.from)}<br><strong>To:</strong> ${escHtml(m.to)}<br><strong>Date:</strong> ${escHtml(m.date)}`;
+
+    const divider = document.createElement('hr');
+    divider.style.cssText = 'border:none;border-top:1px solid var(--color-gray-200);margin:12px 0;';
+
+    const bodyEl = document.createElement('div');
+    bodyEl.className = 'gmail-thread-body';
+    bodyEl.textContent = m.body;  // textContent prevents XSS
+
+    pane.appendChild(subjectEl);
+    pane.appendChild(metaEl);
+    pane.appendChild(divider);
+    pane.appendChild(bodyEl);
+
+    // Reply button
+    const replyBtn = document.createElement('button');
+    replyBtn.className = 'btn btn-secondary';
+    replyBtn.style.cssText = 'margin-top:16px;';
+    replyBtn.textContent = '↩️ Reply';
+    replyBtn.addEventListener('click', () => openGmailReply({ from: m.from, subject: m.subject }));
+    pane.appendChild(replyBtn);
+      // Mark as read in background
+      apiFetch(`/api/gmail/message/${encodeURIComponent(id)}/read`, { method: 'PATCH' }).catch(() => {});
+      // Remove unread styling from list item
+      const item = document.querySelector(`.gmail-item[data-id="${CSS.escape(id)}"]`);
+      if (item) item.classList.remove('unread');
+    } catch (err) {
+      pane.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>${escHtml(err.message)}</p></div>`;
+    }
+  }
+
+  async function sendGmail() {
+    const to = document.getElementById('gmailTo').value.trim();
+    const subject = document.getElementById('gmailSubject').value.trim();
+    const body = document.getElementById('gmailBody').value.trim();
+
+    if (!to || !subject || !body) { toast('To, Subject and Message are required.', 'warning'); return; }
+
+    const btn = document.getElementById('gmailSendBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>';
+    try {
+      await apiFetch('/api/gmail/send', { method: 'POST', body: JSON.stringify({ to, subject, body }) });
+      toast('Email sent!', 'success');
+      closeModal('gmailComposeModal');
+      ['gmailTo','gmailSubject','gmailBody'].forEach(id => { document.getElementById(id).value = ''; });
+    } catch (err) {
+      toast(`Error: ${err.message}`, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '📤 Send';
+    }
+  }
+
+  // Check for Gmail OAuth callback success/error in URL
+  (function checkGmailCallback() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('gmail_connected') === '1') {
+      toast('Gmail connected successfully!', 'success');
+      history.replaceState({}, '', '/');
+    } else if (params.get('auth_error')) {
+      toast(`Gmail auth error: ${params.get('auth_error')}`, 'error');
+      history.replaceState({}, '', '/');
+    }
+  })();
+
+  // ============================================================
+  // Slack
+  // ============================================================
+  let slackChannels = [];
+  let selectedSlackChannel = null;
+
+  async function loadSlack() {
+    try {
+      const status = await apiFetch('/api/slack/status');
+      const notConfigured = document.getElementById('slackNotConfigured');
+      const layout = document.getElementById('slackLayout');
+      if (!status.connected) {
+        notConfigured.style.display = 'block';
+        layout.style.display = 'none';
+        return;
+      }
+      notConfigured.style.display = 'none';
+      layout.style.display = '';
+      loadSlackChannels();
+    } catch (err) {
+      console.error('Slack status error:', err.message);
+    }
+  }
+
+  async function loadSlackChannels() {
+    try {
+      const data = await apiFetch('/api/slack/channels');
+      slackChannels = data.channels || [];
+      renderSlackChannels();
+    } catch (err) {
+      document.getElementById('slackChannelList').innerHTML = `<div style="padding:12px;font-size:.8125rem;color:var(--color-danger);">${escHtml(err.message)}</div>`;
+    }
+  }
+
+  function renderSlackChannels() {
+    const list = document.getElementById('slackChannelList');
+    if (!slackChannels.length) {
+      list.innerHTML = `<div style="padding:12px;font-size:.8125rem;color:var(--color-gray-400);">No channels found</div>`;
+      return;
+    }
+    list.innerHTML = slackChannels.map(c =>
+      `<div class="slack-channel-item${selectedSlackChannel === c.id ? ' active' : ''}" data-id="${escAttr(c.id)}" data-name="${escAttr(c.name)}"># ${escHtml(c.name)}</div>`
+    ).join('');
+
+    list.querySelectorAll('.slack-channel-item').forEach(item => {
+      item.addEventListener('click', () => selectSlackChannel(item.dataset.id, item.dataset.name));
+    });
+  }
+
+  async function selectSlackChannel(channelId, channelName) {
+    selectedSlackChannel = channelId;
+    renderSlackChannels();
+    document.getElementById('slackChannelHeader').textContent = `# ${channelName}`;
+    await loadSlackMessages(channelId);
+  }
+
+  async function loadSlackMessages(channelId) {
+    const msgList = document.getElementById('slackMsgList');
+    msgList.innerHTML = `<div class="empty-state"><div class="icon">⏳</div><p>Loading…</p></div>`;
+    try {
+      const data = await apiFetch(`/api/slack/channels/${encodeURIComponent(channelId)}/history?limit=50`);
+      renderSlackMessages(data.messages || []);
+    } catch (err) {
+      msgList.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>${escHtml(err.message)}</p></div>`;
+    }
+  }
+
+  function renderSlackMessages(messages) {
+    const msgList = document.getElementById('slackMsgList');
+    if (!messages.length) {
+      msgList.innerHTML = `<div class="empty-state"><div class="icon">💼</div><p>No messages in this channel</p></div>`;
+      return;
+    }
+    const sorted = [...messages].reverse();
+    msgList.innerHTML = sorted.map(m => {
+      const user = m.user || m.username || 'Unknown';
+      const initials = user.slice(0, 2).toUpperCase();
+      const time = m.ts ? new Date(parseFloat(m.ts) * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+      return `
+        <div class="slack-msg">
+          <div class="slack-msg-avatar">${escHtml(initials)}</div>
+          <div class="slack-msg-content">
+            <div class="slack-msg-meta">
+              <span class="slack-msg-user">${escHtml(user)}</span>
+              <span class="slack-msg-time">${escHtml(time)}</span>
+            </div>
+            <div class="slack-msg-body">${escHtml(m.text || '')}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+    msgList.scrollTop = msgList.scrollHeight;
+  }
+
+  async function sendSlackMessage() {
+    if (!selectedSlackChannel) { toast('Select a channel first.', 'warning'); return; }
+    const text = document.getElementById('slackComposeInput').value.trim();
+    if (!text) return;
+
+    const btn = document.getElementById('slackSendBtn');
+    btn.disabled = true;
+    try {
+      await apiFetch('/api/slack/send', { method: 'POST', body: JSON.stringify({ channel: selectedSlackChannel, text }) });
+      document.getElementById('slackComposeInput').value = '';
+      toast('Message sent to Slack!', 'success');
+      await loadSlackMessages(selectedSlackChannel);
+    } catch (err) {
+      toast(`Error: ${err.message}`, 'error');
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  // ============================================================
+  // Integrations / Webhooks
+  // ============================================================
+  let slackIsConnected = false;
+  let aiIsConfigured = false;
+  let huddleIsConfigured = false;
+
+  // Integration key → vault group key mapping
+  const INTEGRATION_GROUP_KEYS = {
+    'Gmail': 'google',
+    'Slack': 'slack',
+    'Zapier': 'zapier',
+    'n8n': 'n8n',
+    'AI Assistant': 'ai',
+    'Daily.co Huddles': 'daily',
+    'Supabase': 'supabase',
+    'SlickText SMS': 'slicktext',
+  };
+
+  async function loadIntegrations() {
+    try {
+      const [webhookData, slackStatus, aiStatus, meetingsStatus, smsStatus] = await Promise.all([
+        apiFetch('/api/webhooks/status'),
+        apiFetch('/api/slack/status').catch(() => ({ connected: false })),
+        apiFetch('/api/ai/status').catch(() => ({ configured: false })),
+        apiFetch('/api/meetings/status').catch(() => ({ configured: false })),
+        apiFetch('/api/sms/status').catch(() => ({ configured: false })),
+      ]);
+      slackIsConnected = slackStatus.connected;
+      aiIsConfigured = aiStatus.configured;
+      huddleIsConfigured = meetingsStatus.configured;
+      renderIntegrationCards({ ...webhookData, sms: smsStatus });
+      document.getElementById('inboundWebhookUrl').textContent = webhookData.inboundUrl || '';
+    } catch (err) {
+      console.error('Integrations load error:', err.message);
+    }
+  }
+
+  function renderIntegrationCards(data) {
+    const grid = document.getElementById('integrationsGrid');
+
+    const cards = [
+      {
+        icon: '📧',
+        title: 'Gmail',
+        desc: 'Read and send emails from your Google Workspace inbox.',
+        connected: gmailConnected,
+        extraAction: gmailConnected ? null : `<a href="/auth/google" class="btn btn-primary btn-sm" style="display:inline-flex;align-items:center;gap:6px;">🔗 Connect Google</a>`,
+        groupKey: 'google',
+      },
+      {
+        icon: '💼',
+        title: 'Slack',
+        desc: 'Send and receive Slack channel messages.',
+        connected: slackIsConnected,
+        groupKey: 'slack',
+      },
+      {
+        icon: '⚡',
+        title: 'Zapier',
+        desc: 'Trigger Zaps from CallJamal events.',
+        connected: data.zapier?.configured,
+        url: data.zapier?.url,
+        groupKey: 'zapier',
+      },
+      {
+        icon: '🔄',
+        title: 'n8n',
+        desc: 'Trigger n8n workflows from CallJamal events.',
+        connected: data.n8n?.configured,
+        url: data.n8n?.url,
+        groupKey: 'n8n',
+      },
+      {
+        icon: '🤖',
+        title: 'AI Assistant',
+        desc: 'Chat with Gemini or Claude via the floating widget.',
+        connected: aiIsConfigured,
+        groupKey: 'ai',
+      },
+      {
+        icon: '📹',
+        title: 'Daily.co Huddles',
+        desc: 'Instant video huddles with screen share, chat, and recording.',
+        connected: huddleIsConfigured,
+        groupKey: 'daily',
+      },
+      {
+        icon: '🗄️',
+        title: 'Supabase',
+        desc: 'Database for contacts, messages, and team data.',
+        connected: true,
+        groupKey: 'supabase',
+      },
+      {
+        icon: '💬',
+        title: 'SlickText SMS',
+        desc: 'Send and receive SMS with clients.',
+        connected: Boolean(data.sms?.configured),
+        groupKey: 'slicktext',
+      },
+    ];
+
+    grid.innerHTML = cards.map(c => `
+      <div class="integration-card">
+        <div class="integration-card-header">
+          <span class="integration-icon">${c.icon}</span>
+          <div style="flex:1;">
+            <div class="integration-title">${escHtml(c.title)}</div>
+            <span class="status-badge ${c.connected ? 'connected' : 'disconnected'}">${c.connected ? '● Connected' : '○ Not configured'}</span>
+          </div>
+        </div>
+        <div class="integration-desc">${escHtml(c.desc)}</div>
+        ${c.url ? `<div class="integration-url">${escHtml(c.url)}</div>` : ''}
+        ${c.extraAction ? `<div style="margin-top:10px;">${c.extraAction}</div>` : ''}
+        <button class="btn btn-secondary btn-sm integration-configure-btn" data-group="${escAttr(c.groupKey)}" data-title="${escAttr(c.title)}">⚙️ Configure</button>
+      </div>
+    `).join('');
+
+    grid.querySelectorAll('.integration-configure-btn').forEach(btn => {
+      btn.addEventListener('click', () => openVaultModal(btn.dataset.group, btn.dataset.title));
+    });
+  }
+
+  // ============================================================
+  // Vault / Integrations Config UI
+  // ============================================================
+  let vaultConfigData = null;
+  let vaultCurrentGroup = null;
+
+  async function openVaultModal(groupKey, title) {
+    vaultCurrentGroup = groupKey;
+    document.getElementById('vaultModalTitle').textContent = `⚙️ Configure: ${title}`;
+    document.getElementById('vaultAdminPin').value = '';
+    document.getElementById('vaultModalBody').innerHTML = '<div style="padding:16px;color:var(--color-gray-500);">Loading…</div>';
+    document.getElementById('vaultConfigModal').classList.add('open');
+
+    try {
+      const data = await apiFetch('/api/integrations-config');
+      vaultConfigData = data;
+      const group = data.groups.find(g => g.key === groupKey);
+      if (!group) {
+        document.getElementById('vaultModalBody').innerHTML = '<div style="color:var(--color-danger);">Group not found.</div>';
+        return;
+      }
+      renderVaultFields(group, data.adminPinSet);
+    } catch (err) {
+      document.getElementById('vaultModalBody').innerHTML = `<div style="color:var(--color-danger);">Error: ${escHtml(err.message)}</div>`;
+    }
+  }
+
+  function renderVaultFields(group, adminPinSet) {
+    const body = document.getElementById('vaultModalBody');
+    if (!adminPinSet) {
+      body.innerHTML = `
+        <div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;padding:12px;font-size:0.8125rem;color:#92400e;margin-bottom:16px;">
+          ⚠️ <strong>ADMIN_PIN not set.</strong> Add <code>ADMIN_PIN=your-pin</code> to your <code>.env</code> file to enable the vault.
+        </div>
+      `;
+    }
+
+    body.innerHTML = (adminPinSet ? '' : `
+      <div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;padding:12px;font-size:0.8125rem;color:#92400e;margin-bottom:16px;">
+        ⚠️ <strong>ADMIN_PIN not set.</strong> Add <code>ADMIN_PIN=your-pin</code> to your <code>.env</code> file to enable saving.
+      </div>
+    `) + group.vars.map(v => `
+      <div class="form-group">
+        <label class="form-label">
+          ${escHtml(v.label)}
+          <span class="vault-source-badge ${escAttr(v.source)}">${escHtml(v.source)}</span>
+        </label>
+        ${v.hasValue ? `<div class="vault-field-row"><span class="vault-masked-value">${escHtml(v.maskedValue)}</span></div>` : ''}
+        <input class="form-control vault-input" type="${v.type === 'password' ? 'password' : 'text'}"
+          data-var="${escAttr(v.name)}"
+          placeholder="${v.hasValue ? 'Paste new value to update, or leave blank to keep current' : 'Paste value to configure'}"
+          autocomplete="off"
+          style="margin-top:${v.hasValue ? '6px' : '0'};" />
+      </div>
+    `).join('');
+  }
+
+  async function saveVaultConfig() {
+    if (!vaultCurrentGroup || !vaultConfigData) return;
+
+    const pin = document.getElementById('vaultAdminPin').value.trim();
+    if (!pin) {
+      toast('Enter your admin PIN to save.', 'warning');
+      document.getElementById('vaultAdminPin').focus();
+      return;
+    }
+
+    const inputs = document.querySelectorAll('#vaultModalBody .vault-input');
+    const updates = {};
+    inputs.forEach(input => {
+      const varName = input.dataset.var;
+      const value = input.value.trim();
+      if (value) updates[varName] = value;
+    });
+
+    if (Object.keys(updates).length === 0) {
+      toast('No new values entered.', 'warning');
+      return;
+    }
+
+    const btn = document.getElementById('vaultSaveBtn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+    try {
+      const result = await apiFetch('/api/integrations-config', {
+        method: 'POST',
+        body: JSON.stringify({ adminPin: pin, updates }),
+      });
+      toast(result.message || 'Saved!', 'success');
+      document.getElementById('vaultConfigModal').classList.remove('open');
+      // Reload integrations to reflect new status
+      loadIntegrations();
+    } catch (err) {
+      toast(`Save failed: ${err.message}`, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '💾 Save to Vault';
+    }
+  }
+
+  function closeVaultModal() {
+    document.getElementById('vaultConfigModal').classList.remove('open');
+    vaultCurrentGroup = null;
+    vaultConfigData = null;
+  }
+
+  document.getElementById('vaultModalClose').addEventListener('click', closeVaultModal);
+  document.getElementById('vaultCancelBtn').addEventListener('click', closeVaultModal);
+  document.getElementById('vaultSaveBtn').addEventListener('click', saveVaultConfig);
+  document.getElementById('vaultConfigModal').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('vaultConfigModal')) closeVaultModal();
+  });
+
+  // Generic close for data-close-modal buttons
+  document.querySelectorAll('[data-close-modal]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.closeModal;
+      const modal = document.getElementById(id);
+      if (modal) modal.classList.remove('open');
+    });
+  });
+
+  async function testWebhook() {
+    const btn = document.getElementById('testWebhookBtn');
+    btn.disabled = true;
+    try {
+      await apiFetch('/api/webhooks/test', { method: 'POST', body: JSON.stringify({ event: 'test_event' }) });
+      toast('Test webhook fired to all configured endpoints!', 'success');
+    } catch (err) {
+      toast(`Error: ${err.message}`, 'error');
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  function copyWebhookUrl() {
+    const url = document.getElementById('inboundWebhookUrl').textContent;
+    if (!url) return;
+    navigator.clipboard.writeText(url).then(() => toast('Webhook URL copied!', 'success')).catch(() => {
+      toast('Copy failed — select the URL manually.', 'warning');
+    });
+  }
+
+  // ============================================================
+  // Meetings View
+  // ============================================================
+  async function loadMeetingsView() {
+    const grid = document.getElementById('meetingsRoomsGrid');
+    const notConfigured = document.getElementById('meetingsNotConfigured');
+    grid.innerHTML = '<div class="empty-state"><div class="icon">⏳</div><p>Loading…</p></div>';
+
+    try {
+      const status = await apiFetch('/api/meetings/status');
+      if (!status.configured) {
+        notConfigured.style.display = 'block';
+        grid.innerHTML = '';
+        return;
+      }
+      notConfigured.style.display = 'none';
+
+      const data = await apiFetch('/api/meetings/rooms');
+      const rooms = data.rooms || [];
+      if (!rooms.length) {
+        grid.innerHTML = '<div class="empty-state"><div class="icon">📹</div><p>No active rooms. Click <strong>+ New Meeting</strong> to create one.</p></div>';
+        return;
+      }
+      renderMeetingRooms(rooms);
+    } catch (err) {
+      grid.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>${escHtml(err.message)}</p></div>`;
+    }
+  }
+
+  function renderMeetingRooms(rooms) {
+    const grid = document.getElementById('meetingsRoomsGrid');
+    grid.innerHTML = rooms.map(r => {
+      const expiry = r.expiresAt ? new Date(r.expiresAt).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'No expiry';
+      const badges = [
+        r.waitingRoom ? '<span class="huddle-secure-badge">🚪 Waiting Room</span>' : '',
+        r.recordingEnabled ? '<span style="display:inline-flex;align-items:center;gap:4px;font-size:0.7rem;color:#dc2626;background:#fee2e2;padding:2px 7px;border-radius:9999px;font-weight:600;">⏺ Recording</span>' : '',
+      ].filter(Boolean).join(' ');
+      return `
+        <div class="meeting-room-card">
+          <div class="meeting-room-card-header">
+            <span class="meeting-room-icon">📹</span>
+            <div class="meeting-room-name">${escHtml(r.name)}</div>
+          </div>
+          <div class="meeting-room-meta">
+            <span>⏰ Expires ${escHtml(expiry)}</span>
+          </div>
+          ${badges ? `<div style="margin-bottom:10px;display:flex;flex-wrap:wrap;gap:6px;">${badges}</div>` : ''}
+          <div class="meeting-room-actions">
+            <button class="btn btn-primary btn-sm" style="flex:1;" data-room-url="${escAttr(r.url)}" data-room-name="${escAttr(r.name)}">Join</button>
+            <button class="btn btn-secondary btn-sm" data-copy-url="${escAttr(r.url)}" title="Copy join link">📋</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    grid.querySelectorAll('[data-room-url]').forEach(btn => {
+      btn.addEventListener('click', () => openPrejoin(btn.dataset.roomUrl, btn.dataset.roomName));
+    });
+    grid.querySelectorAll('[data-copy-url]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        navigator.clipboard.writeText(btn.dataset.copyUrl).then(() => toast('Room link copied!', 'success')).catch(() => toast('Copy failed', 'warning'));
+      });
+    });
+  }
+
+  async function openNewMeetingModal() {
+    const status = await apiFetch('/api/meetings/status').catch(() => ({ configured: false }));
+    if (!status.configured) {
+      toast('Daily.co is not configured. Set it up in Integrations first.', 'warning');
+      return;
+    }
+    document.getElementById('newMeetingName').value = '';
+    document.getElementById('newMeetingExpiry').value = '60';
+    document.getElementById('newMeetingMaxParticipants').value = '';
+    document.getElementById('newMeetingWaitingRoom').checked = false;
+    document.getElementById('newMeetingRecording').checked = false;
+    document.getElementById('newMeetingAudioOff').checked = false;
+    document.getElementById('newMeetingVideoOff').checked = false;
+    document.getElementById('newMeetingModal').classList.add('open');
+  }
+
+  async function createMeetingRoom() {
+    const btn = document.getElementById('createMeetingRoomBtn');
+    btn.disabled = true;
+    btn.textContent = 'Creating…';
+    try {
+      const data = await apiFetch('/api/meetings/create', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: document.getElementById('newMeetingName').value.trim(),
+          expiryMinutes: parseInt(document.getElementById('newMeetingExpiry').value),
+          maxParticipants: document.getElementById('newMeetingMaxParticipants').value || undefined,
+          waitingRoom: document.getElementById('newMeetingWaitingRoom').checked,
+          enableRecording: document.getElementById('newMeetingRecording').checked,
+          startAudioOff: document.getElementById('newMeetingAudioOff').checked,
+          startVideoOff: document.getElementById('newMeetingVideoOff').checked,
+        }),
+      });
+      document.getElementById('newMeetingModal').classList.remove('open');
+      openPrejoin(data.url, data.name);
+      if (currentView === 'meetings') loadMeetingsView();
+    } catch (err) {
+      toast(`Error: ${err.message}`, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '📹 Create Room &amp; Join';
+    }
+  }
+
+  document.getElementById('newMeetingBtn').addEventListener('click', openNewMeetingModal);
+  document.getElementById('createMeetingRoomBtn').addEventListener('click', createMeetingRoom);
+  document.getElementById('refreshRoomsBtn').addEventListener('click', loadMeetingsView);
+  document.getElementById('closeMeetingModalBtn').addEventListener('click', () => document.getElementById('newMeetingModal').classList.remove('open'));
+  document.getElementById('cancelMeetingModalBtn').addEventListener('click', () => document.getElementById('newMeetingModal').classList.remove('open'));
+
+  // ============================================================
+  // Internal Team Chat (floating widget)
+  // ============================================================
+  let teamChatOpen = false;
+  let teamChatLastTs = null;
+  let teamChatPollInterval = null;
+  // currentUserName is declared at top of script and set by login gate
+
+  function toggleTeamChat() {
+    teamChatOpen = !teamChatOpen;
+    document.getElementById('teamChatPanel').classList.toggle('open', teamChatOpen);
+    if (teamChatOpen) {
+      startTeamChatPoll();
+      document.getElementById('teamChatInput').focus();
+    } else {
+      stopTeamChatPoll();
+    }
+  }
+
+  function startTeamChatPoll() {
+    loadTeamChatMessages();
+    teamChatPollInterval = setInterval(loadTeamChatMessages, 3000);
+  }
+
+  function stopTeamChatPoll() {
+    if (teamChatPollInterval) { clearInterval(teamChatPollInterval); teamChatPollInterval = null; }
+  }
+
+  async function loadTeamChatMessages() {
+    const path = teamChatLastTs
+      ? `/api/internal-chat/messages?limit=100&since=${encodeURIComponent(teamChatLastTs)}`
+      : '/api/internal-chat/messages?limit=50';
+    try {
+      const data = await apiFetch(path);
+      const msgs = data.messages || [];
+      if (msgs.length > 0) {
+        renderTeamChatMessages(msgs, Boolean(teamChatLastTs));
+        teamChatLastTs = msgs[msgs.length - 1].created_at;
+      } else if (!teamChatLastTs) {
+        document.getElementById('teamChatMessages').innerHTML = `<div class="empty-state" style="padding:32px 16px;"><div class="icon">💬</div><p>No messages yet. Say hi!</p></div>`;
+      }
+    } catch (err) {
+      // Silently ignore poll errors to avoid spamming the user
+      console.error('Team chat poll error:', err.message);
+    }
+  }
+
+  function renderTeamChatMessages(messages, append) {
+    const container = document.getElementById('teamChatMessages');
+    if (!append) container.innerHTML = '';
+    messages.forEach(m => {
+      const isMine = m.sender_name === currentUserName;
+      const bubble = document.createElement('div');
+      bubble.innerHTML = `
+        ${!isMine ? `<div class="chat-bubble-meta">${escHtml(m.sender_name)}</div>` : ''}
+        <div class="chat-bubble ${isMine ? 'mine' : 'theirs'}">${escHtml(m.body)}</div>
+      `;
+      container.appendChild(bubble);
+    });
+    container.scrollTop = container.scrollHeight;
+  }
+
+  async function sendTeamChatMessage() {
+    const input = document.getElementById('teamChatInput');
+    const body = input.value.trim();
+    if (!body) return;
+
+    input.value = '';
+    const btn = document.getElementById('teamChatSend');
+    btn.disabled = true;
+    try {
+      await apiFetch('/api/internal-chat/send', { method: 'POST', body: JSON.stringify({ body, senderName: currentUserName }) });
+      // Immediately append optimistically and refresh
+      await loadTeamChatMessages();
+    } catch (err) {
+      toast(`Chat error: ${err.message}`, 'error');
+      input.value = body;
+    } finally {
+      btn.disabled = false;
+      input.focus();
+    }
+  }
+
+  // ============================================================
+  // AI Assistant Chat (floating widget)
+  // ============================================================
+  let aiChatOpen = false;
+  let aiMessages = []; // { role: 'user'|'assistant', content }
+  let aiStreaming = false;
+
+  function toggleAiChat() {
+    aiChatOpen = !aiChatOpen;
+    document.getElementById('aiChatPanel').classList.toggle('open', aiChatOpen);
+    if (aiChatOpen) document.getElementById('aiChatInput').focus();
+  }
+
+  async function sendAiMessage() {
+    if (aiStreaming) return;
+    const input = document.getElementById('aiChatInput');
+    const text = input.value.trim();
+    if (!text) return;
+
+    input.value = '';
+    aiMessages.push({ role: 'user', content: text });
+
+    const container = document.getElementById('aiChatMessages');
+
+    // Append user bubble
+    const userBubble = document.createElement('div');
+    userBubble.className = 'chat-bubble mine';
+    userBubble.textContent = text;
+    container.appendChild(userBubble);
+
+    // Show thinking indicator
+    const thinking = document.createElement('div');
+    thinking.className = 'ai-thinking';
+    thinking.textContent = '…';
+    container.appendChild(thinking);
+    container.scrollTop = container.scrollHeight;
+
+    aiStreaming = true;
+    document.getElementById('aiChatSend').disabled = true;
+
+    try {
+      const res = await fetch('/api/ai/chat/stream', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: aiMessages }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
+        throw new Error(err.error || `HTTP ${res.status}`);
+      }
+
+      thinking.remove();
+
+      const aiBubble = document.createElement('div');
+      aiBubble.className = 'chat-bubble ai-bubble';
+      container.appendChild(aiBubble);
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let aiText = '';
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop(); // keep incomplete line
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue;
+          const payload = line.slice(6);
+          if (payload === '[DONE]') break;
+          try {
+            const { text, error } = JSON.parse(payload);
+            if (error) throw new Error(error);
+            if (text) {
+              aiText += text;
+              aiBubble.textContent = aiText;
+              container.scrollTop = container.scrollHeight;
+            }
+          } catch { /* skip malformed */ }
+        }
+      }
+
+      aiMessages.push({ role: 'assistant', content: aiText });
+    } catch (err) {
+      thinking.remove();
+      const errBubble = document.createElement('div');
+      errBubble.className = 'chat-bubble theirs';
+      errBubble.style.color = 'var(--color-danger)';
+      errBubble.textContent = `Error: ${err.message}`;
+      container.appendChild(errBubble);
+      // Roll back user message so they can retry
+      aiMessages.pop();
+    } finally {
+      aiStreaming = false;
+      document.getElementById('aiChatSend').disabled = false;
+      container.scrollTop = container.scrollHeight;
+      input.focus();
+    }
+  }
+
+  // ============================================================
+  // Huddle Widget (Daily.co video calls + PiP)
+  // ============================================================
+  let huddleOpen = false;
+  let huddleMinimized = false;
+  let huddleInCall = false;
+  let huddleDailyConfigured = false;
+  let currentHuddleUrl = null;
+  let currentHuddleRoomName = null;
+  let prejoinPendingUrl = null;
+  let prejoinPendingName = null;
+
+  // Restore persisted state from sessionStorage on load
+  (function restoreHuddle() {
+    try {
+      const saved = JSON.parse(sessionStorage.getItem('cj_huddle') || 'null');
+      if (!saved) return;
+      if (saved.url) {
+        currentHuddleUrl = saved.url;
+        currentHuddleRoomName = saved.roomName || null;
+        huddleInCall = true;
+        document.getElementById('huddleFrame').src = saved.url;
+        document.getElementById('huddleFrame').classList.add('active');
+        document.getElementById('huddleLobby').style.display = 'none';
+        document.getElementById('huddleCallBar').classList.add('active');
+        document.getElementById('huddleSecureBadge').style.display = saved.secured ? '' : 'none';
+        const roomIdentifier = saved.roomName || saved.url.split('/').pop();
+        document.getElementById('huddleRoomLabel').textContent = roomIdentifier ? `Room: ${escHtml(roomIdentifier)}` : 'In a huddle';
+      }
+      if (saved.open) {
+        huddleOpen = true;
+        document.getElementById('huddleWidget').classList.add('open');
+      }
+      if (saved.minimized) {
+        huddleMinimized = true;
+        document.getElementById('huddleWidget').classList.add('minimized');
+      }
+      if (saved.right) document.getElementById('huddleWidget').style.right = saved.right;
+      if (saved.bottom) document.getElementById('huddleWidget').style.bottom = saved.bottom;
+    } catch { /* ignore */ }
+  })();
+
+  function saveHuddleState(secured) {
+    try {
+      const widget = document.getElementById('huddleWidget');
+      sessionStorage.setItem('cj_huddle', JSON.stringify({
+        url: currentHuddleUrl,
+        roomName: currentHuddleRoomName,
+        secured: Boolean(secured),
+        open: huddleOpen,
+        minimized: huddleMinimized,
+        right: widget.style.right || '',
+        bottom: widget.style.bottom || '',
+      }));
+    } catch { /* ignore */ }
+  }
+
+  async function openHuddleWidget() {
+    huddleOpen = true;
+    document.getElementById('huddleWidget').classList.add('open');
+    if (!huddleInCall) await loadHuddleLobby();
+    saveHuddleState();
+  }
+
+  function closeHuddleWidget() {
+    huddleOpen = false;
+    document.getElementById('huddleWidget').classList.remove('open');
+    saveHuddleState();
+  }
+
+  function toggleHuddle() {
+    if (huddleOpen) closeHuddleWidget();
+    else openHuddleWidget();
+  }
+
+  function toggleHuddleMinimize() {
+    huddleMinimized = !huddleMinimized;
+    document.getElementById('huddleWidget').classList.toggle('minimized', huddleMinimized);
+    document.getElementById('huddleMinimizeBtn').textContent = huddleMinimized ? '+' : '−';
+    saveHuddleState();
+  }
+
+  async function loadHuddleLobby() {
+    const note = document.getElementById('huddleNote');
+    const roomSection = document.getElementById('huddleRoomSection');
+    const roomList = document.getElementById('huddleRoomList');
+    const startBtn = document.getElementById('huddleStartBtn');
+    const createOpts = document.getElementById('huddleCreateOpts');
+    const prejoin = document.getElementById('huddlePrejoin');
+
+    // Ensure lobby is visible
+    document.getElementById('huddleLobby').style.display = '';
+    prejoin.style.display = 'none';
+
+    try {
+      const status = await apiFetch('/api/meetings/status');
+      huddleDailyConfigured = status.configured;
+
+      if (!huddleDailyConfigured) {
+        startBtn.disabled = true;
+        startBtn.textContent = '⚙️ Configure Daily.co first';
+        note.textContent = 'Go to Integrations → Daily.co to enter your API key and domain.';
+        roomSection.style.display = 'none';
+        createOpts.style.display = 'none';
+        return;
+      }
+
+      startBtn.disabled = false;
+      startBtn.textContent = '📹 Start New Huddle';
+      note.textContent = 'Start a video huddle with your team or jump into Google Meet.';
+      createOpts.style.display = '';
+
+      // Load active rooms
+      const data = await apiFetch('/api/meetings/rooms');
+      const rooms = data.rooms || [];
+      if (rooms.length) {
+        roomSection.style.display = 'block';
+        roomList.innerHTML = rooms.map(r => `
+          <div class="huddle-room-item">
+            <span class="huddle-room-item-name" title="${escAttr(r.name)}">🔴 ${escHtml(r.name)}</span>
+            <button class="btn btn-primary btn-sm js-join-room" data-url="${escAttr(r.url)}" data-name="${escAttr(r.name)}">Join</button>
+          </div>
+        `).join('');
+        roomList.querySelectorAll('.js-join-room').forEach(btn => {
+          btn.addEventListener('click', () => openPrejoin(btn.dataset.url, btn.dataset.name));
+        });
+      } else {
+        roomSection.style.display = 'none';
+      }
+    } catch (err) {
+      note.textContent = `Could not load status: ${err.message}`;
+    }
+  }
+
+  async function startNewHuddle() {
+    const btn = document.getElementById('huddleStartBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner" style="border-color:rgba(255,255,255,.3);border-top-color:#fff;"></span>';
+    try {
+      const data = await apiFetch('/api/meetings/create', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: document.getElementById('huddleRoomNameInput').value.trim(),
+          expiryMinutes: parseInt(document.getElementById('huddleExpirySelect').value),
+          waitingRoom: document.getElementById('huddleWaitingRoom').checked,
+          enableRecording: document.getElementById('huddleRecording').checked,
+        }),
+      });
+      openPrejoin(data.url, data.name);
+    } catch (err) {
+      toast(`Huddle error: ${err.message}`, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '📹 Start New Huddle';
+    }
+  }
+
+  // openPrejoin: show pre-join name/settings before loading the iframe
+  // Called from both lobby and meetings view
+  function openPrejoin(url, roomName) {
+    prejoinPendingUrl = url;
+    prejoinPendingName = roomName;
+
+    // Open the huddle widget if not already open
+    if (!huddleOpen) {
+      huddleOpen = true;
+      document.getElementById('huddleWidget').classList.add('open');
+    }
+
+    document.getElementById('huddleLobby').style.display = 'none';
+    document.getElementById('huddleCreateOpts').style.display = 'none';
+    document.getElementById('huddleFrame').classList.remove('active');
+    document.getElementById('huddleCallBar').classList.remove('active');
+
+    document.getElementById('prejoinRoomLabel').textContent = `Room: ${escHtml(roomName || url.split('/').pop())}`;
+    document.getElementById('huddlePrejoin').style.display = '';
+    document.getElementById('prejoinName').focus();
+  }
+
+  async function confirmPrejoin() {
+    if (!prejoinPendingUrl) return;
+
+    const userName = document.getElementById('prejoinName').value.trim();
+    const startAudioOff = document.getElementById('prejoinMicOff').checked;
+    const startVideoOff = document.getElementById('prejoinCamOff').checked;
+    const btn = document.getElementById('prejoinJoinBtn');
+    btn.disabled = true;
+    btn.textContent = 'Joining…';
+
+    // Extract room name from URL safely
+    let rawRoomName = prejoinPendingName;
+    if (!rawRoomName) {
+      try {
+        const parsedUrl = new URL(prejoinPendingUrl);
+        rawRoomName = parsedUrl.pathname.split('/').filter(Boolean).pop() || 'meeting';
+      } catch {
+        rawRoomName = 'meeting';
+      }
+    }
+    let finalUrl = prejoinPendingUrl;
+    let secured = false;
+
+    try {
+      // Attempt to get a meeting token for secure access
+      const tokenData = await apiFetch('/api/meetings/token', {
+        method: 'POST',
+        body: JSON.stringify({
+          roomName: rawRoomName,
+          userName: userName || undefined,
+          startAudioOff,
+          startVideoOff,
+        }),
+      });
+      if (tokenData.token) {
+        const baseUrl = prejoinPendingUrl.split('?')[0];
+        finalUrl = `${baseUrl}?t=${encodeURIComponent(tokenData.token)}`;
+        secured = true;
+      }
+    } catch {
+      // Token unavailable — join without token (Daily.co configured but token API failed)
+      // Still set user name via URL param if supported
+      if (userName) {
+        const sep = finalUrl.includes('?') ? '&' : '?';
+        finalUrl = `${finalUrl}${sep}userName=${encodeURIComponent(userName)}`;
+      }
+    }
+
+    joinHuddleRoomFinal(finalUrl, rawRoomName, secured);
+    btn.disabled = false;
+    btn.textContent = '🚀 Join Meeting';
+  }
+
+  function cancelPrejoin() {
+    prejoinPendingUrl = null;
+    prejoinPendingName = null;
+    document.getElementById('huddlePrejoin').style.display = 'none';
+    document.getElementById('huddleLobby').style.display = '';
+    document.getElementById('huddleCreateOpts').style.display = '';
+  }
+
+  function joinHuddleRoomFinal(url, name, secured) {
+    if (!url) return;
+    currentHuddleUrl = url;
+    currentHuddleRoomName = name;
+    huddleInCall = true;
+    prejoinPendingUrl = null;
+    prejoinPendingName = null;
+
+    document.getElementById('huddlePrejoin').style.display = 'none';
+
+    const frame = document.getElementById('huddleFrame');
+    frame.src = url;
+    frame.classList.add('active');
+
+    document.getElementById('huddleLobby').style.display = 'none';
+    document.getElementById('huddleCallBar').classList.add('active');
+    document.getElementById('huddleRoomLabel').textContent = name ? `Room: ${escHtml(name)}` : 'In a huddle';
+
+    const secureBadge = document.getElementById('huddleSecureBadge');
+    secureBadge.style.display = secured ? '' : 'none';
+
+    const startBtn = document.getElementById('huddleStartBtn');
+    startBtn.disabled = false;
+    startBtn.textContent = '📹 Start New Huddle';
+
+    saveHuddleState(secured);
+    toast(`Joined huddle: ${name || url}`, 'success');
+  }
+
+  function leaveHuddle() {
+    huddleInCall = false;
+    currentHuddleUrl = null;
+    currentHuddleRoomName = null;
+
+    const frame = document.getElementById('huddleFrame');
+    frame.src = '';
+    frame.classList.remove('active');
+
+    document.getElementById('huddlePrejoin').style.display = 'none';
+    document.getElementById('huddleLobby').style.display = '';
+    document.getElementById('huddleCreateOpts').style.display = '';
+    document.getElementById('huddleCallBar').classList.remove('active');
+    document.getElementById('huddleSecureBadge').style.display = 'none';
+
+    sessionStorage.removeItem('cj_huddle');
+    loadHuddleLobby();
+  }
+
+  function openGoogleMeet() {
+    window.open('https://meet.new', '_blank', 'noopener,noreferrer');
+  }
+
+  // Picture-in-Picture: use Document PiP API if available, otherwise open popup
+  async function requestHuddlePiP() {
+    if (!currentHuddleUrl) {
+      toast('No active huddle to pop out.', 'warning');
+      return;
+    }
+
+    if (window.documentPictureInPicture) {
+      try {
+        const pipWin = await window.documentPictureInPicture.requestWindow({ width: 420, height: 320 });
+        const iframe = pipWin.document.createElement('iframe');
+        iframe.src = currentHuddleUrl;
+        iframe.setAttribute('allow', 'camera; microphone; fullscreen; display-capture; autoplay; picture-in-picture');
+        iframe.style.cssText = 'width:100%;height:100%;border:none;background:#000;';
+        pipWin.document.body.style.cssText = 'margin:0;padding:0;background:#000;overflow:hidden;';
+        pipWin.document.body.appendChild(iframe);
+        toast('Huddle popped out!', 'success');
+        return;
+      } catch (err) {
+        // Fall through to popup
+      }
+    }
+    // Fallback: open in a small popup window
+    window.open(
+      currentHuddleUrl,
+      'huddlePiP',
+      'width=440,height=340,resizable=yes,scrollbars=no,toolbar=no,menubar=no,location=no,status=no'
+    );
+    toast('Huddle opened in popup window.', 'success');
+  }
+
+  // Draggable huddle widget
+  (function initHuddleDrag() {
+    const widget = document.getElementById('huddleWidget');
+    const handle = document.getElementById('huddleHeader');
+    let dragging = false, startX, startY, origRight, origBottom;
+
+    handle.addEventListener('mousedown', (e) => {
+      // Don't drag when clicking header buttons
+      if (e.target.closest('.huddle-header-btns')) return;
+      dragging = true;
+      const rect = widget.getBoundingClientRect();
+      startX = e.clientX;
+      startY = e.clientY;
+      origRight = window.innerWidth - rect.right;
+      origBottom = window.innerHeight - rect.bottom;
+      widget.style.right = origRight + 'px';
+      widget.style.bottom = origBottom + 'px';
+      widget.style.left = 'auto';
+      widget.style.top = 'auto';
+      widget.style.transition = 'none';
+      document.body.style.userSelect = 'none';
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (!dragging) return;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      const newRight = Math.max(0, origRight - dx);
+      const newBottom = Math.max(0, origBottom - dy);
+      widget.style.right = Math.min(newRight, window.innerWidth - 60) + 'px';
+      widget.style.bottom = Math.min(newBottom, window.innerHeight - 40) + 'px';
+    });
+
+    document.addEventListener('mouseup', () => {
+      if (!dragging) return;
+      dragging = false;
+      widget.style.transition = '';
+      document.body.style.userSelect = '';
+      saveHuddleState();
+    });
+  })();
+
+  // ============================================================
+  // New event listeners
+  // ============================================================
+  document.getElementById('gmailComposeBtn').addEventListener('click', () => openModal('gmailComposeModal'));
+  document.getElementById('gmailSendBtn').addEventListener('click', sendGmail);
+
+  document.getElementById('slackSendBtn').addEventListener('click', sendSlackMessage);
+  document.getElementById('slackComposeInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') sendSlackMessage(); });
+
+  document.getElementById('testWebhookBtn').addEventListener('click', testWebhook);
+  document.getElementById('copyWebhookUrlBtn').addEventListener('click', copyWebhookUrl);
+
+  document.getElementById('fabHuddle').addEventListener('click', toggleHuddle);
+  document.getElementById('huddleCloseBtn').addEventListener('click', closeHuddleWidget);
+  document.getElementById('huddleMinimizeBtn').addEventListener('click', toggleHuddleMinimize);
+  document.getElementById('huddlePipBtn').addEventListener('click', requestHuddlePiP);
+  document.getElementById('huddleStartBtn').addEventListener('click', startNewHuddle);
+  document.getElementById('huddleMeetBtn').addEventListener('click', openGoogleMeet);
+  document.getElementById('huddleLeaveBtn').addEventListener('click', leaveHuddle);
+  document.getElementById('huddlePipCallBtn').addEventListener('click', requestHuddlePiP);
+  document.getElementById('prejoinJoinBtn').addEventListener('click', confirmPrejoin);
+  document.getElementById('prejoinCancelBtn').addEventListener('click', cancelPrejoin);
+  document.getElementById('prejoinName').addEventListener('keydown', (e) => { if (e.key === 'Enter') confirmPrejoin(); });
+
+  document.getElementById('fabTeam').addEventListener('click', toggleTeamChat);
+  document.getElementById('fabAi').addEventListener('click', toggleAiChat);
+  document.getElementById('closeTeamChat').addEventListener('click', toggleTeamChat);
+  document.getElementById('closeAiChat').addEventListener('click', toggleAiChat);
+
+  document.getElementById('teamChatSend').addEventListener('click', sendTeamChatMessage);
+  document.getElementById('teamChatInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') sendTeamChatMessage(); });
+
+  document.getElementById('aiChatSend').addEventListener('click', sendAiMessage);
+  document.getElementById('aiChatInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') sendAiMessage(); });
+
+  // loadView is now called by boot() above after login resolves
+
+  // ============================================================
+  // Conversation Thread
+  // ============================================================
+  let activeConversationId = null;
+
+  function openConversationThread(conv) {
+    activeConversationId = conv.id;
+    const clientName = conv.client?.name || conv.phone_number;
+    document.getElementById('convThreadTitle').textContent = clientName;
+    document.getElementById('convThreadPhone').textContent = conv.phone_number;
+    document.getElementById('convThreadReplyInput').value = '';
+    document.getElementById('convThreadMessages').innerHTML =
+      '<div class="empty-state"><div class="icon">⏳</div><p>Loading…</p></div>';
+    openModal('conversationThreadModal');
+
+    // Mark as read
+    apiFetch(`/api/sms/conversations/${conv.id}/read`, { method: 'PATCH' }).catch(() => {});
+
+    loadConversationThread(conv.id);
+  }
+
+  async function loadConversationThread(convId) {
+    try {
+      const data = await apiFetch(`/api/sms/conversations/${convId}/messages?limit=100`);
+      renderConversationThread(data.messages || []);
+    } catch (err) {
+      document.getElementById('convThreadMessages').innerHTML =
+        `<div class="empty-state"><div class="icon">⚠️</div><p>${escHtml(err.message)}</p></div>`;
+    }
+  }
+
+  function renderConversationThread(messages) {
+    const el = document.getElementById('convThreadMessages');
+    if (!messages.length) {
+      el.innerHTML = '<div class="empty-state"><div class="icon">💬</div><p>No messages yet. Send the first one below!</p></div>';
+      return;
+    }
+    el.innerHTML = messages.map(m => {
+      const isOutbound = m.direction === 'outbound';
+      const sender = isOutbound ? (m.sender?.name || 'Team') : 'Client';
+      const time = new Date(m.created_at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+      const align = isOutbound ? 'flex-end' : 'flex-start';
+      const bubbleClass = isOutbound ? 'mine' : 'theirs';
+      return `
+        <div style="display:flex;flex-direction:column;align-items:${align};">
+          <div style="font-size:0.7rem;color:var(--color-gray-400);margin-bottom:2px;">${escHtml(sender)} · ${escHtml(time)}</div>
+          <div class="chat-bubble ${bubbleClass}" style="max-width:80%;">${escHtml(m.body)}</div>
+        </div>`;
+    }).join('');
+    el.scrollTop = el.scrollHeight;
+  }
+
+  async function sendConversationReply() {
+    if (!activeConversationId) return;
+    const message = document.getElementById('convThreadReplyInput').value.trim();
+    if (!message) return;
+
+    const btn = document.getElementById('convThreadSendBtn');
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+    try {
+      await apiFetch(`/api/sms/conversations/${activeConversationId}/reply`, {
+        method: 'POST',
+        body: JSON.stringify({ message }),
+      });
+      document.getElementById('convThreadReplyInput').value = '';
+      await loadConversationThread(activeConversationId);
+      loadConversations();
+    } catch (err) {
+      toast(`Reply failed: ${err.message}`, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Send';
+    }
+  }
+
+  document.getElementById('convThreadSendBtn').addEventListener('click', sendConversationReply);
+  document.getElementById('convThreadReplyInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) sendConversationReply();
+  });
+
+  // Wire up conversation items to open thread (delegated)
+  document.getElementById('conversationList').addEventListener('click', (e) => {
+    const item = e.target.closest('.conversation-item[data-conv-id]');
+    if (!item) return;
+    const convId = item.dataset.convId;
+    const conv = allConversations.find(c => c.id === convId);
+    if (conv) openConversationThread(conv);
+  });
+
+  // ============================================================
+  // Templates
+  // ============================================================
+  let allTemplates = [];
+  let templateSendId = null;
+  let templateSendType = null;
+
+  async function loadTemplates() {
+    try {
+      const data = await apiFetch('/api/templates');
+      allTemplates = data.templates || [];
+      renderTemplates(allTemplates);
+    } catch (err) {
+      document.getElementById('templateTableBody').innerHTML =
+        `<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--color-danger);">${escHtml(err.message)}</td></tr>`;
+    }
+  }
+
+  function renderTemplates(templates) {
+    const tbody = document.getElementById('templateTableBody');
+    if (!templates.length) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:32px;color:#9ca3af;">No templates yet. Click <strong>+ New Template</strong> to create one.</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = templates.map(t => {
+      const vars = (t.variables || []).length ? t.variables.map(v => `<code style="font-size:0.7rem;background:var(--color-gray-100);padding:1px 4px;border-radius:3px;">{{${escHtml(v)}}}</code>`).join(' ') : '–';
+      const preview = t.subject || t.body.slice(0, 60) + (t.body.length > 60 ? '…' : '');
+      return `
+        <tr>
+          <td><strong>${escHtml(t.name)}</strong></td>
+          <td><span class="badge badge-${t.type === 'email' ? 'external' : 'internal'}">${escHtml(t.type)}</span></td>
+          <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(preview)}</td>
+          <td>${vars}</td>
+          <td>
+            <button class="btn btn-primary btn-sm js-send-template" data-id="${escAttr(t.id)}" data-type="${escAttr(t.type)}">📤 Send</button>
+            <button class="btn btn-secondary btn-sm js-edit-template" data-id="${escAttr(t.id)}">✏️</button>
+            <button class="btn btn-secondary btn-sm js-del-template" data-id="${escAttr(t.id)}" data-name="${escAttr(t.name)}">🗑️</button>
+          </td>
+        </tr>`;
+    }).join('');
+
+    tbody.querySelectorAll('.js-send-template').forEach(btn => {
+      btn.addEventListener('click', () => openTemplateSend(btn.dataset.id, btn.dataset.type));
+    });
+    tbody.querySelectorAll('.js-edit-template').forEach(btn => {
+      btn.addEventListener('click', () => openTemplateEdit(btn.dataset.id));
+    });
+    tbody.querySelectorAll('.js-del-template').forEach(btn => {
+      btn.addEventListener('click', () => deleteTemplate(btn.dataset.id, btn.dataset.name));
+    });
+  }
+
+  function openNewTemplate() {
+    document.getElementById('templateEditId').value = '';
+    document.getElementById('templateModalTitle').textContent = '📝 New Template';
+    document.getElementById('templateName').value = '';
+    document.getElementById('templateType').value = 'sms';
+    document.getElementById('templateSubject').value = '';
+    document.getElementById('templateBody').value = '';
+    document.getElementById('templateSubjectGroup').style.display = 'none';
+    openModal('templateModal');
+  }
+
+  function openTemplateEdit(id) {
+    const t = allTemplates.find(x => x.id === id);
+    if (!t) return;
+    document.getElementById('templateEditId').value = t.id;
+    document.getElementById('templateModalTitle').textContent = '✏️ Edit Template';
+    document.getElementById('templateName').value = t.name;
+    document.getElementById('templateType').value = t.type;
+    document.getElementById('templateSubject').value = t.subject || '';
+    document.getElementById('templateBody').value = t.body;
+    document.getElementById('templateSubjectGroup').style.display = t.type === 'email' ? '' : 'none';
+    openModal('templateModal');
+  }
+
+  document.getElementById('templateType').addEventListener('change', function () {
+    document.getElementById('templateSubjectGroup').style.display = this.value === 'email' ? '' : 'none';
+  });
+
+  async function saveTemplate() {
+    const id = document.getElementById('templateEditId').value;
+    const name = document.getElementById('templateName').value.trim();
+    const type = document.getElementById('templateType').value;
+    const subject = document.getElementById('templateSubject').value.trim();
+    const body = document.getElementById('templateBody').value.trim();
+
+    if (!name || !body) { toast('Name and body are required.', 'warning'); return; }
+    if (type === 'email' && !subject) { toast('Subject is required for email templates.', 'warning'); return; }
+
+    const payload = { name, type, body };
+    if (type === 'email') payload.subject = subject;
+
+    const btn = document.getElementById('saveTemplateBtn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+    try {
+      if (id) {
+        await apiFetch(`/api/templates/${id}`, { method: 'PUT', body: JSON.stringify(payload) });
+        toast('Template updated!', 'success');
+      } else {
+        await apiFetch('/api/templates', { method: 'POST', body: JSON.stringify(payload) });
+        toast('Template created!', 'success');
+      }
+      closeModal('templateModal');
+      loadTemplates();
+    } catch (err) {
+      toast(`Error: ${err.message}`, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '💾 Save Template';
+    }
+  }
+
+  async function deleteTemplate(id, name) {
+    if (!confirm(`Delete template "${name}"?`)) return;
+    try {
+      await apiFetch(`/api/templates/${id}`, { method: 'DELETE' });
+      toast('Template deleted.', 'success');
+      loadTemplates();
+    } catch (err) {
+      toast(`Error: ${err.message}`, 'error');
+    }
+  }
+
+  async function openTemplateSend(id, type) {
+    templateSendId = id;
+    templateSendType = type;
+    const t = allTemplates.find(x => x.id === id);
+    if (!t) return;
+
+    document.getElementById('templateSendTitle').textContent = `📤 Send: ${t.name}`;
+    document.getElementById('templateSendPreview').style.display = 'none';
+
+    // Build variable inputs
+    const vars = t.variables || [];
+    const varHtml = vars.length ? vars.map(v => `
+      <div class="form-group">
+        <label class="form-label">{{${escHtml(v)}}}</label>
+        <input class="form-control template-var-input" data-var="${escAttr(v)}" placeholder="Value for ${escHtml(v)}" />
+      </div>`).join('') : '';
+    document.getElementById('templateSendVars').innerHTML = varHtml;
+
+    // Show/hide recipient field based on type
+    const toGroup = document.getElementById('templateSendToGroup');
+    toGroup.style.display = type === 'sms' ? '' : 'none';
+
+    // Load client options
+    const select = document.getElementById('templateSendClient');
+    select.innerHTML = '<option value="">– Select a client –</option>' +
+      allClients.map(c => `<option value="${escAttr(c.id)}" data-phone="${escAttr(c.phone)}" data-name="${escAttr(c.name)}" data-email="${escAttr(c.email || '')}">${escHtml(c.name)} (${escHtml(c.phone)})</option>`).join('');
+
+    openModal('templateSendModal');
+  }
+
+  async function previewTemplateSend() {
+    if (!templateSendId) return;
+    const values = {};
+    document.querySelectorAll('#templateSendVars .template-var-input').forEach(inp => {
+      values[inp.dataset.var] = inp.value;
+    });
+    try {
+      const data = await apiFetch(`/api/templates/${templateSendId}/render`, {
+        method: 'POST', body: JSON.stringify({ variables: values }),
+      });
+      const preview = document.getElementById('templateSendPreview');
+      preview.style.display = '';
+      document.getElementById('templateSendPreviewBody').textContent = data.rendered.body;
+    } catch (err) {
+      toast(`Preview error: ${err.message}`, 'error');
+    }
+  }
+
+  async function sendTemplateSend() {
+    if (!templateSendId || !templateSendType) return;
+    const values = {};
+    document.querySelectorAll('#templateSendVars .template-var-input').forEach(inp => {
+      values[inp.dataset.var] = inp.value;
+    });
+
+    const btn = document.getElementById('templateSendConfirmBtn');
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+
+    try {
+      // Render the template
+      const rendered = await apiFetch(`/api/templates/${templateSendId}/render`, {
+        method: 'POST', body: JSON.stringify({ variables: values }),
+      });
+
+      if (templateSendType === 'sms') {
+        const clientOpt = document.getElementById('templateSendClient');
+        const selected = clientOpt.options[clientOpt.selectedIndex];
+        const phone = selected?.dataset?.phone;
+        if (!phone) { toast('Select a client to send to.', 'warning'); return; }
+        const clientId = clientOpt.value || undefined;
+        await apiFetch('/api/sms/send-external', {
+          method: 'POST',
+          body: JSON.stringify({ to: phone, message: rendered.rendered.body, clientId }),
+        });
+        toast('SMS sent!', 'success');
+      } else {
+        const clientOpt = document.getElementById('templateSendClient');
+        const selected = clientOpt.options[clientOpt.selectedIndex];
+        const email = selected?.dataset?.email;
+        if (!email) { toast('Select a client with an email address.', 'warning'); return; }
+        await apiFetch('/api/gmail/send', {
+          method: 'POST',
+          body: JSON.stringify({ to: email, subject: rendered.rendered.subject || '(no subject)', body: rendered.rendered.body }),
+        });
+        toast('Email sent!', 'success');
+      }
+      closeModal('templateSendModal');
+    } catch (err) {
+      toast(`Error: ${err.message}`, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '📤 Send';
+    }
+  }
+
+  document.getElementById('newTemplateBtn').addEventListener('click', openNewTemplate);
+  document.getElementById('saveTemplateBtn').addEventListener('click', saveTemplate);
+  document.getElementById('templateSendPreviewBtn').addEventListener('click', previewTemplateSend);
+  document.getElementById('templateSendConfirmBtn').addEventListener('click', sendTemplateSend);
+
+  // ============================================================
+  // Brand Settings
+  // ============================================================
+  function updateBrandPreview() {
+    const name = document.getElementById('brandCompanyName').value || 'Company Name';
+    const tagline = document.getElementById('brandTagline').value || 'Your tagline';
+    const footer = document.getElementById('brandFooterText').value || 'Footer text';
+    const primary = document.getElementById('brandPrimaryColor').value || '#4F46E5';
+
+    document.getElementById('brandPreviewHeader').style.background = primary;
+    document.getElementById('brandPreviewName').textContent = name;
+    document.getElementById('brandPreviewTagline').textContent = tagline;
+    document.getElementById('brandPreviewFooter').textContent = footer;
+  }
+
+  // Sync color picker ↔ text input
+  document.getElementById('brandPrimaryColorPicker').addEventListener('input', function () {
+    document.getElementById('brandPrimaryColor').value = this.value;
+    updateBrandPreview();
+  });
+  document.getElementById('brandSecondaryColorPicker').addEventListener('input', function () {
+    document.getElementById('brandSecondaryColor').value = this.value;
+  });
+  document.getElementById('brandPrimaryColor').addEventListener('input', function () {
+    if (/^#[0-9A-Fa-f]{6}$/.test(this.value)) {
+      document.getElementById('brandPrimaryColorPicker').value = this.value;
+      updateBrandPreview();
+    }
+  });
+  ['brandCompanyName', 'brandTagline', 'brandFooterText'].forEach(id => {
+    document.getElementById(id).addEventListener('input', updateBrandPreview);
+  });
+
+  async function loadBrand() {
+    try {
+      const data = await apiFetch('/api/brand');
+      const b = data.brand || {};
+      document.getElementById('brandCompanyName').value = b.company_name || '';
+      document.getElementById('brandLogoUrl').value = b.logo_url || '';
+      document.getElementById('brandTagline').value = b.tagline || '';
+      document.getElementById('brandFooterText').value = b.footer_text || '';
+      const primary = b.primary_color || '#4F46E5';
+      const secondary = b.secondary_color || '#7C3AED';
+      document.getElementById('brandPrimaryColor').value = primary;
+      document.getElementById('brandSecondaryColor').value = secondary;
+      document.getElementById('brandPrimaryColorPicker').value = primary;
+      document.getElementById('brandSecondaryColorPicker').value = secondary;
+      updateBrandPreview();
+    } catch (err) {
+      console.error('Load brand error:', err.message);
+    }
+  }
+
+  async function saveBrand() {
+    const payload = {
+      company_name: document.getElementById('brandCompanyName').value.trim() || undefined,
+      logo_url: document.getElementById('brandLogoUrl').value.trim() || undefined,
+      tagline: document.getElementById('brandTagline').value.trim() || undefined,
+      footer_text: document.getElementById('brandFooterText').value.trim() || undefined,
+      primary_color: document.getElementById('brandPrimaryColor').value.trim() || undefined,
+      secondary_color: document.getElementById('brandSecondaryColor').value.trim() || undefined,
+    };
+    // Remove undefined keys
+    Object.keys(payload).forEach(k => payload[k] === undefined && delete payload[k]);
+
+    const btn = document.getElementById('saveBrandBtn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+    try {
+      await apiFetch('/api/brand', { method: 'PUT', body: JSON.stringify(payload) });
+      toast('Brand settings saved!', 'success');
+    } catch (err) {
+      toast(`Error: ${err.message}`, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '💾 Save';
+    }
+  }
+
+  document.getElementById('saveBrandBtn').addEventListener('click', saveBrand);
+
+  // ============================================================
+  // Activity Log
+  // ============================================================
+  async function loadActivity() {
+    try {
+      const data = await apiFetch('/api/activity?limit=100');
+      renderActivity(data.activity || []);
+    } catch (err) {
+      document.getElementById('activityTableBody').innerHTML =
+        `<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--color-danger);">${escHtml(err.message)}</td></tr>`;
+    }
+  }
+
+  function renderActivity(activities) {
+    const tbody = document.getElementById('activityTableBody');
+    if (!activities.length) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:#9ca3af;">No activity recorded yet.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = activities.map(a => {
+      const time = new Date(a.created_at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+      const user = a.user?.name || a.user?.email || '–';
+      const details = a.details ? Object.entries(a.details).map(([k, v]) => `${k}: ${typeof v === 'object' ? JSON.stringify(v) : v}`).join(', ') : '–';
+      const action = a.action.replace(/_/g, ' ');
+      return `
+        <tr>
+          <td style="white-space:nowrap;font-size:0.8125rem;">${escHtml(time)}</td>
+          <td style="font-size:0.8125rem;">${escHtml(user)}</td>
+          <td><span style="font-size:0.8125rem;font-weight:500;">${escHtml(action)}</span></td>
+          <td style="font-size:0.8125rem;">${escHtml(a.entity_type || '–')}</td>
+          <td style="font-size:0.75rem;color:var(--color-gray-500);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escAttr(details)}">${escHtml(details.slice(0, 80))}</td>
+        </tr>`;
+    }).join('');
+  }
+
+  document.getElementById('refreshActivityBtn').addEventListener('click', loadActivity);
+
+  // ============================================================
+  // Client Edit
+  // ============================================================
+  function openEditClient(id) {
+    const c = allClients.find(x => x.id === id);
+    if (!c) return;
+    document.getElementById('editClientId').value = c.id;
+    document.getElementById('editClientName').value = c.name || '';
+    document.getElementById('editClientCompany').value = c.company || '';
+    document.getElementById('editClientPhone').value = c.phone || '';
+    document.getElementById('editClientEmail').value = c.email || '';
+    document.getElementById('editClientNotes').value = c.notes || '';
+    openModal('editClientModal');
+  }
+
+  async function saveEditClient() {
+    const id = document.getElementById('editClientId').value;
+    const name = document.getElementById('editClientName').value.trim();
+    const phone = document.getElementById('editClientPhone').value.trim();
+
+    if (!name || !phone) { toast('Name and phone are required.', 'warning'); return; }
+
+    const payload = {
+      name,
+      phone,
+      company: document.getElementById('editClientCompany').value.trim() || null,
+      email: document.getElementById('editClientEmail').value.trim() || null,
+      notes: document.getElementById('editClientNotes').value.trim() || null,
+    };
+
+    const btn = document.getElementById('saveEditClientBtn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+    try {
+      await apiFetch(`/api/clients/${id}`, { method: 'PATCH', body: JSON.stringify(payload) });
+      toast('Client updated!', 'success');
+      closeModal('editClientModal');
+      loadClients();
+      loadClientOptions();
+    } catch (err) {
+      toast(`Error: ${err.message}`, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '💾 Save Changes';
+    }
+  }
+
+  document.getElementById('saveEditClientBtn').addEventListener('click', saveEditClient);
+
+  // ============================================================
+  // Gmail Reply
+  // ============================================================
+  function openGmailReply(messageData) {
+    const from = messageData.from || '';
+    // Extract just the email address from "Name <email@example.com>"
+    const emailMatch = from.match(/<([^>]+)>/) || [null, from];
+    const replyTo = emailMatch[1] || from;
+    const subject = messageData.subject || '';
+    const replySubject = subject.toLowerCase().startsWith('re:') ? subject : `Re: ${subject}`;
+
+    document.getElementById('gmailReplyTo').value = replyTo;
+    document.getElementById('gmailReplyToDisplay').value = from;
+    document.getElementById('gmailReplySubject').value = replySubject;
+    document.getElementById('gmailReplyBody').value = '';
+    openModal('gmailReplyModal');
+  }
+
+  async function sendGmailReply() {
+    const to = document.getElementById('gmailReplyTo').value.trim();
+    const subject = document.getElementById('gmailReplySubject').value.trim();
+    const body = document.getElementById('gmailReplyBody').value.trim();
+
+    if (!to || !subject || !body) { toast('To, Subject, and Message are required.', 'warning'); return; }
+
+    const btn = document.getElementById('gmailReplySendBtn');
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+    try {
+      await apiFetch('/api/gmail/send', { method: 'POST', body: JSON.stringify({ to, subject, body }) });
+      toast('Reply sent!', 'success');
+      closeModal('gmailReplyModal');
+    } catch (err) {
+      toast(`Error: ${err.message}`, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '📤 Send Reply';
+    }
+  }
+
+  document.getElementById('gmailReplySendBtn').addEventListener('click', sendGmailReply);
+
+  // ============================================================
+  // User Status Update
+  // ============================================================
+  async function openUserStatus(userId, currentStatus, currentMessage) {
+    document.getElementById('statusUserId').value = userId;
+    document.getElementById('statusMessage').value = currentMessage || '';
+    // Set the matching radio
+    document.querySelectorAll('[name="statusPick"]').forEach(r => {
+      r.checked = r.value === (currentStatus || 'online');
+    });
+    openModal('userStatusModal');
+  }
+
+  async function saveUserStatus() {
+    const userId = document.getElementById('statusUserId').value;
+    const status = document.querySelector('[name="statusPick"]:checked')?.value || 'online';
+    const statusMessage = document.getElementById('statusMessage').value.trim();
+
+    const btn = document.getElementById('saveStatusBtn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+    try {
+      await apiFetch(`/api/users/${userId}/status`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status, statusMessage }),
+      });
+      toast('Status updated!', 'success');
+      closeModal('userStatusModal');
+      if (currentView === 'users') loadTeam();
+    } catch (err) {
+      toast(`Error: ${err.message}`, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '✅ Update Status';
+    }
+  }
+
+  document.getElementById('saveStatusBtn').addEventListener('click', saveUserStatus);
+
+  // ============================================================
+  // Fix SlickText status in integrations — handled in loadIntegrations() above
+  // ============================================================
+</script>
+
+</body>
+</html>
