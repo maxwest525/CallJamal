@@ -19,8 +19,8 @@ const authUrlLimiter = rateLimit({
  * GET /api/gmail/status
  * Returns whether Gmail is connected
  */
-router.get('/status', (req, res) => {
-  res.json({ connected: getTokens() !== null });
+router.get('/status', async (req, res) => {
+  const tokens = await getTokens(); res.json({ connected: tokens !== null });
 });
 
 /**
@@ -50,7 +50,7 @@ router.get('/inbox', async (req, res) => {
   const { maxResults = 20, pageToken } = req.query;
 
   try {
-    const auth = getAuthenticatedClient();
+    const auth = await getAuthenticatedClient();
     const gmail = google.gmail({ version: 'v1', auth });
 
     const listParams = {
@@ -106,7 +106,7 @@ router.get('/inbox', async (req, res) => {
 router.get('/message/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    const auth = getAuthenticatedClient();
+    const auth = await getAuthenticatedClient();
     const gmail = google.gmail({ version: 'v1', auth });
     const r = await gmail.users.messages.get({ userId: 'me', id, format: 'full' });
     const headers = {};
@@ -142,7 +142,7 @@ router.post('/send', async (req, res) => {
   }
 
   try {
-    const auth = getAuthenticatedClient();
+    const auth = await getAuthenticatedClient();
     const gmail = google.gmail({ version: 'v1', auth });
 
     // Get the authenticated user's email address
@@ -186,7 +186,7 @@ router.post('/send', async (req, res) => {
 router.patch('/message/:id/read', async (req, res) => {
   const { id } = req.params;
   try {
-    const auth = getAuthenticatedClient();
+    const auth = await getAuthenticatedClient();
     const gmail = google.gmail({ version: 'v1', auth });
     await gmail.users.messages.modify({
       userId: 'me',

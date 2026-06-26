@@ -56,7 +56,8 @@ router.get('/google/callback', authLimiter, async (req, res) => {
   try {
     const oauth2Client = getOAuth2Client();
     const { tokens } = await oauth2Client.getToken(code);
-    setTokens(tokens);
+    // Persist tokens to Supabase (survives server restarts)
+    await setTokens(tokens);
 
     // Redirect back to the app with a success flag
     res.redirect('/?gmail_connected=1');
@@ -100,9 +101,10 @@ router.post('/verify-token', authLimiter, async (req, res) => {
  * GET /auth/status
  * Returns current connection status for the frontend
  */
-router.get('/status', (req, res) => {
+router.get('/status', async (req, res) => {
+  const tokens = await getTokens();
   res.json({
-    gmailConnected: getTokens() !== null,
+    gmailConnected: tokens !== null,
   });
 });
 
