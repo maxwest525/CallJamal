@@ -156,7 +156,7 @@ router.post('/broadcast', async (req, res) => {
     }));
 
     const { error: insertError } = await supabase.from('messages').insert(broadcastRecords);
-    if (insertError) console.error('Broadcast insert error:', insertError.message);
+    if (insertError) throw new Error(`Broadcast DB insert failed: ${insertError.message}`);
 
     await logActivity({
       userId: senderId,
@@ -175,9 +175,19 @@ router.post('/broadcast', async (req, res) => {
 /**
  * POST /api/sms/webhook
  * Incoming SMS webhook from SlickText
- * SlickText will POST here when a client replies to the shared number
+ * SlickText will POST here when a client replies to the shared number.
+ * Set SMS_WEBHOOK_SECRET env var and pass it as ?secret=… or X-Webhook-Secret header
+ * to authenticate inbound webhooks.
  */
 router.post('/webhook', async (req, res) => {
+  const webhookSecret = process.env.SMS_WEBHOOK_SECRET;
+  if (webhookSecret) {
+    const provided = req.query.secret || req.headers['x-webhook-secret'] || '';
+    if (provided !== webhookSecret) {
+      return res.status(401).json({ error: 'Unauthorized webhook request' });
+    }
+  }
+
   const { from, to, body: messageBody, id: slicktextId } = req.body;
 
   if (!from || !messageBody) {

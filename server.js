@@ -48,7 +48,14 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json({
+  verify: (req, _res, buf) => {
+    // Preserve raw body for Slack HMAC signature verification
+    if (req.url && req.url.startsWith('/api/slack/events')) {
+      req.rawBody = buf.toString('utf8');
+    }
+  },
+}));
 app.use(express.urlencoded({ extended: true }));
 
 // Rate limiting for API routes

@@ -89,32 +89,33 @@ router.post('/send', async (req, res) => {
 /**
  * POST /api/slack/events
  * Incoming Slack Events API webhook
- * Handles URL verification and message events
- *
- * Note: express.json() on the app level will parse the body before this route runs.
- * We use req.body directly (already parsed object) and skip raw-body signature verification.
- * For production, add a rawBody capture middleware before express.json() to enable
- * proper HMAC verification via verifySlackSignature().
+ * Handles URL verification and message events.
+ * Raw body is captured in server.js for HMAC verification.
  */
 router.post('/events', (req, res) => {
+  const signingSecret = process.env.SLACK_SIGNING_SECRET;
+  if (signingSecret && req.rawBody) {
+    const sig = req.headers['x-slack-signature'];
+    const ts = req.headers['x-slack-request-timestamp'];
+    if (!sig || !ts || !verifySlackSignature(signingSecret, sig, ts, req.rawBody)) {
+      return res.status(401).json({ error: 'Invalid Slack signature' });
+    }
+  }
+
   const payload = req.body;
 
   if (!payload || typeof payload !== 'object') {
     return res.status(400).json({ error: 'Invalid JSON payload' });
   }
 
-  // Slack URL verification challenge
   if (payload.type === 'url_verification') {
     return res.json({ challenge: payload.challenge });
   }
 
-  // Handle incoming events
   if (payload.type === 'event_callback') {
     const event = payload.event;
-    // Log incoming message events (non-bot)
     if (event?.type === 'message' && !event.bot_id) {
       console.log(`[Slack] ${event.channel}: <${event.user}> ${event.text}`);
-      // TODO: persist incoming Slack messages to DB if needed
     }
   }
 
