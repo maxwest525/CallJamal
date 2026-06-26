@@ -310,10 +310,10 @@ router.get('/:id/conversations', async (req, res) => {
  * Query: { limit, offset }
  */
 router.get('/conversations/all', async (req, res) => {
-  const { limit = 20, offset = 0 } = req.query;
+  const { limit = 20, offset = 0, assignedTo, unassigned } = req.query;
 
   try {
-    const { data, error } = await supabase
+    let query = supabase
       .from('sms_conversations')
       .select(`
         *,
@@ -323,6 +323,10 @@ router.get('/conversations/all', async (req, res) => {
       .order('last_message_at', { ascending: false })
       .range(Number(offset), Number(offset) + Number(limit) - 1);
 
+    if (assignedTo) query = query.eq('assigned_to', assignedTo);
+    if (unassigned === 'true') query = query.is('assigned_to', null);
+
+    const { data, error } = await query;
     if (error) throw new Error(error.message);
 
     res.json({ conversations: data });

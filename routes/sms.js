@@ -28,6 +28,11 @@ router.post('/send-external', async (req, res) => {
       lastMessage: message,
     });
 
+    // Auto-assign conversation to the sender so it shows in their inbox
+    if (senderId && !conversation.assigned_to) {
+      await supabase.from('sms_conversations').update({ assigned_to: senderId }).eq('id', conversation.id);
+    }
+
     const { data: msg, error: msgError } = await supabase.from('messages').insert({
       conversation_id: conversation.id,
       direction: 'outbound',
@@ -200,7 +205,7 @@ router.post('/webhook', async (req, res) => {
   try {
     const { data: client } = await supabase
       .from('clients')
-      .select('id, name')
+      .select('id, name, assigned_to')
       .eq('phone', from)
       .maybeSingle();
 
@@ -209,6 +214,11 @@ router.post('/webhook', async (req, res) => {
       clientId: client?.id || null,
       lastMessage: messageBody,
     });
+
+    // Auto-assign conversation to the client's assigned team member
+    if (client?.assigned_to && !conversation.assigned_to) {
+      await supabase.from('sms_conversations').update({ assigned_to: client.assigned_to }).eq('id', conversation.id);
+    }
 
     const { error: rpcError } = await supabase.rpc('increment_unread_count', { conversation_id: conversation.id });
     if (rpcError) console.error('increment_unread_count error:', rpcError.message);
@@ -329,7 +339,7 @@ router.post('/conversations/:id/reply', async (req, res) => {
   try {
     const { data: conversation, error: convError } = await supabase
       .from('sms_conversations')
-      .select('id, phone_number, client_id')
+      .select('id, phone_number, client_id, assigned_to')
       .eq('id', id)
       .single();
 
@@ -356,11 +366,10 @@ router.post('/conversations/:id/reply', async (req, res) => {
 
     if (msgError) throw new Error(msgError.message);
 
-    // Update conversation last message
-    await supabase.from('sms_conversations').update({
-      last_message: message,
-      last_message_at: new Date().toISOString(),
-    }).eq('id', id);
+    // Update conversation last message + auto-assign to replier if unassigned
+    const convUpdate = { last_message: message, last_message_at: new Date().toISOString() };
+    if (senderId && !conversation.assigned_to) convUpdate.assigned_to = senderId;
+    await supabase.from('sms_conversations').update(convUpdate).eq('id', id);
 
     if (conversation.client_id) {
       await supabase.from('clients').update({ last_contacted_at: new Date().toISOString() }).eq('id', conversation.client_id);
@@ -398,6 +407,50 @@ router.patch('/conversations/:id/read', async (req, res) => {
     res.json({ success: true });
   } catch (err) {
     console.error('mark read error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * PATCH /api/sms/conversations/:id/assign
+ * Assign a conversation to a team member
+ * Body: { userId } — pass null to unassign
+ */
+router.patch('/conversations/:id/assign', async (req, res) => {
+  const { id } = req.params;
+  const { userId } = req.body;
+
+  try {
+    const { error } = await supabase
+      .from('sms_conversations')
+      .update({ assigned_to: userId || null })
+      .eq('id', id);
+
+    if (error) throw new Error(error.message);
+
+    if (userId) {
+      const { data: conv } = await supabase
+        .from('sms_conversations')
+        .select('client_id')
+        .eq('id', id)
+        .single();
+      if (conv?.client_id) {
+        await supabase.from('clients').update({ assigned_to: userId }).eq('id', conv.client_id);
+      }
+    }
+
+    await logActivity({
+      userId: req.user?.id,
+      action: userId ? 'conversation_assigned' : 'conversation_unassigned',
+      entityType: 'conversation',
+      entityId: id,
+      details: { assignedTo: userId },
+      ipAddress: req.ip,
+    });
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error('assign conversation error:', err.message);
     res.status(500).json({ error: err.message });
   }
 });
