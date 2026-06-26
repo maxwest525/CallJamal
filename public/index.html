@@ -297,58 +297,82 @@
     ============================================================ */
     .team-grid { display: block; }
 
+    /* Ro.am-style spatial office */
     .office-floor {
+      position: relative;
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 12px;
-      padding: 16px;
-      background: #e8eaf0;
-      border-radius: 14px;
-      border: 1px solid var(--color-gray-300);
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: auto auto;
+      gap: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #f1f0f6 0%, #e2e1ec 100%);
+      border-radius: 18px;
+      border: 2px solid #d1d0db;
+      overflow: hidden;
+      min-height: 420px;
+    }
+    .office-floor::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(0,0,0,.03) 39px, rgba(0,0,0,.03) 40px),
+        repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(0,0,0,.03) 39px, rgba(0,0,0,.03) 40px);
+      pointer-events: none;
+      z-index: 0;
     }
 
     .office-room {
-      background: #fff;
-      border-radius: 10px;
-      padding: 16px 18px 18px;
-      border: 2px solid var(--color-gray-200);
-      min-height: 150px;
-      transition: border-color .15s, box-shadow .15s;
+      position: relative;
+      z-index: 1;
+      background: rgba(255,255,255,.75);
+      backdrop-filter: blur(2px);
+      padding: 18px 16px 20px;
+      min-height: 180px;
+      border: 2px solid #c8c7d4;
+      transition: background .2s, box-shadow .2s;
     }
-
     .office-room:hover {
-      border-color: var(--color-primary-light);
-      box-shadow: var(--shadow);
+      background: rgba(255,255,255,.92);
+      box-shadow: inset 0 0 0 2px var(--color-primary-light), 0 4px 20px rgba(99,102,241,.12);
     }
+    .office-room.room-lobby     { grid-column: 1 / 3; border-radius: 16px 0 0 0; }
+    .office-room.room-conference { grid-column: 3; border-radius: 0 16px 0 0; }
+    .office-room.room-breakroom  { grid-column: 1; border-radius: 0 0 0 16px; }
+    .office-room.room-focus      { grid-column: 2; }
+    .office-room.room-lounge     { grid-column: 3; border-radius: 0 0 16px 0; }
 
     .room-header {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
       margin-bottom: 14px;
       padding-bottom: 10px;
-      border-bottom: 1px solid var(--color-gray-100);
+      border-bottom: 1px dashed rgba(0,0,0,.1);
     }
 
-    .room-icon { font-size: 1rem; line-height: 1; }
+    .room-icon { font-size: 1.2rem; line-height: 1; }
     .room-name {
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: var(--color-gray-600);
+      font-size: 0.6875rem;
+      font-weight: 800;
+      color: var(--color-gray-500);
       text-transform: uppercase;
-      letter-spacing: .6px;
+      letter-spacing: 1px;
     }
     .room-count {
       margin-left: auto;
-      font-size: 0.75rem;
+      font-size: 0.6875rem;
       color: var(--color-gray-400);
       font-weight: 500;
+      background: rgba(0,0,0,.05);
+      padding: 2px 8px;
+      border-radius: 8px;
     }
 
     .room-avatars {
       display: flex;
       flex-wrap: wrap;
-      gap: 14px;
+      gap: 16px;
       align-items: flex-start;
     }
 
@@ -357,46 +381,49 @@
       flex-direction: column;
       align-items: center;
       gap: 5px;
-      cursor: default;
+      cursor: pointer;
+      transition: transform .15s;
     }
+    .office-avatar:hover { transform: translateY(-3px); }
 
     .office-avatar-ring {
-      width: 54px;
-      height: 54px;
+      width: 52px;
+      height: 52px;
       border-radius: 50%;
       padding: 3px;
       background: var(--color-gray-300);
-      transition: transform .15s;
+      box-shadow: 0 2px 8px rgba(0,0,0,.1);
+      transition: transform .15s, box-shadow .15s;
     }
 
-    .office-avatar:hover .office-avatar-ring { transform: scale(1.1); }
+    .office-avatar:hover .office-avatar-ring {
+      transform: scale(1.12);
+      box-shadow: 0 4px 14px rgba(0,0,0,.18);
+    }
 
-    .office-avatar-ring.online  { background: #22c55e; }
-    .office-avatar-ring.away    { background: #f59e0b; }
-    .office-avatar-ring.busy    { background: #ef4444; }
+    .office-avatar-ring.online  { background: linear-gradient(135deg, #22c55e, #16a34a); }
+    .office-avatar-ring.away    { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    .office-avatar-ring.busy    { background: linear-gradient(135deg, #ef4444, #dc2626); }
+    .office-avatar-ring.dnd     { background: linear-gradient(135deg, #a855f7, #7c3aed); }
+    .office-avatar-ring.idle    { background: linear-gradient(135deg, #6366f1, #4f46e5); }
     .office-avatar-ring.offline { background: var(--color-gray-300); }
 
     .office-avatar-ring img {
-      width: 48px;
-      height: 48px;
+      width: 46px; height: 46px;
       border-radius: 50%;
       object-fit: cover;
       display: block;
-      border: 2px solid #fff;
+      border: 2.5px solid #fff;
     }
 
     .office-avatar-initials {
-      width: 48px;
-      height: 48px;
+      width: 46px; height: 46px;
       border-radius: 50%;
       background: var(--color-primary);
       color: #fff;
-      font-size: 1rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 2px solid #fff;
+      font-size: 0.9375rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      border: 2.5px solid #fff;
     }
 
     .office-avatar-label {
@@ -404,7 +431,7 @@
       font-weight: 600;
       color: var(--color-gray-700);
       text-align: center;
-      max-width: 62px;
+      max-width: 64px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -414,38 +441,39 @@
       font-size: 0.8125rem;
       color: var(--color-gray-300);
       font-style: italic;
+      padding: 18px 0;
     }
 
     .room-join-btn {
       display: inline-flex; align-items: center; gap: 4px;
-      padding: 5px 12px; border-radius: 6px;
-      border: 1px solid var(--color-primary-light);
-      background: var(--color-primary-light);
-      color: var(--color-primary-dark);
+      padding: 4px 10px; border-radius: 8px;
+      border: 1px solid rgba(99,102,241,.25);
+      background: rgba(99,102,241,.08);
+      color: var(--color-primary);
       font-size: 0.6875rem; font-weight: 600;
       cursor: pointer; transition: all .15s;
       margin-left: auto;
     }
-    .room-join-btn:hover { background: var(--color-primary); color: #fff; }
+    .room-join-btn:hover { background: var(--color-primary); color: #fff; border-color: var(--color-primary); }
 
     .offline-row {
       margin-top: 14px;
-      padding: 12px 16px;
-      background: var(--color-gray-100);
-      border-radius: 8px;
-      border: 1px solid var(--color-gray-200);
+      padding: 14px 18px;
+      background: rgba(255,255,255,.5);
+      border-radius: 12px;
+      border: 1px dashed var(--color-gray-300);
       display: flex;
       align-items: center;
       flex-wrap: wrap;
-      gap: 12px;
+      gap: 14px;
     }
 
     .offline-row-label {
-      font-size: 0.7rem;
+      font-size: 0.6875rem;
       font-weight: 700;
       color: var(--color-gray-400);
       text-transform: uppercase;
-      letter-spacing: .6px;
+      letter-spacing: .8px;
       white-space: nowrap;
       margin-right: 4px;
     }
@@ -2904,6 +2932,12 @@
             <input type="radio" name="statusPick" value="busy" /> <span style="width:8px;height:8px;border-radius:50%;background:var(--color-danger);display:inline-block;"></span> Busy
           </label>
           <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:6px;border:1px solid var(--color-gray-200);">
+            <input type="radio" name="statusPick" value="dnd" /> <span style="width:8px;height:8px;border-radius:50%;background:#a855f7;display:inline-block;"></span> Do Not Disturb
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:6px;border:1px solid var(--color-gray-200);">
+            <input type="radio" name="statusPick" value="idle" /> <span style="width:8px;height:8px;border-radius:50%;background:#6366f1;display:inline-block;"></span> Idle
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:6px;border:1px solid var(--color-gray-200);">
             <input type="radio" name="statusPick" value="offline" /> <span style="width:8px;height:8px;border-radius:50%;background:var(--color-gray-400);display:inline-block;"></span> Offline
           </label>
         </div>
@@ -3031,9 +3065,11 @@
   })();
   // Virtual office floor plan rooms (status → room mapping)
   const OFFICE_ROOMS = [
-    { icon: '🏢', name: 'Main Office',  statuses: ['online'] },
-    { icon: '📅', name: 'Conference',   statuses: ['busy'] },
-    { icon: '☕', name: 'Break Room',   statuses: ['away'] },
+    { icon: '🏢', name: 'Main Office', slug: 'lobby',      statuses: ['online'] },
+    { icon: '📹', name: 'Conference',  slug: 'conference',  statuses: ['busy'] },
+    { icon: '☕', name: 'Break Room',  slug: 'breakroom',   statuses: ['away'] },
+    { icon: '🎯', name: 'Focus Room',  slug: 'focus',       statuses: ['dnd'] },
+    { icon: '🛋️', name: 'Lounge',      slug: 'lounge',      statuses: ['idle'] },
   ];
 
   // ============================================================
@@ -3363,14 +3399,13 @@
     const floorHtml = rooms.map(room => {
       const roomUsers = users.filter(u => room.statuses.includes(u.status || 'offline'));
       const count = roomUsers.length;
-      const slugName = room.name.toLowerCase().replace(/\s+/g, '-');
       return `
-        <div class="office-room">
+        <div class="office-room room-${room.slug}">
           <div class="room-header">
             <span class="room-icon">${room.icon}</span>
             <span class="room-name">${room.name}</span>
             ${count ? `<span class="room-count">${count} ${count === 1 ? 'person' : 'people'}</span>` : ''}
-            <button class="room-join-btn js-room-join" data-room="${escAttr(slugName)}" data-label="${escAttr(room.name)}">📹 Join</button>
+            <button class="room-join-btn js-room-join" data-room="${escAttr(room.slug)}" data-label="${escAttr(room.name)}">📹 Join</button>
           </div>
           <div class="room-avatars">
             ${count ? roomUsers.map(officeAvatarHtml).join('') : '<span class="room-empty">Empty</span>'}
