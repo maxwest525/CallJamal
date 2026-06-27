@@ -309,7 +309,8 @@
  /* ============================================================
  Dark Workspace — Black / Red / White — Glassmorphism
  ============================================================ */
- #view-users { color: rgba(255,255,255,.8); }
+ #view-users { color: rgba(255,255,255,.8); display: none; flex-direction: column; min-height: 100%; }
+ #view-users.active { display: flex; }
  #view-users h2 { color: rgba(255,255,255,.6); font-size: 0.6875rem; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; }
  #view-users .btn-secondary {
  background: transparent;
@@ -331,227 +332,251 @@
  #view-users .btn-primary:hover { background: rgba(229,64,64,.06); border-color: rgba(229,64,64,.4); }
  #view-users .empty-state { color: rgba(255,255,255,.2); }
 
- /* ── Team Member Cards ── */
- .team-cards-grid {
+ /* ── Spatial Office Floor Plan ── */
+ .office-floor {
  display: grid;
- grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
- gap: 16px;
- }
- @media (max-width: 640px) { .team-cards-grid { grid-template-columns: 1fr; } }
-
- .team-card {
+ grid-template-columns: 1.6fr 1fr 1fr;
+ grid-template-rows: auto auto;
+ gap: 1px;
  background: rgba(255,255,255,.02);
- border: 1px solid rgba(255,255,255,.06);
- border-radius: 14px;
- padding: 20px;
- cursor: pointer;
- transition: background .25s, border-color .25s, transform .2s;
- backdrop-filter: blur(20px);
- position: relative;
+ border-radius: 16px;
  overflow: hidden;
+ border: 1px solid rgba(255,255,255,.06);
+ position: relative;
+ }
+
+ .office-room {
+ background: rgba(255,255,255,.01);
+ border-right: 1px solid rgba(255,255,255,.04);
+ border-bottom: 1px solid rgba(255,255,255,.04);
+ padding: 18px;
+ min-height: 180px;
+ display: flex;
+ flex-direction: column;
+ transition: background .3s;
+ backdrop-filter: blur(20px);
+ }
+ .office-room:hover { background: rgba(255,255,255,.02); }
+
+ .office-room.room-lobby { grid-column: 1; grid-row: 1 / 3; border-radius: 15px 0 0 15px; border-bottom: none; }
+ .office-room.room-conference { grid-column: 2; grid-row: 1; }
+ .office-room.room-breakroom { grid-column: 3; grid-row: 1; border-radius: 0 15px 0 0; border-right: none; }
+ .office-room.room-focus { grid-column: 2; grid-row: 2; border-bottom: none; }
+ .office-room.room-lounge { grid-column: 3; grid-row: 2; border-radius: 0 0 15px 0; border-right: none; border-bottom: none; }
+
+ .room-header {
+ display: flex;
+ align-items: center;
+ gap: 8px;
+ margin-bottom: 14px;
+ }
+ .room-status-dot {
+ width: 6px; height: 6px;
+ border-radius: 50%;
+ flex-shrink: 0;
+ }
+ .room-dot-lobby { background: #4ade80; box-shadow: 0 0 6px rgba(74,222,128,.3); }
+ .room-dot-conference { background: #ef4444; box-shadow: 0 0 6px rgba(239,68,68,.3); }
+ .room-dot-breakroom { background: #fbbf24; box-shadow: 0 0 6px rgba(251,191,36,.3); }
+ .room-dot-focus { background: #a78bfa; box-shadow: 0 0 6px rgba(167,139,250,.3); }
+ .room-dot-lounge { background: #64748b; box-shadow: 0 0 6px rgba(100,116,139,.2); }
+ .room-name {
+ font-size: 0.625rem;
+ font-weight: 500;
+ color: rgba(255,255,255,.3);
+ text-transform: uppercase;
+ letter-spacing: 2px;
+ }
+ .room-count {
+ font-size: 0.5625rem;
+ color: rgba(255,255,255,.15);
+ }
+ .room-join-btn {
+ padding: 3px 8px; border-radius: 4px;
+ border: 1px solid rgba(255,255,255,.06);
+ background: transparent;
+ color: rgba(255,255,255,.18);
+ font-size: 0.5rem; font-weight: 500;
+ cursor: pointer; transition: all .2s;
+ margin-left: auto;
+ text-transform: uppercase; letter-spacing: 1px;
+ }
+ .room-join-btn:hover {
+ border-color: rgba(229,64,64,.25);
+ color: rgba(229,64,64,.6);
+ background: rgba(229,64,64,.03);
+ }
+
+ .room-cards {
+ display: flex;
+ flex-direction: column;
+ gap: 10px;
+ flex: 1;
+ }
+ .room-empty {
+ font-size: 0.6875rem;
+ color: rgba(255,255,255,.07);
+ padding: 16px 0;
+ }
+
+ /* ── Person Cards (inside rooms) ── */
+ .team-card {
+ background: rgba(255,255,255,.025);
+ border: 1px solid rgba(255,255,255,.06);
+ border-radius: 10px;
+ padding: 12px 14px;
+ cursor: pointer;
+ transition: background .2s, border-color .2s;
  }
  .team-card:hover {
- background: rgba(255,255,255,.035);
+ background: rgba(255,255,255,.04);
  border-color: rgba(255,255,255,.1);
- transform: translateY(-2px);
  }
  .team-card.expanded {
  border-color: rgba(229,64,64,.2);
- background: rgba(255,255,255,.03);
+ background: rgba(255,255,255,.035);
  }
 
  .team-card-top {
  display: flex;
  align-items: center;
- gap: 14px;
- flex-wrap: wrap;
+ gap: 10px;
  }
 
  .team-card-avatar {
  position: relative;
- width: 52px;
- height: 52px;
+ width: 40px;
+ height: 40px;
  border-radius: 50%;
  flex-shrink: 0;
- overflow: hidden;
- border: 2px solid rgba(255,255,255,.08);
+ overflow: visible;
  }
  .team-card-avatar img {
- width: 100%;
- height: 100%;
- object-fit: cover;
+ width: 40px; height: 40px;
  border-radius: 50%;
+ object-fit: cover;
+ border: 2px solid rgba(255,255,255,.08);
  }
  .team-card-avatar .tc-initials {
- width: 100%;
- height: 100%;
- display: flex;
- align-items: center;
- justify-content: center;
+ width: 40px; height: 40px;
+ display: flex; align-items: center; justify-content: center;
+ border-radius: 50%;
  background: #111;
  color: rgba(255,255,255,.6);
- font-size: 0.8125rem;
- font-weight: 500;
+ font-size: 0.6875rem; font-weight: 500;
  letter-spacing: 1px;
+ border: 2px solid rgba(255,255,255,.08);
  }
 
  .team-card-status-dot {
  position: absolute;
- bottom: 1px;
- right: 1px;
- width: 12px;
- height: 12px;
+ bottom: 0; right: 0;
+ width: 10px; height: 10px;
  border-radius: 50%;
  border: 2px solid #0c0c0c;
  z-index: 2;
  }
- .team-card-status-dot.online { background: #4ade80; box-shadow: 0 0 6px rgba(74,222,128,.4); }
- .team-card-status-dot.busy { background: #ef4444; box-shadow: 0 0 6px rgba(239,68,68,.4); }
- .team-card-status-dot.away { background: #fbbf24; box-shadow: 0 0 6px rgba(251,191,36,.4); }
- .team-card-status-dot.dnd { background: #a78bfa; box-shadow: 0 0 6px rgba(167,139,250,.4); }
+ .team-card-status-dot.online { background: #4ade80; box-shadow: 0 0 5px rgba(74,222,128,.4); }
+ .team-card-status-dot.busy { background: #ef4444; box-shadow: 0 0 5px rgba(239,68,68,.4); }
+ .team-card-status-dot.away { background: #fbbf24; box-shadow: 0 0 5px rgba(251,191,36,.4); }
+ .team-card-status-dot.dnd { background: #a78bfa; box-shadow: 0 0 5px rgba(167,139,250,.4); }
  .team-card-status-dot.offline { background: #374151; }
 
- .team-card-info {
- flex: 1;
- min-width: 80px;
- }
+ .team-card-info { flex: 1; min-width: 0; }
  .team-card-name {
- font-size: 0.9375rem;
+ font-size: 0.8125rem;
  font-weight: 600;
- color: rgba(255,255,255,.9);
- white-space: nowrap;
- overflow: hidden;
- text-overflow: ellipsis;
+ color: rgba(255,255,255,.85);
+ white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
  }
  .team-card-role {
+ font-size: 0.625rem;
+ color: rgba(255,255,255,.3);
+ margin-top: 1px;
+ }
+
+ .team-card-activity-context {
  font-size: 0.6875rem;
  color: rgba(255,255,255,.35);
- margin-top: 2px;
- }
-
- .team-card-activity {
+ margin-top: 6px;
+ padding-left: 50px;
  display: flex;
  align-items: center;
  gap: 6px;
- margin-left: auto;
- flex-shrink: 0;
- padding: 4px 10px;
- border-radius: 6px;
- background: rgba(255,255,255,.03);
- border: 1px solid rgba(255,255,255,.06);
- font-size: 0.625rem;
- font-weight: 500;
- color: rgba(255,255,255,.4);
- text-transform: uppercase;
- letter-spacing: .5px;
  }
- .team-card-activity-icon {
- font-size: 0.75rem;
- line-height: 1;
- }
- .team-card-activity.on-call {
- background: rgba(229,64,64,.06);
- border-color: rgba(229,64,64,.2);
- color: rgba(229,64,64,.8);
- }
- .team-card-activity.on-call .team-card-activity-icon::after {
- content: '';
- display: inline-block;
- width: 5px; height: 5px;
- border-radius: 50%;
+ .team-card-activity-context .tc-ctx-icon { display: flex; opacity: .5; }
+ .team-card-activity-context .tc-ctx-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+ .team-card-activity-context.on-call { color: rgba(229,64,64,.7); }
+ .team-card-activity-context.on-call .tc-ctx-icon { opacity: .8; }
+ .team-card-activity-context.in-meeting { color: rgba(167,139,250,.7); }
+ .team-card-activity-context.in-meeting .tc-ctx-icon { opacity: .8; }
+ .team-card-activity-context .tc-live-dot {
+ width: 5px; height: 5px; border-radius: 50%;
  background: #e54040;
- margin-left: 4px;
  animation: callPulse 2s ease-in-out infinite;
- vertical-align: middle;
- }
- .team-card-activity.in-meeting {
- background: rgba(167,139,250,.06);
- border-color: rgba(167,139,250,.2);
- color: rgba(167,139,250,.8);
- }
- .team-card-activity.idle-activity {
- background: rgba(255,255,255,.02);
- border-color: rgba(255,255,255,.04);
- color: rgba(255,255,255,.25);
+ flex-shrink: 0;
  }
 
- .team-card-channels {
- display: none;
- margin-top: 16px;
- padding-top: 14px;
- border-top: 1px solid rgba(255,255,255,.06);
- }
- .team-card.expanded .team-card-channels { display: block; }
-
- .tc-channel-grid {
- display: grid;
- grid-template-columns: repeat(3, 1fr);
- gap: 8px;
- }
- @media (max-width: 360px) { .tc-channel-grid { grid-template-columns: repeat(2, 1fr); } }
-
- .tc-channel-btn {
+ .team-card-actions {
  display: flex;
- flex-direction: column;
+ gap: 4px;
+ margin-top: 8px;
+ padding-left: 50px;
+ }
+ .tc-action-btn {
+ display: flex;
  align-items: center;
- gap: 6px;
- padding: 12px 8px;
- border-radius: 10px;
- background: rgba(255,255,255,.02);
+ gap: 4px;
+ padding: 4px 8px;
+ border-radius: 5px;
+ background: rgba(255,255,255,.025);
  border: 1px solid rgba(255,255,255,.06);
- color: rgba(255,255,255,.45);
- font-size: 0.625rem;
+ color: rgba(255,255,255,.35);
+ font-size: 0.5625rem;
  font-weight: 500;
  letter-spacing: .3px;
  cursor: pointer;
- transition: all .2s;
+ transition: all .15s;
  text-transform: uppercase;
  }
- .tc-channel-btn:hover {
- background: rgba(229,64,64,.04);
+ .tc-action-btn:hover {
+ background: rgba(229,64,64,.05);
  border-color: rgba(229,64,64,.2);
  color: rgba(229,64,64,.8);
  }
- .tc-channel-btn .tc-ch-icon {
- font-size: 1.125rem;
- line-height: 1;
+ .tc-action-btn .tc-act-icon { line-height: 1; display: flex; }
+ .tc-action-btn.tc-action-listen:hover { background: rgba(74,222,128,.06); border-color: rgba(74,222,128,.25); color: rgba(74,222,128,.85); }
+ .tc-action-btn.tc-action-coach:hover { background: rgba(251,191,36,.06); border-color: rgba(251,191,36,.25); color: rgba(251,191,36,.85); }
+ .tc-action-btn.tc-action-screen:hover { background: rgba(96,165,250,.06); border-color: rgba(96,165,250,.25); color: rgba(96,165,250,.85); }
+
+ /* ── Offline row below floor ── */
+ .offline-row {
+ margin-top: 12px;
+ padding: 12px 16px;
+ background: rgba(255,255,255,.01);
+ border-radius: 10px;
+ border: 1px solid rgba(255,255,255,.04);
+ display: flex;
+ flex-direction: column;
+ gap: 8px;
+ }
+ .offline-row-label {
+ font-size: 0.5625rem;
+ font-weight: 500;
+ color: rgba(255,255,255,.1);
+ text-transform: uppercase;
+ letter-spacing: 2px;
  }
 
- .team-card-status-text {
- margin-top: 8px;
- font-size: 0.6875rem;
- color: rgba(255,255,255,.2);
- font-style: italic;
+ @media (max-width: 900px) {
+ .office-floor {
+ grid-template-columns: 1fr 1fr;
+ grid-template-rows: auto;
  }
-
- /* keep old avatar ring classes for popover reuse */
- .office-avatar-ring {
- width: 48px;
- height: 48px;
- border-radius: 50%;
- padding: 2px;
- background: rgba(255,255,255,.06);
- transition: box-shadow .3s;
- position: relative;
+ .office-room.room-lobby { grid-column: 1 / 3; grid-row: auto; border-radius: 15px 15px 0 0; }
+ .office-room.room-breakroom { border-radius: 0; border-right: none; }
+ .office-room.room-lounge { border-radius: 0 0 15px 0; }
  }
-
- .office-avatar-ring.online {
- background: rgba(255,255,255,.1);
- box-shadow: 0 0 0 1px rgba(74,222,128,.3);
- }
- .office-avatar-ring.away {
- background: rgba(255,255,255,.08);
- box-shadow: 0 0 0 1px rgba(251,191,36,.25);
- }
- .office-avatar-ring.busy {
- background: rgba(255,255,255,.08);
- box-shadow: 0 0 0 1px rgba(239,68,68,.3);
- }
- .office-avatar-ring.busy {
- background: rgba(255,255,255,.08);
- box-shadow: 0 0 0 1px rgba(239,68,68,.3);
- }
- .office-avatar-ring.offline { background: rgba(255,255,255,.03); box-shadow: none; }
 
  /* ── Call Activity ── */
  .call-activity-panel {
@@ -751,6 +776,45 @@
  line-height: 1.5;
  }
  .coaching-tip::before { content: ''; width: 3px; height: 3px; border-radius: 50%; background: rgba(229,64,64,.35); flex-shrink: 0; margin-top: 7px; }
+
+ /* ── Noah Chat Composer ── */
+ .noah-chat-composer {
+ position: sticky;
+ bottom: 0;
+ background: rgba(10,10,10,.92);
+ backdrop-filter: blur(24px);
+ border-top: 1px solid rgba(255,255,255,.06);
+ padding: 12px 16px;
+ display: flex;
+ align-items: center;
+ gap: 10px;
+ margin-top: auto;
+ }
+ .noah-chat-input {
+ flex: 1;
+ background: rgba(255,255,255,.04);
+ border: 1px solid rgba(255,255,255,.08);
+ border-radius: 10px;
+ padding: 10px 14px;
+ color: rgba(255,255,255,.85);
+ font-size: 0.8125rem;
+ outline: none;
+ transition: border-color .15s;
+ }
+ .noah-chat-input::placeholder { color: rgba(255,255,255,.2); }
+ .noah-chat-input:focus { border-color: rgba(229,64,64,.35); }
+ .noah-chat-send {
+ width: 36px; height: 36px;
+ border-radius: 10px;
+ background: rgba(229,64,64,.12);
+ border: 1px solid rgba(229,64,64,.2);
+ color: #e54040;
+ display: flex; align-items: center; justify-content: center;
+ cursor: pointer;
+ transition: all .15s;
+ flex-shrink: 0;
+ }
+ .noah-chat-send:hover { background: rgba(229,64,64,.2); border-color: rgba(229,64,64,.35); }
 
  /* ── RingCentral AI Panel ── */
  .rc-ai-panel {
@@ -1940,10 +2004,6 @@
  <svg class="nav-icon-svg" viewBox="0 0 20 20" fill="currentColor"><path d="M7 8a3 3 0 100-6 3 3 0 000 6zm7 0a3 3 0 100-6 3 3 0 000 6zm-7 2c-3.31 0-6 1.79-6 4v1h12v-1c0-2.21-2.69-4-6-4zm7 0c-.34 0-.67.03-1 .08C14.3 11.2 15 12.5 15 14v1h5v-1c0-2.21-2.69-4-6-4z"/></svg>
  <span>Team</span>
  </button>
- <button class="nav-item" data-view="clients">
- <svg class="nav-icon-svg" viewBox="0 0 20 20" fill="currentColor"><path d="M9 2a1 1 0 00-1 1v1H4a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1V5a1 1 0 00-1-1h-4V3a1 1 0 00-1-1H9zm0 2h2v1H9V4zM6 8h8v1H6V8zm0 3h8v1H6v-1zm0 3h5v1H6v-1z"/></svg>
- <span>Clients</span>
- </button>
  <button class="nav-item" data-view="gmail">
  <svg class="nav-icon-svg" viewBox="0 0 20 20" fill="currentColor"><path d="M2 4a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V4zm2 0l6 4 6-4H4zm0 2v10h12V6l-6 4-6-4z"/></svg>
  <span>Gmail</span>
@@ -1952,6 +2012,10 @@
      <svg class="nav-icon-svg" viewBox="0 0 20 20" fill="currentColor"><path d="M6 2a2 2 0 00-2 2v2H2a2 2 0 000 4h2v2a2 2 0 004 0v-2h2v2a2 2 0 004 0v-2h2a2 2 0 000-4h-2V4a2 2 0 00-4 0v2H8V4a2 2 0 00-2-2zm2 6h4v4H8V8z"/></svg>
      <span>Slack</span>
      </button>
+ <button class="nav-item" data-view="rcai">
+ <svg class="nav-icon-svg" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm0 2a6 6 0 110 12 6 6 0 010-12zm-1 3v3H6v2h3v3h2v-3h3V10h-3V7H9z"/></svg>
+ <span>RC AI</span>
+ </button>
  <button class="nav-item" data-view="integrations">
  <svg class="nav-icon-svg" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1.07A7.002 7.002 0 003.07 10H2a1 1 0 100 2h1.07A7.002 7.002 0 009 17.93V19a1 1 0 102 0v-1.07A7.002 7.002 0 0016.93 12H18a1 1 0 100-2h-1.07A7.002 7.002 0 0011 4.07V3zm-1 3a4 4 0 100 8 4 4 0 000-8z"/></svg>
  <span>Integrations</span>
@@ -2187,16 +2251,29 @@
  </div>
  </div>
 
- <!-- RingCentral AI Features Panel -->
- <div id="rcAiPanel" class="rc-ai-panel">
- <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+ <!-- Noah Chat Composer -->
+ <div class="noah-chat-composer">
+ <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="1.5"><path d="M2 5a2 2 0 012-2h12a2 2 0 012 2v7a2 2 0 01-2 2H6l-4 3V5z"/></svg>
+ <input class="noah-chat-input" id="noahChatInput" type="text" placeholder="Message the team or type / for commands..." autocomplete="off" />
+ <button class="noah-chat-send" id="noahChatSend" title="Send">
+ <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 10l7-7m0 0l7 7m-7-7v14"/></svg>
+ </button>
+ </div>
+ </div>
+
+ <!-- ========== RC AI VIEW ========== -->
+ <div class="view" id="view-rcai">
+ <div id="rcAiPanel" class="rc-ai-panel" style="display:block;">
+ <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
  <h2 style="font-size:0.6875rem;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.4);">RingCentral AI</h2>
  <span class="rc-ai-status-dot" id="rcAiStatusDot"></span>
  </div>
  <div class="rc-ai-grid">
  <div class="rc-ai-card">
  <div class="rc-ai-card-header">
- <div class="rc-ai-card-icon" style="color:#4ade80;">T</div>
+ <div class="rc-ai-card-icon" style="color:#4ade80;">
+ <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 10h2l2-5 3 10 2-7 2 2h3"/></svg>
+ </div>
  <div>
  <div class="rc-ai-card-title">Live Transcription</div>
  <div class="rc-ai-card-desc">Real-time speech-to-text on active calls</div>
@@ -2210,7 +2287,9 @@
  </div>
  <div class="rc-ai-card">
  <div class="rc-ai-card-header">
- <div class="rc-ai-card-icon" style="color:#f59e0b;">S</div>
+ <div class="rc-ai-card-icon" style="color:#f59e0b;">
+ <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2l2.4 4.8 5.3.8-3.85 3.7.9 5.3L10 14.1l-4.75 2.5.9-5.3L2.3 7.6l5.3-.8z"/></svg>
+ </div>
  <div>
  <div class="rc-ai-card-title">Call Scoring</div>
  <div class="rc-ai-card-desc">AI grades agent performance and compliance</div>
@@ -2224,7 +2303,9 @@
  </div>
  <div class="rc-ai-card">
  <div class="rc-ai-card-header">
- <div class="rc-ai-card-icon" style="color:#a78bfa;">R</div>
+ <div class="rc-ai-card-icon" style="color:#a78bfa;">
+ <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 10h3l3-6 3 12 2-6h3"/><circle cx="10" cy="10" r="7"/></svg>
+ </div>
  <div>
  <div class="rc-ai-card-title">Smart Routing</div>
  <div class="rc-ai-card-desc">AI routes inbound calls to the best agent</div>
@@ -2238,7 +2319,9 @@
  </div>
  <div class="rc-ai-card">
  <div class="rc-ai-card-header">
- <div class="rc-ai-card-icon" style="color:#e54040;">A</div>
+ <div class="rc-ai-card-icon" style="color:#e54040;">
+ <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm0 4v4l3 2"/></svg>
+ </div>
  <div>
  <div class="rc-ai-card-title">AI Receptionist</div>
  <div class="rc-ai-card-desc">Virtual receptionist handles after-hours and overflow</div>
@@ -2251,34 +2334,6 @@
  </div>
  </div>
  </div>
- </div>
- </div>
-
- <!-- ========== CLIENTS VIEW ========== -->
- <div class="view" id="view-clients">
- <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
- <div class="search-bar" style="width:280px;">
- <span class="search-icon"></span>
- <input class="form-control" id="clientSearchInput" type="text" placeholder="Search clients…" />
- </div>
- <button class="btn btn-primary btn-sm" id="addClientBtn">+ Add Client</button>
- </div>
- <div class="card">
- <table class="clients-table">
- <thead>
- <tr>
- <th>Name</th>
- <th>Company</th>
- <th>Phone</th>
- <th>Email</th>
- <th>Last Contacted</th>
- <th>Actions</th>
- </tr>
- </thead>
- <tbody id="clientTableBody">
- <tr><td colspan="6" style="text-align:center; padding:32px; color:#9ca3af;">Loading clients…</td></tr>
- </tbody>
- </table>
  </div>
  </div>
 
@@ -3215,10 +3270,10 @@
  }
 
  const DEMO_USERS = [
- { id: 'demo-1', name: 'Chris B', email: 'chris@noahconnect.com', status: 'online', job_title: 'Sales', phone: '+14155550101', avatar_url: makeDemoAvatar(1, 0, 'CB'), activity: 'on-call', activity_label: 'On Call' },
- { id: 'demo-2', name: 'Jon D', email: 'jon@noahconnect.com', status: 'online', job_title: 'Admin', phone: '+14155550102', avatar_url: makeDemoAvatar(2, 200, 'JD'), activity: 'idle-activity', activity_label: 'Available' },
- { id: 'demo-3', name: 'Mike B', email: 'mike@noahconnect.com', status: 'busy', job_title: 'Dispatch', phone: '+14155550103', avatar_url: makeDemoAvatar(3, 30, 'MB'), activity: 'in-meeting', activity_label: 'In Meeting' },
- { id: 'demo-4', name: 'Matt B', email: 'matt@noahconnect.com', status: 'online', job_title: 'Sales', phone: '+14155550104', avatar_url: makeDemoAvatar(4, 160, 'MB'), activity: 'idle-activity', activity_label: 'Drafting Email' },
+ { id: 'demo-1', name: 'Chris B', email: 'chris@noahconnect.com', status: 'online', job_title: 'Sales', phone: '+14155550101', avatar_url: makeDemoAvatar(1, 0, 'CB'), activity: 'on-call', activity_context: 'Talking to Shelly Jones' },
+ { id: 'demo-2', name: 'Jon D', email: 'jon@noahconnect.com', status: 'online', job_title: 'Admin', phone: '+14155550102', avatar_url: makeDemoAvatar(2, 200, 'JD'), activity: 'idle-activity', activity_context: 'Reviewing invoices' },
+ { id: 'demo-3', name: 'Mike B', email: 'mike@noahconnect.com', status: 'busy', job_title: 'Dispatch', phone: '+14155550103', avatar_url: makeDemoAvatar(3, 30, 'MB'), activity: 'in-meeting', activity_context: 'Team standup call' },
+ { id: 'demo-4', name: 'Matt B', email: 'matt@noahconnect.com', status: 'online', job_title: 'Sales', phone: '+14155550104', avatar_url: makeDemoAvatar(4, 160, 'MB'), activity: 'idle-activity', activity_context: 'On YouTube' },
  ];
 
  function applyDemoToggleUI() {
@@ -3273,7 +3328,7 @@
  document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.dataset.view === view));
  document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === `view-${view}`));
 
- const titles = { messages: 'Messages', conversations: 'Conversations', users: 'Team', clients: 'Clients', gmail: 'Gmail', slack: 'Slack', integrations: 'Integrations', meetings: 'Meetings', templates: 'Templates', brand: 'Brand Settings', activity: 'Activity Log' };
+ const titles = { messages: 'Messages', conversations: 'Conversations', users: 'Team', gmail: 'Gmail', slack: 'Slack', rcai: 'RingCentral AI', integrations: 'Integrations', meetings: 'Meetings', templates: 'Templates', brand: 'Brand Settings', activity: 'Activity Log' };
  document.getElementById('headerTitle').textContent = titles[view] || view;
 
  loadView(view);
@@ -3285,7 +3340,6 @@
  if (view === 'messages') { loadMessages(); loadStats(); loadClientOptions(); loadPhoneNumbers(); }
  else if (view === 'conversations') loadConversations();
  else if (view === 'users') loadTeam();
- else if (view === 'clients') loadClients();
  else if (view === 'gmail') loadGmail();
     else if (view === 'slack') loadSlack();
  else if (view === 'integrations') loadIntegrations();
@@ -3740,6 +3794,27 @@
  document.getElementById('stopScreenShareBtn').style.display = 'none';
  }
 
+ // Noah Chat composer
+ function sendNoahChat() {
+ const input = document.getElementById('noahChatInput');
+ const msg = input?.value.trim();
+ if (!msg) return;
+ input.value = '';
+ if (msg.startsWith('/')) {
+ toast(`Command: ${msg}`, 'info');
+ } else {
+ apiFetch('/api/internal-messages', {
+ method: 'POST',
+ body: JSON.stringify({ content: msg }),
+ }).then(() => toast('Message sent to team', 'success'))
+ .catch(() => toast('Failed to send message', 'error'));
+ }
+ }
+ document.getElementById('noahChatSend')?.addEventListener('click', sendNoahChat);
+ document.getElementById('noahChatInput')?.addEventListener('keydown', (e) => {
+ if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendNoahChat(); }
+ });
+
  // RingCentral presence sync button + auto-poll
  document.getElementById('syncRcPresenceBtn')?.addEventListener('click', async () => {
  showToast('Syncing RingCentral presence...', 'info');
@@ -3773,18 +3848,26 @@
  } catch { /* not configured */ }
  }
 
+ const SVG_ICONS = {
+ phone: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>',
+ sms: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>',
+ email: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22,7 12,13 2,7"/></svg>',
+ slack: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2a2.5 2.5 0 000 5H17V4.5A2.5 2.5 0 0014.5 2z"/><path d="M2 14.5a2.5 2.5 0 015 0V17H4.5A2.5 2.5 0 012 14.5z"/><path d="M22 9.5a2.5 2.5 0 01-5 0V7h2.5A2.5 2.5 0 0122 9.5z"/><path d="M9.5 22a2.5 2.5 0 010-5H12v2.5A2.5 2.5 0 019.5 22z"/></svg>',
+ video: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>',
+ status: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>',
+ clock: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+ listen: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18v-6a9 9 0 0118 0v6"/><path d="M21 19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3v5z"/><path d="M3 19a2 2 0 002 2h1a2 2 0 002-2v-3a2 2 0 00-2-2H3v5z"/></svg>',
+ coach: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>',
+ screen: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>',
+ message: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>',
+ };
+
  function renderUsers(users) {
  const el = document.getElementById('teamGrid');
  if (!users.length) {
  el.innerHTML = `<div class="empty-state"><div class="icon"></div><p>No team members yet. Add members or sync from Google Workspace.</p></div>`;
  return;
  }
-
- const activityIcons = {
- 'on-call': '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>',
- 'in-meeting': '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>',
- 'idle-activity': '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
- };
 
  function teamCardHtml(u) {
  const status = u.status || 'offline';
@@ -3794,8 +3877,11 @@
  : `<div class="tc-initials">${escHtml(initials)}</div>`;
  const roleLabel = u.job_title || u.role || u.department || '';
  const activity = u.activity || 'idle-activity';
- const activityLabel = u.activity_label || 'Available';
- const actIcon = activityIcons[activity] || activityIcons['idle-activity'];
+ const activityContext = u.activity_context || '';
+ const actIcon = activity === 'on-call' ? SVG_ICONS.phone
+ : activity === 'in-meeting' ? SVG_ICONS.video
+ : SVG_ICONS.clock;
+ const liveDot = activity === 'on-call' ? '<span class="tc-live-dot"></span>' : '';
 
  return `
  <div class="team-card js-team-card" data-user-id="${escAttr(u.id)}" data-name="${escAttr(u.name || '')}" data-phone="${escAttr(u.phone || '')}" data-email="${escAttr(u.email || '')}" data-avatar="${escAttr(u.avatar_url || '')}" data-role="${escAttr(roleLabel)}" data-status="${escAttr(status)}">
@@ -3808,74 +3894,72 @@
  <div class="team-card-name">${escHtml(u.name || 'Unknown')}</div>
  <div class="team-card-role">${escHtml(roleLabel || 'Team Member')}</div>
  </div>
- <div class="team-card-activity ${activity}">
- <span class="team-card-activity-icon">${actIcon}</span>
- ${escHtml(activityLabel)}
  </div>
+ <div class="team-card-activity-context ${activity}">
+ <span class="tc-ctx-icon">${actIcon}</span>
+ ${liveDot}
+ <span class="tc-ctx-text">${escHtml(activityContext)}</span>
  </div>
- <div class="team-card-channels">
- <div class="tc-channel-grid">
- <button class="tc-channel-btn js-tc-action" data-action="call" data-phone="${escAttr(u.phone || '')}">
- <span class="tc-ch-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></span>
- Call
- </button>
- <button class="tc-channel-btn js-tc-action" data-action="sms" data-phone="${escAttr(u.phone || '')}" data-name="${escAttr(u.name || '')}">
- <span class="tc-ch-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></span>
- SMS
- </button>
- <button class="tc-channel-btn js-tc-action" data-action="email" data-email="${escAttr(u.email || '')}">
- <span class="tc-ch-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22,7 12,13 2,7"/></svg></span>
- Email
- </button>
- <button class="tc-channel-btn js-tc-action" data-action="slack" data-name="${escAttr(u.name || '')}">
- <span class="tc-ch-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2a2.5 2.5 0 000 5H17V4.5A2.5 2.5 0 0014.5 2z"/><path d="M2 14.5a2.5 2.5 0 015 0V17H4.5A2.5 2.5 0 012 14.5z"/><path d="M22 9.5a2.5 2.5 0 01-5 0V7h2.5A2.5 2.5 0 0122 9.5z"/><path d="M9.5 22a2.5 2.5 0 010-5H12v2.5A2.5 2.5 0 019.5 22z"/></svg></span>
- Slack
- </button>
- <button class="tc-channel-btn js-tc-action" data-action="video" data-name="${escAttr(u.name || '')}">
- <span class="tc-ch-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></span>
- Video
- </button>
- <button class="tc-channel-btn js-tc-action" data-action="status" data-user-id="${escAttr(u.id)}" data-status="${escAttr(status)}">
- <span class="tc-ch-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></span>
- Status
- </button>
- </div>
+ <div class="team-card-actions">
+ <button class="tc-action-btn tc-action-listen js-tc-action" data-action="listen" data-name="${escAttr(u.name || '')}"><span class="tc-act-icon">${SVG_ICONS.listen}</span>Listen</button>
+ <button class="tc-action-btn tc-action-coach js-tc-action" data-action="coach" data-name="${escAttr(u.name || '')}"><span class="tc-act-icon">${SVG_ICONS.coach}</span>Coach</button>
+ <button class="tc-action-btn tc-action-screen js-tc-action" data-action="screen" data-name="${escAttr(u.name || '')}"><span class="tc-act-icon">${SVG_ICONS.screen}</span>Screen</button>
+ <button class="tc-action-btn js-tc-action" data-action="message" data-name="${escAttr(u.name || '')}"><span class="tc-act-icon">${SVG_ICONS.message}</span>Message</button>
  </div>
  </div>`;
  }
 
- el.innerHTML = `<div class="team-cards-grid">${users.map(teamCardHtml).join('')}</div>`;
+ const rooms = OFFICE_ROOMS;
+ const offlineUsers = users.filter(u => (u.status || 'offline') === 'offline');
 
- el.querySelectorAll('.js-team-card').forEach(card => {
- card.addEventListener('click', (e) => {
- if (e.target.closest('.js-tc-action')) return;
- card.classList.toggle('expanded');
- });
- });
+ const floorHtml = rooms.map(room => {
+ const roomUsers = users.filter(u => room.statuses.includes(u.status || 'offline'));
+ const count = roomUsers.length;
+ return `
+ <div class="office-room room-${room.slug}">
+ <div class="room-header">
+ <span class="room-status-dot room-dot-${room.slug}"></span>
+ <span class="room-name">${room.name}</span>
+ ${count ? `<span class="room-count">${count}</span>` : ''}
+ <button class="room-join-btn js-room-join" data-room="${escAttr(room.slug)}">Join</button>
+ </div>
+ <div class="room-cards">
+ ${count ? roomUsers.map(teamCardHtml).join('') : '<span class="room-empty">--</span>'}
+ </div>
+ </div>`;
+ }).join('');
+
+ const offlineHtml = offlineUsers.length ? `
+ <div class="offline-row">
+ <span class="offline-row-label">Offline</span>
+ ${offlineUsers.map(teamCardHtml).join('')}
+ </div>` : '';
+
+ el.innerHTML = `<div class="office-floor">${floorHtml}</div>${offlineHtml}`;
 
  el.querySelectorAll('.js-tc-action').forEach(btn => {
  btn.addEventListener('click', (e) => {
  e.stopPropagation();
  const action = btn.dataset.action;
- if (action === 'call' && btn.dataset.phone) {
- window.open(`tel:${btn.dataset.phone}`);
- } else if (action === 'sms') {
- navigate('messages');
- } else if (action === 'email' && btn.dataset.email) {
- openModal('gmailComposeModal');
- setTimeout(() => {
- document.getElementById('gmailTo').value = btn.dataset.email;
- document.getElementById('gmailSubject').value = '';
- document.getElementById('gmailBody').value = '';
- document.getElementById('gmailSubject').focus();
- }, 100);
- } else if (action === 'slack') {
- navigate('slack');
- } else if (action === 'video') {
- toast('Starting video huddle with ' + (btn.dataset.name || 'team member') + '...', 'info');
- } else if (action === 'status') {
- openUserStatus(btn.dataset.userId, btn.dataset.status, '');
+ const name = btn.dataset.name || 'team member';
+ if (action === 'listen') {
+ toast('Listening in on ' + name + '...', 'info');
+ } else if (action === 'coach') {
+ const input = document.getElementById('noahChatInput');
+ if (input) { input.value = '/coach ' + name + ' '; input.focus(); }
+ } else if (action === 'screen') {
+ toast('Viewing ' + name + "'s screen...", 'info');
+ } else if (action === 'message') {
+ const input = document.getElementById('noahChatInput');
+ if (input) { input.value = '/msg ' + name + ' '; input.focus(); }
  }
+ });
+ });
+
+ el.querySelectorAll('.js-room-join').forEach(btn => {
+ btn.addEventListener('click', (e) => {
+ e.stopPropagation();
+ toast('Joining ' + btn.dataset.room + '...', 'info');
  });
  });
  }
