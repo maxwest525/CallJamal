@@ -19,88 +19,8 @@ const vaultWriteLimiter = rateLimit({
 // Groups of configurable env vars exposed through the vault UI
 const CONFIG_GROUPS = [
   {
-    key: 'daily',
-    title: 'Daily.co Huddles',
-    icon: '📹',
-    vars: [
-      { name: 'DAILY_CO_API_KEY', label: 'API Key', type: 'password' },
-      { name: 'DAILY_CO_DOMAIN', label: 'Domain (e.g. yourteam.daily.co)', type: 'text' },
-    ],
-  },
-  {
-    key: 'slack',
-    title: 'Slack',
-    icon: '💼',
-    vars: [
-      { name: 'SLACK_BOT_TOKEN', label: 'Bot Token (xoxb-…)', type: 'password' },
-      { name: 'SLACK_SIGNING_SECRET', label: 'Signing Secret', type: 'password' },
-      { name: 'SLACK_APP_TOKEN', label: 'App Token (xapp-…)', type: 'password' },
-      { name: 'SLACK_CLIENT_ID', label: 'Client ID', type: 'text' },
-      { name: 'SLACK_CLIENT_SECRET', label: 'Client Secret', type: 'password' },
-    ],
-  },
-  {
-    key: 'ai',
-    title: 'AI Assistant',
-    icon: '🤖',
-    vars: [
-      { name: 'AI_PROVIDER', label: 'Provider (gemini or claude)', type: 'text' },
-      { name: 'GEMINI_API_KEY', label: 'Gemini API Key', type: 'password' },
-      { name: 'ANTHROPIC_API_KEY', label: 'Anthropic API Key', type: 'password' },
-    ],
-  },
-  {
-    key: 'zapier',
-    title: 'Zapier',
-    icon: '⚡',
-    vars: [
-      { name: 'ZAPIER_WEBHOOK_URL', label: 'Outbound Webhook URL', type: 'url' },
-    ],
-  },
-  {
-    key: 'n8n',
-    title: 'n8n',
-    icon: '🔄',
-    vars: [
-      { name: 'N8N_WEBHOOK_URL', label: 'Outbound Webhook URL', type: 'url' },
-    ],
-  },
-  {
-    key: 'google',
-    title: 'Google / Gmail',
-    icon: '📧',
-    vars: [
-      { name: 'GOOGLE_CLIENT_ID', label: 'OAuth Client ID', type: 'text' },
-      { name: 'GOOGLE_CLIENT_SECRET', label: 'OAuth Client Secret', type: 'password' },
-      { name: 'GOOGLE_WORKSPACE_DOMAIN', label: 'Workspace Domain (e.g. company.com)', type: 'text' },
-      { name: 'GOOGLE_WORKSPACE_ADMIN_EMAIL', label: 'Admin Email', type: 'email' },
-    ],
-  },
-  {
-    key: 'supabase',
-    title: 'Supabase',
-    icon: '🗄️',
-    vars: [
-      { name: 'SUPABASE_URL', label: 'Project URL', type: 'url' },
-      { name: 'SUPABASE_ANON_KEY', label: 'Anon Key', type: 'password' },
-      { name: 'SUPABASE_SERVICE_ROLE_KEY', label: 'Service Role Key', type: 'password' },
-    ],
-  },
-  {
-    key: 'slicktext',
-    title: 'SlickText SMS',
-    icon: '💬',
-    vars: [
-      { name: 'SLICKTEXT_PUBLIC_KEY', label: 'Public Key', type: 'text' },
-      { name: 'SLICKTEXT_PRIVATE_KEY', label: 'Private Key', type: 'password' },
-      { name: 'SLICKTEXT_MAIN_NUMBER', label: 'Shared Phone Number', type: 'tel' },
-      { name: 'SMS_WEBHOOK_SECRET', label: 'Inbound Webhook Secret', type: 'password' },
-    ],
-  },
-  {
     key: 'ringcentral',
     title: 'RingCentral',
-    icon: '📞',
     vars: [
       { name: 'RINGCENTRAL_CLIENT_ID', label: 'Client ID (App)', type: 'text' },
       { name: 'RINGCENTRAL_CLIENT_SECRET', label: 'Client Secret', type: 'password' },
@@ -110,13 +30,38 @@ const CONFIG_GROUPS = [
     ],
   },
   {
-    key: 'twilio',
-    title: 'Twilio (Personal Numbers)',
-    icon: '📱',
+    key: 'google',
+    title: 'Google / Gmail',
     vars: [
-      { name: 'TWILIO_ACCOUNT_SID', label: 'Account SID', type: 'text' },
-      { name: 'TWILIO_AUTH_TOKEN', label: 'Auth Token', type: 'password' },
-      { name: 'APP_BASE_URL', label: 'App Base URL (for webhooks)', type: 'url' },
+      { name: 'GOOGLE_CLIENT_ID', label: 'OAuth Client ID', type: 'text' },
+      { name: 'GOOGLE_CLIENT_SECRET', label: 'OAuth Client Secret', type: 'password' },
+      { name: 'GOOGLE_WORKSPACE_DOMAIN', label: 'Workspace Domain (e.g. company.com)', type: 'text' },
+      { name: 'GOOGLE_WORKSPACE_ADMIN_EMAIL', label: 'Admin Email', type: 'email' },
+    ],
+  },
+  {
+    key: 'ai',
+    title: 'AI Assistant',
+    vars: [
+      { name: 'AI_PROVIDER', label: 'Provider (gemini or claude)', type: 'text' },
+      { name: 'GEMINI_API_KEY', label: 'Gemini API Key', type: 'password' },
+      { name: 'ANTHROPIC_API_KEY', label: 'Anthropic API Key', type: 'password' },
+    ],
+  },
+  {
+    key: 'zapier',
+    title: 'Zapier',
+    vars: [
+      { name: 'ZAPIER_WEBHOOK_URL', label: 'Outbound Webhook URL', type: 'url' },
+    ],
+  },
+  {
+    key: 'supabase',
+    title: 'Supabase',
+    vars: [
+      { name: 'SUPABASE_URL', label: 'Project URL', type: 'url' },
+      { name: 'SUPABASE_ANON_KEY', label: 'Anon Key', type: 'password' },
+      { name: 'SUPABASE_SERVICE_ROLE_KEY', label: 'Service Role Key', type: 'password' },
     ],
   },
 ];
