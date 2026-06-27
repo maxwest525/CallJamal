@@ -40,6 +40,8 @@ const templatesRoutes = require('./routes/templates');
 const brandRoutes = require('./routes/brand');
 const activityRoutes = require('./routes/activity');
 const tenantsRoutes = require('./routes/tenants');
+const phoneNumbersRoutes = require('./routes/phone-numbers');
+const ringcentralRoutes = require('./routes/ringcentral');
 const { authMiddleware } = require('./lib/auth');
 const { resolveTenant } = require('./lib/tenants');
 
@@ -48,7 +50,14 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json({
+  verify: (req, _res, buf) => {
+    // Preserve raw body for Slack HMAC signature verification
+    if (req.url && req.url.startsWith('/api/slack/events')) {
+      req.rawBody = buf.toString('utf8');
+    }
+  },
+}));
 app.use(express.urlencoded({ extended: true }));
 
 // Rate limiting for API routes
@@ -124,6 +133,8 @@ app.use('/api/templates', templatesRoutes);
 app.use('/api/brand', brandRoutes);
 app.use('/api/activity', activityRoutes);
 app.use('/api/tenants', tenantsRoutes);
+app.use('/api/phone-numbers', phoneNumbersRoutes);
+app.use('/api/ringcentral', ringcentralRoutes);
 
 // Auth routes (OAuth callbacks live outside /api/)
 app.use('/auth', authRoutes);

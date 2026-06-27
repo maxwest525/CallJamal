@@ -1,6 +1,7 @@
 const express = require('express');
 const { sendSms, sendBulkSms } = require('../lib/slicktext');
 const { supabase, logActivity, upsertConversation } = require('../lib/supabase');
+const { triggerOutbound } = require('../lib/webhooks');
 
 const router = express.Router();
 
@@ -26,6 +27,11 @@ router.post('/send-external', async (req, res) => {
       clientId,
       lastMessage: message,
     });
+
+    // Auto-assign conversation to the sender so it shows in their inbox
+    if (senderId && !conversation.assigned_to) {
+      await supabase.from('sms_conversations').update({ assigned_to: senderId }).eq('id', conversation.id);
+    }
 
     const { data: msg, error: msgError } = await supabase.from('messages').insert({
       conversation_id: conversation.id,
@@ -54,6 +60,8 @@ router.post('/send-external', async (req, res) => {
       details: { to, messagePreview: message.slice(0, 50) },
       ipAddress: req.ip,
     });
+
+    triggerOutbound('sms_sent', { to, messagePreview: message.slice(0, 100), clientId, messageId: msg.id }).catch(() => {});
 
     res.json({ success: true, message: msg, slicktextResponse: slicktextResponse.data });
   } catch (err) {
@@ -156,7 +164,7 @@ router.post('/broadcast', async (req, res) => {
     }));
 
     const { error: insertError } = await supabase.from('messages').insert(broadcastRecords);
-    if (insertError) console.error('Broadcast insert error:', insertError.message);
+    if (insertError) throw new Error(`Broadcast DB insert failed: ${insertError.message}`);
 
     await logActivity({
       userId: senderId,
@@ -175,9 +183,19 @@ router.post('/broadcast', async (req, res) => {
 /**
  * POST /api/sms/webhook
  * Incoming SMS webhook from SlickText
- * SlickText will POST here when a client replies to the shared number
+ * SlickText will POST here when a client replies to the shared number.
+ * Set SMS_WEBHOOK_SECRET env var and pass it as ?secret=… or X-Webhook-Secret header
+ * to authenticate inbound webhooks.
  */
 router.post('/webhook', async (req, res) => {
+  const webhookSecret = process.env.SMS_WEBHOOK_SECRET;
+  if (webhookSecret) {
+    const provided = req.query.secret || req.headers['x-webhook-secret'] || '';
+    if (provided !== webhookSecret) {
+      return res.status(401).json({ error: 'Unauthorized webhook request' });
+    }
+  }
+
   const { from, to, body: messageBody, id: slicktextId } = req.body;
 
   if (!from || !messageBody) {
@@ -187,7 +205,7 @@ router.post('/webhook', async (req, res) => {
   try {
     const { data: client } = await supabase
       .from('clients')
-      .select('id, name')
+      .select('id, name, assigned_to')
       .eq('phone', from)
       .maybeSingle();
 
@@ -196,6 +214,11 @@ router.post('/webhook', async (req, res) => {
       clientId: client?.id || null,
       lastMessage: messageBody,
     });
+
+    // Auto-assign conversation to the client's assigned team member
+    if (client?.assigned_to && !conversation.assigned_to) {
+      await supabase.from('sms_conversations').update({ assigned_to: client.assigned_to }).eq('id', conversation.id);
+    }
 
     const { error: rpcError } = await supabase.rpc('increment_unread_count', { conversation_id: conversation.id });
     if (rpcError) console.error('increment_unread_count error:', rpcError.message);
@@ -211,6 +234,14 @@ router.post('/webhook', async (req, res) => {
       client_id: client?.id || null,
       slicktext_message_id: slicktextId || null,
     });
+
+    triggerOutbound('sms_received', {
+      from,
+      clientName: client?.name || null,
+      clientId: client?.id || null,
+      messagePreview: messageBody.slice(0, 100),
+      conversationId: conversation.id,
+    }).catch(() => {});
 
     res.json({ success: true });
   } catch (err) {
@@ -308,7 +339,7 @@ router.post('/conversations/:id/reply', async (req, res) => {
   try {
     const { data: conversation, error: convError } = await supabase
       .from('sms_conversations')
-      .select('id, phone_number, client_id')
+      .select('id, phone_number, client_id, assigned_to')
       .eq('id', id)
       .single();
 
@@ -335,11 +366,10 @@ router.post('/conversations/:id/reply', async (req, res) => {
 
     if (msgError) throw new Error(msgError.message);
 
-    // Update conversation last message
-    await supabase.from('sms_conversations').update({
-      last_message: message,
-      last_message_at: new Date().toISOString(),
-    }).eq('id', id);
+    // Update conversation last message + auto-assign to replier if unassigned
+    const convUpdate = { last_message: message, last_message_at: new Date().toISOString() };
+    if (senderId && !conversation.assigned_to) convUpdate.assigned_to = senderId;
+    await supabase.from('sms_conversations').update(convUpdate).eq('id', id);
 
     if (conversation.client_id) {
       await supabase.from('clients').update({ last_contacted_at: new Date().toISOString() }).eq('id', conversation.client_id);
@@ -377,6 +407,50 @@ router.patch('/conversations/:id/read', async (req, res) => {
     res.json({ success: true });
   } catch (err) {
     console.error('mark read error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * PATCH /api/sms/conversations/:id/assign
+ * Assign a conversation to a team member
+ * Body: { userId } — pass null to unassign
+ */
+router.patch('/conversations/:id/assign', async (req, res) => {
+  const { id } = req.params;
+  const { userId } = req.body;
+
+  try {
+    const { error } = await supabase
+      .from('sms_conversations')
+      .update({ assigned_to: userId || null })
+      .eq('id', id);
+
+    if (error) throw new Error(error.message);
+
+    if (userId) {
+      const { data: conv } = await supabase
+        .from('sms_conversations')
+        .select('client_id')
+        .eq('id', id)
+        .single();
+      if (conv?.client_id) {
+        await supabase.from('clients').update({ assigned_to: userId }).eq('id', conv.client_id);
+      }
+    }
+
+    await logActivity({
+      userId: req.user?.id,
+      action: userId ? 'conversation_assigned' : 'conversation_unassigned',
+      entityType: 'conversation',
+      entityId: id,
+      details: { assignedTo: userId },
+      ipAddress: req.ip,
+    });
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error('assign conversation error:', err.message);
     res.status(500).json({ error: err.message });
   }
 });

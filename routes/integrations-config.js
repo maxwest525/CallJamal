@@ -94,6 +94,29 @@ const CONFIG_GROUPS = [
       { name: 'SLICKTEXT_PUBLIC_KEY', label: 'Public Key', type: 'text' },
       { name: 'SLICKTEXT_PRIVATE_KEY', label: 'Private Key', type: 'password' },
       { name: 'SLICKTEXT_MAIN_NUMBER', label: 'Shared Phone Number', type: 'tel' },
+      { name: 'SMS_WEBHOOK_SECRET', label: 'Inbound Webhook Secret', type: 'password' },
+    ],
+  },
+  {
+    key: 'ringcentral',
+    title: 'RingCentral',
+    icon: '📞',
+    vars: [
+      { name: 'RINGCENTRAL_CLIENT_ID', label: 'Client ID (App)', type: 'text' },
+      { name: 'RINGCENTRAL_CLIENT_SECRET', label: 'Client Secret', type: 'password' },
+      { name: 'RINGCENTRAL_JWT_TOKEN', label: 'JWT Token (Service Auth)', type: 'password' },
+      { name: 'RINGCENTRAL_MAIN_NUMBER', label: 'Main Company Number', type: 'tel' },
+      { name: 'RINGCENTRAL_SANDBOX', label: 'Sandbox Mode (true/false)', type: 'text' },
+    ],
+  },
+  {
+    key: 'twilio',
+    title: 'Twilio (Personal Numbers)',
+    icon: '📱',
+    vars: [
+      { name: 'TWILIO_ACCOUNT_SID', label: 'Account SID', type: 'text' },
+      { name: 'TWILIO_AUTH_TOKEN', label: 'Auth Token', type: 'password' },
+      { name: 'APP_BASE_URL', label: 'App Base URL (for webhooks)', type: 'url' },
     ],
   },
 ];
@@ -125,6 +148,7 @@ function maskValue(val) {
 }
 
 function checkAdminPin(req, res) {
+  const crypto = require('crypto');
   const pin = process.env.ADMIN_PIN;
   if (!pin) {
     res.status(503).json({
@@ -133,7 +157,13 @@ function checkAdminPin(req, res) {
     return false;
   }
   const provided = (req.headers['x-admin-pin'] || req.body?.adminPin || '').toString().trim();
-  if (!provided || provided !== pin) {
+  if (!provided) {
+    res.status(401).json({ error: 'Invalid admin PIN.' });
+    return false;
+  }
+  const pinBuf = Buffer.from(pin);
+  const providedBuf = Buffer.from(provided);
+  if (pinBuf.length !== providedBuf.length || !crypto.timingSafeEqual(pinBuf, providedBuf)) {
     res.status(401).json({ error: 'Invalid admin PIN.' });
     return false;
   }
