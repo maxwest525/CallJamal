@@ -495,84 +495,59 @@
  margin-top: 1px;
  }
 
- .team-card-activity {
- display: flex;
- align-items: center;
- gap: 5px;
- flex-shrink: 0;
- padding: 3px 8px;
- border-radius: 5px;
- background: rgba(255,255,255,.03);
- border: 1px solid rgba(255,255,255,.06);
- font-size: 0.5625rem;
- font-weight: 500;
+ .team-card-activity-context {
+ font-size: 0.6875rem;
  color: rgba(255,255,255,.35);
- text-transform: uppercase;
- letter-spacing: .4px;
- }
- .team-card-activity-icon { line-height: 1; display: flex; }
- .team-card-activity.on-call {
- background: rgba(229,64,64,.06);
- border-color: rgba(229,64,64,.2);
- color: rgba(229,64,64,.8);
- }
- .team-card-activity.on-call .team-card-activity-icon::after {
- content: '';
- display: inline-block;
- width: 4px; height: 4px;
- border-radius: 50%;
- background: #e54040;
- margin-left: 3px;
- animation: callPulse 2s ease-in-out infinite;
- vertical-align: middle;
- }
- .team-card-activity.in-meeting {
- background: rgba(167,139,250,.06);
- border-color: rgba(167,139,250,.2);
- color: rgba(167,139,250,.8);
- }
- .team-card-activity.idle-activity {
- background: rgba(255,255,255,.02);
- border-color: rgba(255,255,255,.04);
- color: rgba(255,255,255,.2);
- }
-
- /* ── Expanded Card Channels ── */
- .team-card-channels {
- display: none;
- margin-top: 10px;
- padding-top: 10px;
- border-top: 1px solid rgba(255,255,255,.05);
- }
- .team-card.expanded .team-card-channels { display: block; }
-
- .tc-channel-grid {
- display: flex;
- gap: 6px;
- flex-wrap: wrap;
- }
- .tc-channel-btn {
+ margin-top: 6px;
+ padding-left: 50px;
  display: flex;
  align-items: center;
- gap: 5px;
- padding: 6px 10px;
- border-radius: 6px;
- background: rgba(255,255,255,.02);
+ gap: 6px;
+ }
+ .team-card-activity-context .tc-ctx-icon { display: flex; opacity: .5; }
+ .team-card-activity-context .tc-ctx-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+ .team-card-activity-context.on-call { color: rgba(229,64,64,.7); }
+ .team-card-activity-context.on-call .tc-ctx-icon { opacity: .8; }
+ .team-card-activity-context.in-meeting { color: rgba(167,139,250,.7); }
+ .team-card-activity-context.in-meeting .tc-ctx-icon { opacity: .8; }
+ .team-card-activity-context .tc-live-dot {
+ width: 5px; height: 5px; border-radius: 50%;
+ background: #e54040;
+ animation: callPulse 2s ease-in-out infinite;
+ flex-shrink: 0;
+ }
+
+ .team-card-actions {
+ display: flex;
+ gap: 4px;
+ margin-top: 8px;
+ padding-left: 50px;
+ }
+ .tc-action-btn {
+ display: flex;
+ align-items: center;
+ gap: 4px;
+ padding: 4px 8px;
+ border-radius: 5px;
+ background: rgba(255,255,255,.025);
  border: 1px solid rgba(255,255,255,.06);
- color: rgba(255,255,255,.4);
+ color: rgba(255,255,255,.35);
  font-size: 0.5625rem;
  font-weight: 500;
  letter-spacing: .3px;
  cursor: pointer;
- transition: all .2s;
+ transition: all .15s;
  text-transform: uppercase;
  }
- .tc-channel-btn:hover {
- background: rgba(229,64,64,.04);
+ .tc-action-btn:hover {
+ background: rgba(229,64,64,.05);
  border-color: rgba(229,64,64,.2);
  color: rgba(229,64,64,.8);
  }
- .tc-channel-btn .tc-ch-icon { line-height: 1; display: flex; }
+ .tc-action-btn .tc-act-icon { line-height: 1; display: flex; }
+ .tc-action-btn.tc-action-listen:hover { background: rgba(74,222,128,.06); border-color: rgba(74,222,128,.25); color: rgba(74,222,128,.85); }
+ .tc-action-btn.tc-action-coach:hover { background: rgba(251,191,36,.06); border-color: rgba(251,191,36,.25); color: rgba(251,191,36,.85); }
+ .tc-action-btn.tc-action-screen:hover { background: rgba(96,165,250,.06); border-color: rgba(96,165,250,.25); color: rgba(96,165,250,.85); }
 
  /* ── Offline row below floor ── */
  .offline-row {
@@ -3295,10 +3270,10 @@
  }
 
  const DEMO_USERS = [
- { id: 'demo-1', name: 'Chris B', email: 'chris@noahconnect.com', status: 'online', job_title: 'Sales', phone: '+14155550101', avatar_url: makeDemoAvatar(1, 0, 'CB'), activity: 'on-call', activity_label: 'On Call' },
- { id: 'demo-2', name: 'Jon D', email: 'jon@noahconnect.com', status: 'online', job_title: 'Admin', phone: '+14155550102', avatar_url: makeDemoAvatar(2, 200, 'JD'), activity: 'idle-activity', activity_label: 'Available' },
- { id: 'demo-3', name: 'Mike B', email: 'mike@noahconnect.com', status: 'busy', job_title: 'Dispatch', phone: '+14155550103', avatar_url: makeDemoAvatar(3, 30, 'MB'), activity: 'in-meeting', activity_label: 'In Meeting' },
- { id: 'demo-4', name: 'Matt B', email: 'matt@noahconnect.com', status: 'online', job_title: 'Sales', phone: '+14155550104', avatar_url: makeDemoAvatar(4, 160, 'MB'), activity: 'idle-activity', activity_label: 'Drafting Email' },
+ { id: 'demo-1', name: 'Chris B', email: 'chris@noahconnect.com', status: 'online', job_title: 'Sales', phone: '+14155550101', avatar_url: makeDemoAvatar(1, 0, 'CB'), activity: 'on-call', activity_context: 'Talking to Shelly Jones' },
+ { id: 'demo-2', name: 'Jon D', email: 'jon@noahconnect.com', status: 'online', job_title: 'Admin', phone: '+14155550102', avatar_url: makeDemoAvatar(2, 200, 'JD'), activity: 'idle-activity', activity_context: 'Reviewing invoices' },
+ { id: 'demo-3', name: 'Mike B', email: 'mike@noahconnect.com', status: 'busy', job_title: 'Dispatch', phone: '+14155550103', avatar_url: makeDemoAvatar(3, 30, 'MB'), activity: 'in-meeting', activity_context: 'Team standup call' },
+ { id: 'demo-4', name: 'Matt B', email: 'matt@noahconnect.com', status: 'online', job_title: 'Sales', phone: '+14155550104', avatar_url: makeDemoAvatar(4, 160, 'MB'), activity: 'idle-activity', activity_context: 'On YouTube' },
  ];
 
  function applyDemoToggleUI() {
@@ -3881,6 +3856,10 @@
  video: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>',
  status: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>',
  clock: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+ listen: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18v-6a9 9 0 0118 0v6"/><path d="M21 19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3v5z"/><path d="M3 19a2 2 0 002 2h1a2 2 0 002-2v-3a2 2 0 00-2-2H3v5z"/></svg>',
+ coach: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>',
+ screen: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>',
+ message: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>',
  };
 
  function renderUsers(users) {
@@ -3898,10 +3877,11 @@
  : `<div class="tc-initials">${escHtml(initials)}</div>`;
  const roleLabel = u.job_title || u.role || u.department || '';
  const activity = u.activity || 'idle-activity';
- const activityLabel = u.activity_label || 'Available';
+ const activityContext = u.activity_context || '';
  const actIcon = activity === 'on-call' ? SVG_ICONS.phone
  : activity === 'in-meeting' ? SVG_ICONS.video
  : SVG_ICONS.clock;
+ const liveDot = activity === 'on-call' ? '<span class="tc-live-dot"></span>' : '';
 
  return `
  <div class="team-card js-team-card" data-user-id="${escAttr(u.id)}" data-name="${escAttr(u.name || '')}" data-phone="${escAttr(u.phone || '')}" data-email="${escAttr(u.email || '')}" data-avatar="${escAttr(u.avatar_url || '')}" data-role="${escAttr(roleLabel)}" data-status="${escAttr(status)}">
@@ -3914,20 +3894,17 @@
  <div class="team-card-name">${escHtml(u.name || 'Unknown')}</div>
  <div class="team-card-role">${escHtml(roleLabel || 'Team Member')}</div>
  </div>
- <div class="team-card-activity ${activity}">
- <span class="team-card-activity-icon">${actIcon}</span>
- ${escHtml(activityLabel)}
  </div>
+ <div class="team-card-activity-context ${activity}">
+ <span class="tc-ctx-icon">${actIcon}</span>
+ ${liveDot}
+ <span class="tc-ctx-text">${escHtml(activityContext)}</span>
  </div>
- <div class="team-card-channels">
- <div class="tc-channel-grid">
- <button class="tc-channel-btn js-tc-action" data-action="call" data-phone="${escAttr(u.phone || '')}"><span class="tc-ch-icon">${SVG_ICONS.phone}</span>Call</button>
- <button class="tc-channel-btn js-tc-action" data-action="sms" data-phone="${escAttr(u.phone || '')}" data-name="${escAttr(u.name || '')}"><span class="tc-ch-icon">${SVG_ICONS.sms}</span>SMS</button>
- <button class="tc-channel-btn js-tc-action" data-action="email" data-email="${escAttr(u.email || '')}"><span class="tc-ch-icon">${SVG_ICONS.email}</span>Email</button>
- <button class="tc-channel-btn js-tc-action" data-action="slack" data-name="${escAttr(u.name || '')}"><span class="tc-ch-icon">${SVG_ICONS.slack}</span>Slack</button>
- <button class="tc-channel-btn js-tc-action" data-action="video" data-name="${escAttr(u.name || '')}"><span class="tc-ch-icon">${SVG_ICONS.video}</span>Video</button>
- <button class="tc-channel-btn js-tc-action" data-action="status" data-user-id="${escAttr(u.id)}" data-status="${escAttr(status)}"><span class="tc-ch-icon">${SVG_ICONS.status}</span>Status</button>
- </div>
+ <div class="team-card-actions">
+ <button class="tc-action-btn tc-action-listen js-tc-action" data-action="listen" data-name="${escAttr(u.name || '')}"><span class="tc-act-icon">${SVG_ICONS.listen}</span>Listen</button>
+ <button class="tc-action-btn tc-action-coach js-tc-action" data-action="coach" data-name="${escAttr(u.name || '')}"><span class="tc-act-icon">${SVG_ICONS.coach}</span>Coach</button>
+ <button class="tc-action-btn tc-action-screen js-tc-action" data-action="screen" data-name="${escAttr(u.name || '')}"><span class="tc-act-icon">${SVG_ICONS.screen}</span>Screen</button>
+ <button class="tc-action-btn js-tc-action" data-action="message" data-name="${escAttr(u.name || '')}"><span class="tc-act-icon">${SVG_ICONS.message}</span>Message</button>
  </div>
  </div>`;
  }
@@ -3960,35 +3937,21 @@
 
  el.innerHTML = `<div class="office-floor">${floorHtml}</div>${offlineHtml}`;
 
- el.querySelectorAll('.js-team-card').forEach(card => {
- card.addEventListener('click', (e) => {
- if (e.target.closest('.js-tc-action')) return;
- card.classList.toggle('expanded');
- });
- });
-
  el.querySelectorAll('.js-tc-action').forEach(btn => {
  btn.addEventListener('click', (e) => {
  e.stopPropagation();
  const action = btn.dataset.action;
- if (action === 'call' && btn.dataset.phone) {
- window.open(`tel:${btn.dataset.phone}`);
- } else if (action === 'sms') {
- navigate('messages');
- } else if (action === 'email' && btn.dataset.email) {
- openModal('gmailComposeModal');
- setTimeout(() => {
- document.getElementById('gmailTo').value = btn.dataset.email;
- document.getElementById('gmailSubject').value = '';
- document.getElementById('gmailBody').value = '';
- document.getElementById('gmailSubject').focus();
- }, 100);
- } else if (action === 'slack') {
- navigate('slack');
- } else if (action === 'video') {
- toast('Starting video huddle with ' + (btn.dataset.name || 'team member') + '...', 'info');
- } else if (action === 'status') {
- openUserStatus(btn.dataset.userId, btn.dataset.status, '');
+ const name = btn.dataset.name || 'team member';
+ if (action === 'listen') {
+ toast('Listening in on ' + name + '...', 'info');
+ } else if (action === 'coach') {
+ const input = document.getElementById('noahChatInput');
+ if (input) { input.value = '/coach ' + name + ' '; input.focus(); }
+ } else if (action === 'screen') {
+ toast('Viewing ' + name + "'s screen...", 'info');
+ } else if (action === 'message') {
+ const input = document.getElementById('noahChatInput');
+ if (input) { input.value = '/msg ' + name + ' '; input.focus(); }
  }
  });
  });
