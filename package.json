@@ -1,5 +1,5 @@
 {
-  "name": "calljamal-virtual-office",
+  "name": "noah-connect-virtual-office",
   "version": "1.0.0",
   "description": "Virtual Office system with SlickText SMS integration and Supabase database",
   "main": "server.js",

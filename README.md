@@ -1,4 +1,4 @@
-# 📞 CallJamal – Virtual Office
+# Noah Connect – Virtual Office
 
 A production-ready Virtual Office system with SlickText SMS integration and Supabase database. Built for teams of up to 5 employees sharing a single SMS number, at a fraction of the cost of platforms like Roam HQ.
 
@@ -36,7 +36,7 @@ A production-ready Virtual Office system with SlickText SMS integration and Supa
 
 ### Integrations
 - **Slack** — Send and receive Slack channel messages
-- **Zapier / n8n** — Trigger webhooks from CallJamal events
+- **Zapier / n8n** — Trigger webhooks from Noah Connect events
 - **AI Assistant** — Floating chat widget powered by Gemini or Claude
 - **Daily.co Huddles** — Instant video huddles with PiP pop-out and Google Meet fallback
 - **Integrations Vault** — Admin-only vault to store API keys; no per-user setup required
@@ -62,7 +62,7 @@ A production-ready Virtual Office system with SlickText SMS integration and Supa
 ## 📁 Project Structure
 
 ```
-CallJamal/
+NoahConnect/
 ├── server.js               # Express server entry point
 ├── package.json
 ├── .env.example            # Environment variable template
@@ -85,8 +85,8 @@ CallJamal/
 ### 1. Clone & Install
 
 ```bash
-git clone https://github.com/maxwest525/CallJamal.git
-cd CallJamal
+git clone https://github.com/maxwest525/calljamal.git
+cd calljamal
 npm install
 ```
 
@@ -234,8 +234,8 @@ curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
 sudo apt-get install -y nodejs
 
 # Clone and install
-git clone https://github.com/maxwest525/CallJamal.git /var/www/calljamal
-cd /var/www/calljamal
+git clone https://github.com/maxwest525/calljamal.git /var/www/noah-connect
+cd /var/www/noah-connect
 npm install --production
 
 # Set up environment
@@ -244,7 +244,7 @@ nano .env  # fill in your values
 
 # Install PM2 for process management
 npm install -g pm2
-pm2 start server.js --name calljamal
+pm2 start server.js --name noah-connect
 pm2 startup
 pm2 save
 ```
