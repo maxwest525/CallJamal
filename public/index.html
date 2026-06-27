@@ -976,7 +976,13 @@
  flex-direction: column;
  gap: 8px;
  margin-bottom: 20px;
+ max-height: 320px;
+ overflow-y: auto;
+ padding-right: 4px;
  }
+ .login-team-list::-webkit-scrollbar { width: 4px; }
+ .login-team-list::-webkit-scrollbar-track { background: transparent; }
+ .login-team-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 2px; }
 
  .login-team-btn {
  display: flex;
@@ -1001,6 +1007,7 @@
  background: rgba(229,64,64,.15); color: #e54040;
  display: flex; align-items: center; justify-content: center;
  font-size: 0.875rem; font-weight: 700; flex-shrink: 0;
+ overflow: hidden;
  }
 
  .login-or {
@@ -1854,7 +1861,7 @@
  </div>
 
  <nav class="sidebar-nav">
- <button class="nav-item active" data-view="messages">
+ <button class="nav-item" data-view="messages">
  <svg class="nav-icon-svg" viewBox="0 0 20 20" fill="currentColor"><path d="M2 5a2 2 0 012-2h12a2 2 0 012 2v7a2 2 0 01-2 2H6l-4 3V5z"/></svg>
  <span>Messages</span>
  </button>
@@ -1862,7 +1869,7 @@
  <svg class="nav-icon-svg" viewBox="0 0 20 20" fill="currentColor"><path d="M2 4a1 1 0 011-1h14a1 1 0 011 1v1H2V4zm0 3h16v9a1 1 0 01-1 1H3a1 1 0 01-1-1V7zm3 2v2h4V9H5z"/></svg>
  <span>Conversations</span>
  </button>
- <button class="nav-item" data-view="users">
+ <button class="nav-item active" data-view="users">
  <svg class="nav-icon-svg" viewBox="0 0 20 20" fill="currentColor"><path d="M7 8a3 3 0 100-6 3 3 0 000 6zm7 0a3 3 0 100-6 3 3 0 000 6zm-7 2c-3.31 0-6 1.79-6 4v1h12v-1c0-2.21-2.69-4-6-4zm7 0c-.34 0-.67.03-1 .08C14.3 11.2 15 12.5 15 14v1h5v-1c0-2.21-2.69-4-6-4z"/></svg>
  <span>Team</span>
  </button>
@@ -1917,14 +1924,14 @@
 ============================================================ -->
 <main class="main">
  <header class="header">
- <span class="header-title" id="headerTitle">Messages</span>
+ <span class="header-title" id="headerTitle">Team</span>
  <button class="btn btn-secondary btn-sm" id="refreshBtn">Refresh</button>
  </header>
 
  <div class="content">
 
  <!-- ========== MESSAGES VIEW ========== -->
- <div class="view active" id="view-messages">
+ <div class="view" id="view-messages">
  <div class="grid-3" style="margin-bottom:24px;">
  <div class="stat-card">
  <div class="stat-label">Messages Today</div>
@@ -2063,10 +2070,18 @@
  </div>
 
  <!-- ========== USERS / TEAM VIEW ========== -->
- <div class="view" id="view-users">
+ <div class="view active" id="view-users">
  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
  <h2 style="font-size:1.125rem; font-weight:600;">Team Members</h2>
- <div style="display:flex; gap:8px;">
+ <div style="display:flex; gap:8px; align-items:center;">
+ <label id="demoToggleLabel" style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:0.6875rem;color:rgba(255,255,255,.35);font-weight:500;letter-spacing:.3px;user-select:none;">
+ <span style="position:relative;width:32px;height:18px;display:inline-block;">
+ <input type="checkbox" id="demoToggle" style="opacity:0;width:0;height:0;position:absolute;" />
+ <span id="demoToggleTrack" style="position:absolute;inset:0;border-radius:9px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);transition:background .2s,border-color .2s;"></span>
+ <span id="demoToggleThumb" style="position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,.3);transition:transform .2s,background .2s;"></span>
+ </span>
+ Demo
+ </label>
  <button class="btn btn-secondary btn-sm" id="syncRcPresenceBtn" title="Sync live presence from RingCentral">Live Sync</button>
  <button class="btn btn-secondary btn-sm" id="syncGwBtn">Sync Google Workspace</button>
  <button class="btn btn-primary btn-sm" id="addUserBtn">+ Add Member</button>
@@ -2950,7 +2965,7 @@
 ============================================================ -->
 <script>
  const API = ''; // Same origin
- let currentView = 'messages';
+ let currentView = 'users';
  let allClients = [];
  let allConversations = [];
  let selectedClientForSms = null;
@@ -2992,12 +3007,11 @@
  // Try to populate with real team members
  try {
  const data = await apiFetch('/api/users/team');
- const team = (data.team || []).map(tm => ({ ...tm.user, role: tm.role, extension: tm.extension }));
+ let team = (data.team || []).map(tm => ({ ...tm.user, role: tm.role, extension: tm.extension }));
+ if (!team.length) team = DEMO_USERS;
  renderLoginTeamList(team);
  } catch {
- // If DB not configured yet show manual entry only
- document.getElementById('loginTeamList').innerHTML =
- '<div style="color:var(--color-gray-400);font-size:0.8125rem;padding:4px 0;">No team members yet — type your name below.</div>';
+ renderLoginTeamList(DEMO_USERS);
  }
  }
 
@@ -3010,9 +3024,12 @@
  list.innerHTML = team.map(u => {
  const initials = (u.name || 'U').split(' ').map(s => s[0]).join('').slice(0, 2).toUpperCase();
  const title = u.job_title || u.role || '';
+ const avatarInner = u.avatar_url
+ ? `<img src="${escAttr(u.avatar_url)}" alt="${escAttr(u.name)}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" />`
+ : escHtml(initials);
  return `
  <button class="login-team-btn" data-id="${escAttr(u.id)}" data-name="${escAttr(u.name)}" data-email="${escAttr(u.email || '')}">
- <div class="login-team-avatar">${escHtml(initials)}</div>
+ <div class="login-team-avatar">${avatarInner}</div>
  <div>
  <div>${escHtml(u.name)}</div>
  ${title ? `<div style="font-size:0.75rem;font-weight:400;color:var(--color-gray-500);">${escHtml(title)}</div>` : ''}
@@ -3024,7 +3041,7 @@
  const user = { id: btn.dataset.id, name: btn.dataset.name, email: btn.dataset.email || null };
  storeUser(user);
  applyCurrentUser(user);
- loadView('messages');
+ loadView('users');
  });
  });
  }
@@ -3035,7 +3052,7 @@
  const user = { id: null, name };
  storeUser(user);
  applyCurrentUser(user);
- loadView('messages');
+ loadView('users');
  });
  document.getElementById('loginNameInput').addEventListener('keydown', e => {
  if (e.key === 'Enter') document.getElementById('loginNameBtn').click();
@@ -3046,11 +3063,67 @@
  const stored = getStoredUser();
  if (stored && stored.name) {
  applyCurrentUser(stored);
- loadView('messages');
+ loadView('users');
  } else {
  showLoginGate();
  }
  })();
+ // ============================================================
+ // Demo Mode — pre-populated team with avatar photos
+ // ============================================================
+ let demoMode = localStorage.getItem('nc_demo_mode') !== 'false';
+
+ function makeDemoAvatar(seed, hue, initials) {
+ const bg = `hsl(${hue},35%,18%)`;
+ const fg = `hsl(${hue},50%,65%)`;
+ const accent = `hsl(${(hue + 40) % 360},45%,55%)`;
+ const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 150"><rect width="150" height="150" fill="${bg}"/><circle cx="75" cy="55" r="30" fill="${fg}" opacity=".9"/><ellipse cx="75" cy="130" rx="45" ry="35" fill="${fg}" opacity=".7"/><circle cx="65" cy="50" r="4" fill="${bg}"/><circle cx="85" cy="50" r="4" fill="${bg}"/><path d="M67 62 Q75 70 83 62" stroke="${bg}" stroke-width="2" fill="none"/><rect x="${55+seed%15}" y="2" width="${18+seed%12}" height="${14+seed%8}" rx="4" fill="${accent}" opacity=".6"/></svg>`;
+ return 'data:image/svg+xml,' + encodeURIComponent(svg);
+ }
+
+ const DEMO_USERS = [
+ { id: 'demo-1', name: 'Noah West', email: 'noah@noahconnect.com', status: 'online', job_title: 'CEO', phone: '+14155550101', avatar_url: makeDemoAvatar(1, 0, 'NW') },
+ { id: 'demo-2', name: 'Maya Chen', email: 'maya@noahconnect.com', status: 'online', job_title: 'VP Operations', phone: '+14155550102', avatar_url: makeDemoAvatar(2, 200, 'MC') },
+ { id: 'demo-3', name: 'Darius Johnson', email: 'darius@noahconnect.com', status: 'online', job_title: 'Sales Lead', phone: '+14155550103', avatar_url: makeDemoAvatar(3, 30, 'DJ') },
+ { id: 'demo-4', name: 'Sofia Reyes', email: 'sofia@noahconnect.com', status: 'busy', job_title: 'Account Executive', phone: '+14155550104', avatar_url: makeDemoAvatar(4, 280, 'SR') },
+ { id: 'demo-5', name: 'Marcus Taylor', email: 'marcus@noahconnect.com', status: 'busy', job_title: 'Senior Developer', phone: '+14155550105', avatar_url: makeDemoAvatar(5, 160, 'MT') },
+ { id: 'demo-6', name: 'Aisha Patel', email: 'aisha@noahconnect.com', status: 'away', job_title: 'Marketing Manager', phone: '+14155550106', avatar_url: makeDemoAvatar(6, 320, 'AP') },
+ { id: 'demo-7', name: 'Jamal Brooks', email: 'jamal@noahconnect.com', status: 'away', job_title: 'Customer Success', phone: '+14155550107', avatar_url: makeDemoAvatar(7, 50, 'JB') },
+ { id: 'demo-8', name: 'Lena Kim', email: 'lena@noahconnect.com', status: 'dnd', job_title: 'Product Designer', phone: '+14155550108', avatar_url: makeDemoAvatar(8, 240, 'LK') },
+ { id: 'demo-9', name: 'Trevon Adams', email: 'trevon@noahconnect.com', status: 'idle', job_title: 'IT Support', phone: '+14155550109', avatar_url: makeDemoAvatar(9, 100, 'TA') },
+ { id: 'demo-10', name: 'Priya Sharma', email: 'priya@noahconnect.com', status: 'online', job_title: 'Finance Director', phone: '+14155550110', avatar_url: makeDemoAvatar(10, 350, 'PS') },
+ { id: 'demo-11', name: 'Elijah Moore', email: 'elijah@noahconnect.com', status: 'offline', job_title: 'Recruiter', phone: '+14155550111', avatar_url: makeDemoAvatar(11, 70, 'EM') },
+ { id: 'demo-12', name: 'Isabella Cruz', email: 'isabella@noahconnect.com', status: 'online', job_title: 'Content Strategist', phone: '+14155550112', avatar_url: makeDemoAvatar(12, 180, 'IC') },
+ ];
+
+ function applyDemoToggleUI() {
+ const toggle = document.getElementById('demoToggle');
+ const track = document.getElementById('demoToggleTrack');
+ const thumb = document.getElementById('demoToggleThumb');
+ if (!toggle) return;
+ toggle.checked = demoMode;
+ if (demoMode) {
+ track.style.background = 'rgba(229,64,64,.15)';
+ track.style.borderColor = 'rgba(229,64,64,.35)';
+ thumb.style.transform = 'translateX(14px)';
+ thumb.style.background = '#e54040';
+ } else {
+ track.style.background = 'rgba(255,255,255,.08)';
+ track.style.borderColor = 'rgba(255,255,255,.1)';
+ thumb.style.transform = 'translateX(0)';
+ thumb.style.background = 'rgba(255,255,255,.3)';
+ }
+ }
+
+ document.getElementById('demoToggle')?.addEventListener('change', (e) => {
+ demoMode = e.target.checked;
+ localStorage.setItem('nc_demo_mode', demoMode);
+ applyDemoToggleUI();
+ loadTeam();
+ });
+
+ applyDemoToggleUI();
+
  // Virtual office floor plan rooms (status → room mapping)
  const OFFICE_ROOMS = [
  { icon: '', name: 'Main Office', slug: 'lobby', statuses: ['online'] },
@@ -3334,28 +3407,30 @@
  // Team / Users
  // ============================================================
  async function loadTeam() {
+ let users = [];
  try {
  const data = await apiFetch('/api/users/team');
  const team = data.team || [];
-
- if (!team.length) {
- // Fallback: try getting all users
+ if (team.length) {
+ users = team.map(tm => ({ ...tm.user, role: tm.role, extension: tm.extension, employee_number: tm.employee_number }));
+ } else {
  const usersData = await apiFetch('/api/users');
- renderUsers(usersData.users || []);
- return;
+ users = usersData.users || [];
  }
-
- const users = team.map(tm => ({ ...tm.user, role: tm.role, extension: tm.extension, employee_number: tm.employee_number }));
- renderUsers(users);
- checkRcOnLoad();
  } catch (err) {
  console.error('Load team error:', err.message);
  try {
  const data = await apiFetch('/api/users');
- renderUsers(data.users || []);
- checkRcOnLoad();
+ users = data.users || [];
  } catch (e) { /* ignore */ }
  }
+ if (demoMode) {
+ const realIds = new Set(users.map(u => u.id));
+ const demoToAdd = DEMO_USERS.filter(d => !realIds.has(d.id));
+ users = [...users, ...demoToAdd];
+ }
+ renderUsers(users);
+ checkRcOnLoad();
  }
 
  // ============================================================
