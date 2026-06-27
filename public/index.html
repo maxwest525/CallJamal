@@ -748,6 +748,69 @@
  }
  .coaching-tip::before { content: ''; width: 3px; height: 3px; border-radius: 50%; background: rgba(229,64,64,.35); flex-shrink: 0; margin-top: 7px; }
 
+ /* ── RingCentral AI Panel ── */
+ .rc-ai-panel {
+ margin-top: 24px;
+ background: rgba(255,255,255,.015);
+ border: 1px solid rgba(255,255,255,.06);
+ border-radius: 16px;
+ padding: 20px;
+ backdrop-filter: blur(20px);
+ }
+ .rc-ai-status-dot {
+ width: 8px; height: 8px; border-radius: 50%;
+ background: #4ade80;
+ box-shadow: 0 0 8px rgba(74,222,128,.4);
+ display: inline-block;
+ }
+ .rc-ai-grid {
+ display: grid;
+ grid-template-columns: repeat(4, 1fr);
+ gap: 12px;
+ }
+ @media (max-width: 1100px) { .rc-ai-grid { grid-template-columns: repeat(2, 1fr); } }
+ .rc-ai-card {
+ background: rgba(255,255,255,.02);
+ border: 1px solid rgba(255,255,255,.05);
+ border-radius: 12px;
+ padding: 16px;
+ display: flex;
+ flex-direction: column;
+ gap: 12px;
+ transition: background .2s, border-color .2s;
+ }
+ .rc-ai-card:hover { background: rgba(255,255,255,.035); border-color: rgba(255,255,255,.08); }
+ .rc-ai-card-header { display: flex; align-items: flex-start; gap: 10px; }
+ .rc-ai-card-icon {
+ width: 28px; height: 28px;
+ border-radius: 8px;
+ background: rgba(255,255,255,.04);
+ display: flex; align-items: center; justify-content: center;
+ font-size: 0.75rem; font-weight: 700;
+ flex-shrink: 0;
+ }
+ .rc-ai-card-title { font-size: 0.8125rem; font-weight: 600; color: rgba(255,255,255,.75); }
+ .rc-ai-card-desc { font-size: 0.6875rem; color: rgba(255,255,255,.3); margin-top: 2px; line-height: 1.4; }
+ .rc-ai-card-status {
+ display: inline-flex; align-items: center; gap: 5px;
+ font-size: 0.5625rem; font-weight: 500; text-transform: uppercase; letter-spacing: .5px;
+ color: rgba(255,255,255,.2); width: fit-content;
+ padding: 3px 8px; border-radius: 4px;
+ background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
+ }
+ .rc-ai-card-status.active {
+ color: rgba(74,222,128,.6);
+ background: rgba(74,222,128,.04);
+ border-color: rgba(74,222,128,.12);
+ }
+ .rc-ai-card-status.active::before {
+ content: ''; width: 5px; height: 5px; border-radius: 50%;
+ background: #4ade80; box-shadow: 0 0 4px rgba(74,222,128,.5);
+ }
+ .rc-ai-card-metric { display: flex; justify-content: space-between; align-items: baseline; }
+ .rc-ai-metric-label { font-size: 0.625rem; color: rgba(255,255,255,.2); text-transform: uppercase; letter-spacing: .5px; }
+ .rc-ai-metric-value { font-size: 0.8125rem; font-weight: 600; color: rgba(255,255,255,.55); }
+
  /* ============================================================
  Avatar Contact Popover
  ============================================================ */
@@ -2119,6 +2182,72 @@
  <div class="empty-state" style="padding:24px;"><p>No one is sharing their screen</p></div>
  </div>
  </div>
+
+ <!-- RingCentral AI Features Panel -->
+ <div id="rcAiPanel" class="rc-ai-panel">
+ <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+ <h2 style="font-size:0.6875rem;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.4);">RingCentral AI</h2>
+ <span class="rc-ai-status-dot" id="rcAiStatusDot"></span>
+ </div>
+ <div class="rc-ai-grid">
+ <div class="rc-ai-card">
+ <div class="rc-ai-card-header">
+ <div class="rc-ai-card-icon" style="color:#4ade80;">T</div>
+ <div>
+ <div class="rc-ai-card-title">Live Transcription</div>
+ <div class="rc-ai-card-desc">Real-time speech-to-text on active calls</div>
+ </div>
+ </div>
+ <div class="rc-ai-card-status active">Active</div>
+ <div class="rc-ai-card-metric">
+ <span class="rc-ai-metric-label">Today</span>
+ <span class="rc-ai-metric-value" id="rcAiTranscriptCount">12 calls transcribed</span>
+ </div>
+ </div>
+ <div class="rc-ai-card">
+ <div class="rc-ai-card-header">
+ <div class="rc-ai-card-icon" style="color:#f59e0b;">S</div>
+ <div>
+ <div class="rc-ai-card-title">Call Scoring</div>
+ <div class="rc-ai-card-desc">AI grades agent performance and compliance</div>
+ </div>
+ </div>
+ <div class="rc-ai-card-status active">Active</div>
+ <div class="rc-ai-card-metric">
+ <span class="rc-ai-metric-label">Avg Score</span>
+ <span class="rc-ai-metric-value" id="rcAiAvgScore">8.4 / 10</span>
+ </div>
+ </div>
+ <div class="rc-ai-card">
+ <div class="rc-ai-card-header">
+ <div class="rc-ai-card-icon" style="color:#a78bfa;">R</div>
+ <div>
+ <div class="rc-ai-card-title">Smart Routing</div>
+ <div class="rc-ai-card-desc">AI routes inbound calls to the best agent</div>
+ </div>
+ </div>
+ <div class="rc-ai-card-status active">Active</div>
+ <div class="rc-ai-card-metric">
+ <span class="rc-ai-metric-label">Routed Today</span>
+ <span class="rc-ai-metric-value" id="rcAiRoutedCount">34 calls</span>
+ </div>
+ </div>
+ <div class="rc-ai-card">
+ <div class="rc-ai-card-header">
+ <div class="rc-ai-card-icon" style="color:#e54040;">A</div>
+ <div>
+ <div class="rc-ai-card-title">AI Receptionist</div>
+ <div class="rc-ai-card-desc">Virtual receptionist handles after-hours and overflow</div>
+ </div>
+ </div>
+ <div class="rc-ai-card-status active">Active</div>
+ <div class="rc-ai-card-metric">
+ <span class="rc-ai-metric-label">Handled Today</span>
+ <span class="rc-ai-metric-value" id="rcAiReceptionistCount">8 calls</span>
+ </div>
+ </div>
+ </div>
+ </div>
  </div>
 
  <!-- ========== CLIENTS VIEW ========== -->
@@ -3082,18 +3211,10 @@
  }
 
  const DEMO_USERS = [
- { id: 'demo-1', name: 'Noah West', email: 'noah@noahconnect.com', status: 'online', job_title: 'CEO', phone: '+14155550101', avatar_url: makeDemoAvatar(1, 0, 'NW') },
- { id: 'demo-2', name: 'Maya Chen', email: 'maya@noahconnect.com', status: 'online', job_title: 'VP Operations', phone: '+14155550102', avatar_url: makeDemoAvatar(2, 200, 'MC') },
- { id: 'demo-3', name: 'Darius Johnson', email: 'darius@noahconnect.com', status: 'online', job_title: 'Sales Lead', phone: '+14155550103', avatar_url: makeDemoAvatar(3, 30, 'DJ') },
- { id: 'demo-4', name: 'Sofia Reyes', email: 'sofia@noahconnect.com', status: 'busy', job_title: 'Account Executive', phone: '+14155550104', avatar_url: makeDemoAvatar(4, 280, 'SR') },
- { id: 'demo-5', name: 'Marcus Taylor', email: 'marcus@noahconnect.com', status: 'busy', job_title: 'Senior Developer', phone: '+14155550105', avatar_url: makeDemoAvatar(5, 160, 'MT') },
- { id: 'demo-6', name: 'Aisha Patel', email: 'aisha@noahconnect.com', status: 'away', job_title: 'Marketing Manager', phone: '+14155550106', avatar_url: makeDemoAvatar(6, 320, 'AP') },
- { id: 'demo-7', name: 'Jamal Brooks', email: 'jamal@noahconnect.com', status: 'away', job_title: 'Customer Success', phone: '+14155550107', avatar_url: makeDemoAvatar(7, 50, 'JB') },
- { id: 'demo-8', name: 'Lena Kim', email: 'lena@noahconnect.com', status: 'dnd', job_title: 'Product Designer', phone: '+14155550108', avatar_url: makeDemoAvatar(8, 240, 'LK') },
- { id: 'demo-9', name: 'Trevon Adams', email: 'trevon@noahconnect.com', status: 'idle', job_title: 'IT Support', phone: '+14155550109', avatar_url: makeDemoAvatar(9, 100, 'TA') },
- { id: 'demo-10', name: 'Priya Sharma', email: 'priya@noahconnect.com', status: 'online', job_title: 'Finance Director', phone: '+14155550110', avatar_url: makeDemoAvatar(10, 350, 'PS') },
- { id: 'demo-11', name: 'Elijah Moore', email: 'elijah@noahconnect.com', status: 'offline', job_title: 'Recruiter', phone: '+14155550111', avatar_url: makeDemoAvatar(11, 70, 'EM') },
- { id: 'demo-12', name: 'Isabella Cruz', email: 'isabella@noahconnect.com', status: 'online', job_title: 'Content Strategist', phone: '+14155550112', avatar_url: makeDemoAvatar(12, 180, 'IC') },
+ { id: 'demo-1', name: 'Chris B', email: 'chris@noahconnect.com', status: 'online', job_title: 'Sales', phone: '+14155550101', avatar_url: makeDemoAvatar(1, 0, 'CB') },
+ { id: 'demo-2', name: 'Jon D', email: 'jon@noahconnect.com', status: 'online', job_title: 'Admin', phone: '+14155550102', avatar_url: makeDemoAvatar(2, 200, 'JD') },
+ { id: 'demo-3', name: 'Mike B', email: 'mike@noahconnect.com', status: 'busy', job_title: 'Dispatch', phone: '+14155550103', avatar_url: makeDemoAvatar(3, 30, 'MB') },
+ { id: 'demo-4', name: 'Matt B', email: 'matt@noahconnect.com', status: 'online', job_title: 'Sales', phone: '+14155550104', avatar_url: makeDemoAvatar(4, 160, 'MB') },
  ];
 
  function applyDemoToggleUI() {
