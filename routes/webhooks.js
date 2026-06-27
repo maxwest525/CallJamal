@@ -168,7 +168,7 @@ router.post('/test', async (req, res) => {
   const event = req.body?.event || 'test_event';
   try {
     await triggerOutbound(event, {
-      message: 'This is a test webhook from CallJamal Virtual Office',
+      message: 'This is a test webhook from Noah Connect Virtual Office',
       timestamp: new Date().toISOString(),
     });
 

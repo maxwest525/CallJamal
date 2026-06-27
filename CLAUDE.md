@@ -1,8 +1,8 @@
-# CLAUDE.md — CallJamal Virtual Office
+# CLAUDE.md — Noah Connect Virtual Office
 
 ## Project Overview
 
-CallJamal is a **multi-tenant Virtual Office** platform built with Node.js/Express. Each tenant gets their own AI agent instance, routed via a catchall email domain. The system manages SMS (SlickText), Gmail, Slack, AI chat, video huddles, and internal messaging for small teams.
+Noah Connect is a **multi-tenant Virtual Office** platform built with Node.js/Express. Each tenant gets their own AI agent instance, routed via a catchall email domain. The system manages SMS (SlickText), Gmail, Slack, AI chat, video huddles, and internal messaging for small teams.
 
 ## Quick Start
 
@@ -76,7 +76,7 @@ RLS is enabled; backend uses the `service_role` key for full access.
 No test suite currently. Validate manually:
 ```bash
 curl http://localhost:3000/health
-# → {"status":"ok","service":"CallJamal Virtual Office",...}
+# → {"status":"ok","service":"Noah Connect Virtual Office",...}
 ```
 
 ## Deployment (Vercel)

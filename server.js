@@ -97,7 +97,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/health', (req, res) => {
   res.json({
     status: 'ok',
-    service: 'CallJamal Virtual Office',
+    service: 'Noah Connect Virtual Office',
     timestamp: new Date().toISOString(),
     version: '1.0.0',
   });
@@ -156,7 +156,7 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`\n🚀 CallJamal Virtual Office running on port ${PORT}`);
+  console.log(`\nNoah Connect Virtual Office running on port ${PORT}`);
   console.log(`   Dashboard: http://localhost:${PORT}`);
   console.log(`   Health:    http://localhost:${PORT}/health`);
   console.log(`   API:       http://localhost:${PORT}/api\n`);

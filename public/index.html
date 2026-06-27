@@ -3,7 +3,7 @@
 <head>
  <meta charset="UTF-8" />
  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
- <title>CallJamal – Virtual Office</title>
+ <title>Noah Connect – Virtual Office</title>
  <style>
  /* ============================================================
  CSS Reset & Variables
@@ -331,105 +331,200 @@
  #view-users .btn-primary:hover { background: rgba(229,64,64,.06); border-color: rgba(229,64,64,.4); }
  #view-users .empty-state { color: rgba(255,255,255,.2); }
 
- /* ── Floor Plan ── */
- .office-floor {
- position: relative;
+ /* ── Team Member Cards ── */
+ .team-cards-grid {
  display: grid;
- grid-template-columns: 1.6fr 1fr 1fr;
- grid-template-rows: 1fr 1fr;
- gap: 1px;
- padding: 0;
+ grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+ gap: 16px;
+ }
+ @media (max-width: 640px) { .team-cards-grid { grid-template-columns: 1fr; } }
+
+ .team-card {
  background: rgba(255,255,255,.02);
- border-radius: 16px;
- overflow: hidden;
- min-height: 520px;
  border: 1px solid rgba(255,255,255,.06);
- box-shadow: 0 1px 0 rgba(255,255,255,.03);
- }
- .office-floor::before {
- content: '';
- position: absolute;
- inset: 0;
- background: radial-gradient(ellipse 60% 50% at 30% 50%, rgba(229,64,64,.015), transparent);
- pointer-events: none;
- z-index: 0;
- }
-
- .office-room {
- position: relative;
- z-index: 1;
- background: rgba(255,255,255,.01);
- border-right: 1px solid rgba(255,255,255,.04);
- border-bottom: 1px solid rgba(255,255,255,.04);
+ border-radius: 14px;
  padding: 20px;
- min-height: 200px;
- display: flex;
- flex-direction: column;
- transition: background .3s;
+ cursor: pointer;
+ transition: background .25s, border-color .25s, transform .2s;
  backdrop-filter: blur(20px);
+ position: relative;
+ overflow: hidden;
  }
- .office-room:hover {
- background: rgba(255,255,255,.025);
+ .team-card:hover {
+ background: rgba(255,255,255,.035);
+ border-color: rgba(255,255,255,.1);
+ transform: translateY(-2px);
+ }
+ .team-card.expanded {
+ border-color: rgba(229,64,64,.2);
+ background: rgba(255,255,255,.03);
  }
 
- .office-room.room-lobby { grid-column: 1; grid-row: 1 / 3; border-radius: 15px 0 0 15px; border-right: 1px solid rgba(255,255,255,.05); }
- .office-room.room-conference { grid-column: 2; grid-row: 1; }
- .office-room.room-breakroom { grid-column: 3; grid-row: 1; border-radius: 0 15px 0 0; border-right: none; }
- .office-room.room-focus { grid-column: 2; grid-row: 2; border-bottom: none; }
- .office-room.room-lounge { grid-column: 3; grid-row: 2; border-radius: 0 0 15px 0; border-right: none; border-bottom: none; }
- .office-room.room-lobby { border-bottom: none; }
-
- .room-header {
+ .team-card-top {
  display: flex;
  align-items: center;
- gap: 8px;
- margin-bottom: 18px;
+ gap: 14px;
+ flex-wrap: wrap;
  }
 
- .room-status-dot {
- width: 6px; height: 6px;
+ .team-card-avatar {
+ position: relative;
+ width: 52px;
+ height: 52px;
  border-radius: 50%;
  flex-shrink: 0;
+ overflow: hidden;
+ border: 2px solid rgba(255,255,255,.08);
  }
- .room-dot-lobby { background: #4ade80; box-shadow: 0 0 6px rgba(74,222,128,.3); }
- .room-dot-conference { background: #ef4444; box-shadow: 0 0 6px rgba(239,68,68,.3); }
- .room-dot-breakroom { background: #fbbf24; box-shadow: 0 0 6px rgba(251,191,36,.3); }
- .room-dot-focus { background: #a78bfa; box-shadow: 0 0 6px rgba(167,139,250,.3); }
- .room-dot-lounge { background: #64748b; box-shadow: 0 0 6px rgba(100,116,139,.2); }
+ .team-card-avatar img {
+ width: 100%;
+ height: 100%;
+ object-fit: cover;
+ border-radius: 50%;
+ }
+ .team-card-avatar .tc-initials {
+ width: 100%;
+ height: 100%;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ background: #111;
+ color: rgba(255,255,255,.6);
+ font-size: 0.8125rem;
+ font-weight: 500;
+ letter-spacing: 1px;
+ }
 
- .room-name {
+ .team-card-status-dot {
+ position: absolute;
+ bottom: 1px;
+ right: 1px;
+ width: 12px;
+ height: 12px;
+ border-radius: 50%;
+ border: 2px solid #0c0c0c;
+ z-index: 2;
+ }
+ .team-card-status-dot.online { background: #4ade80; box-shadow: 0 0 6px rgba(74,222,128,.4); }
+ .team-card-status-dot.busy { background: #ef4444; box-shadow: 0 0 6px rgba(239,68,68,.4); }
+ .team-card-status-dot.away { background: #fbbf24; box-shadow: 0 0 6px rgba(251,191,36,.4); }
+ .team-card-status-dot.dnd { background: #a78bfa; box-shadow: 0 0 6px rgba(167,139,250,.4); }
+ .team-card-status-dot.offline { background: #374151; }
+
+ .team-card-info {
+ flex: 1;
+ min-width: 80px;
+ }
+ .team-card-name {
+ font-size: 0.9375rem;
+ font-weight: 600;
+ color: rgba(255,255,255,.9);
+ white-space: nowrap;
+ overflow: hidden;
+ text-overflow: ellipsis;
+ }
+ .team-card-role {
+ font-size: 0.6875rem;
+ color: rgba(255,255,255,.35);
+ margin-top: 2px;
+ }
+
+ .team-card-activity {
+ display: flex;
+ align-items: center;
+ gap: 6px;
+ margin-left: auto;
+ flex-shrink: 0;
+ padding: 4px 10px;
+ border-radius: 6px;
+ background: rgba(255,255,255,.03);
+ border: 1px solid rgba(255,255,255,.06);
  font-size: 0.625rem;
  font-weight: 500;
- color: rgba(255,255,255,.3);
+ color: rgba(255,255,255,.4);
  text-transform: uppercase;
- letter-spacing: 2px;
+ letter-spacing: .5px;
  }
- .room-count {
- font-size: 0.5625rem;
- color: rgba(255,255,255,.2);
- font-weight: 400;
+ .team-card-activity-icon {
+ font-size: 0.75rem;
+ line-height: 1;
+ }
+ .team-card-activity.on-call {
+ background: rgba(229,64,64,.06);
+ border-color: rgba(229,64,64,.2);
+ color: rgba(229,64,64,.8);
+ }
+ .team-card-activity.on-call .team-card-activity-icon::after {
+ content: '';
+ display: inline-block;
+ width: 5px; height: 5px;
+ border-radius: 50%;
+ background: #e54040;
+ margin-left: 4px;
+ animation: callPulse 2s ease-in-out infinite;
+ vertical-align: middle;
+ }
+ .team-card-activity.in-meeting {
+ background: rgba(167,139,250,.06);
+ border-color: rgba(167,139,250,.2);
+ color: rgba(167,139,250,.8);
+ }
+ .team-card-activity.idle-activity {
+ background: rgba(255,255,255,.02);
+ border-color: rgba(255,255,255,.04);
+ color: rgba(255,255,255,.25);
  }
 
- .room-avatars {
- display: flex;
- flex-wrap: wrap;
- gap: 18px;
- align-items: flex-start;
- flex: 1;
- align-content: flex-start;
- padding-top: 4px;
+ .team-card-channels {
+ display: none;
+ margin-top: 16px;
+ padding-top: 14px;
+ border-top: 1px solid rgba(255,255,255,.06);
  }
+ .team-card.expanded .team-card-channels { display: block; }
 
- .office-avatar {
+ .tc-channel-grid {
+ display: grid;
+ grid-template-columns: repeat(3, 1fr);
+ gap: 8px;
+ }
+ @media (max-width: 360px) { .tc-channel-grid { grid-template-columns: repeat(2, 1fr); } }
+
+ .tc-channel-btn {
  display: flex;
  flex-direction: column;
  align-items: center;
- gap: 8px;
+ gap: 6px;
+ padding: 12px 8px;
+ border-radius: 10px;
+ background: rgba(255,255,255,.02);
+ border: 1px solid rgba(255,255,255,.06);
+ color: rgba(255,255,255,.45);
+ font-size: 0.625rem;
+ font-weight: 500;
+ letter-spacing: .3px;
  cursor: pointer;
- transition: transform .2s ease;
+ transition: all .2s;
+ text-transform: uppercase;
  }
- .office-avatar:hover { transform: translateY(-2px); }
+ .tc-channel-btn:hover {
+ background: rgba(229,64,64,.04);
+ border-color: rgba(229,64,64,.2);
+ color: rgba(229,64,64,.8);
+ }
+ .tc-channel-btn .tc-ch-icon {
+ font-size: 1.125rem;
+ line-height: 1;
+ }
 
+ .team-card-status-text {
+ margin-top: 8px;
+ font-size: 0.6875rem;
+ color: rgba(255,255,255,.2);
+ font-style: italic;
+ }
+
+ /* keep old avatar ring classes for popover reuse */
  .office-avatar-ring {
  width: 48px;
  height: 48px;
@@ -439,15 +534,11 @@
  transition: box-shadow .3s;
  position: relative;
  }
- .office-avatar:hover .office-avatar-ring {
- box-shadow: 0 0 20px rgba(255,255,255,.06);
- }
 
  .office-avatar-ring.online {
  background: rgba(255,255,255,.1);
  box-shadow: 0 0 0 1px rgba(74,222,128,.3);
  }
- .office-avatar:hover .office-avatar-ring.online { box-shadow: 0 0 12px rgba(74,222,128,.2), 0 0 0 1px rgba(74,222,128,.4); }
  .office-avatar-ring.away {
  background: rgba(255,255,255,.08);
  box-shadow: 0 0 0 1px rgba(251,191,36,.25);
@@ -456,98 +547,11 @@
  background: rgba(255,255,255,.08);
  box-shadow: 0 0 0 1px rgba(239,68,68,.3);
  }
- .office-avatar:hover .office-avatar-ring.busy { box-shadow: 0 0 12px rgba(239,68,68,.15), 0 0 0 1px rgba(239,68,68,.4); }
- .office-avatar-ring.dnd {
- background: rgba(255,255,255,.06);
- box-shadow: 0 0 0 1px rgba(167,139,250,.25);
- }
- .office-avatar-ring.idle {
- background: rgba(255,255,255,.05);
- box-shadow: 0 0 0 1px rgba(100,116,139,.2);
+ .office-avatar-ring.busy {
+ background: rgba(255,255,255,.08);
+ box-shadow: 0 0 0 1px rgba(239,68,68,.3);
  }
  .office-avatar-ring.offline { background: rgba(255,255,255,.03); box-shadow: none; }
-
- .office-avatar-ring img {
- width: 100%; height: 100%;
- border-radius: 50%;
- object-fit: cover;
- display: block;
- border: 2px solid #0a0a0f;
- }
-
- .office-avatar-initials {
- width: 100%; height: 100%;
- border-radius: 50%;
- background: #111111;
- color: rgba(255,255,255,.7);
- font-size: 0.75rem; font-weight: 500;
- display: flex; align-items: center; justify-content: center;
- border: 2px solid #0a0a0f;
- letter-spacing: 1px;
- }
-
- .office-avatar-label {
- font-size: 0.625rem;
- font-weight: 400;
- color: rgba(255,255,255,.3);
- text-align: center;
- max-width: 64px;
- white-space: nowrap;
- overflow: hidden;
- text-overflow: ellipsis;
- letter-spacing: .3px;
- }
- .office-avatar:hover .office-avatar-label { color: rgba(255,255,255,.55); }
-
- .room-empty {
- font-size: 0.6875rem;
- color: rgba(255,255,255,.08);
- font-weight: 400;
- padding: 20px 0;
- }
-
- .room-join-btn {
- display: inline-flex; align-items: center;
- padding: 4px 10px; border-radius: 4px;
- border: 1px solid rgba(255,255,255,.07);
- background: transparent;
- color: rgba(255,255,255,.2);
- font-size: 0.5625rem; font-weight: 500;
- cursor: pointer; transition: all .2s;
- margin-left: auto;
- text-transform: uppercase;
- letter-spacing: 1px;
- }
- .room-join-btn:hover {
- border-color: rgba(229,64,64,.3);
- color: rgba(229,64,64,.7);
- background: rgba(229,64,64,.04);
- }
-
- .offline-row {
- margin-top: 12px;
- padding: 14px 20px;
- background: rgba(255,255,255,.01);
- border-radius: 12px;
- border: 1px solid rgba(255,255,255,.04);
- display: flex;
- align-items: center;
- flex-wrap: wrap;
- gap: 14px;
- }
-
- .offline-row-label {
- font-size: 0.5625rem;
- font-weight: 500;
- color: rgba(255,255,255,.12);
- text-transform: uppercase;
- letter-spacing: 2px;
- white-space: nowrap;
- margin-right: 4px;
- }
- .offline-row .office-avatar-ring { width: 32px; height: 32px; }
- .offline-row .office-avatar-initials { font-size: 0.5625rem; }
- .offline-row .office-avatar-label { font-size: 0.5rem; }
 
  /* ── Call Activity ── */
  .call-activity-panel {
@@ -747,6 +751,69 @@
  line-height: 1.5;
  }
  .coaching-tip::before { content: ''; width: 3px; height: 3px; border-radius: 50%; background: rgba(229,64,64,.35); flex-shrink: 0; margin-top: 7px; }
+
+ /* ── RingCentral AI Panel ── */
+ .rc-ai-panel {
+ margin-top: 24px;
+ background: rgba(255,255,255,.015);
+ border: 1px solid rgba(255,255,255,.06);
+ border-radius: 16px;
+ padding: 20px;
+ backdrop-filter: blur(20px);
+ }
+ .rc-ai-status-dot {
+ width: 8px; height: 8px; border-radius: 50%;
+ background: #4ade80;
+ box-shadow: 0 0 8px rgba(74,222,128,.4);
+ display: inline-block;
+ }
+ .rc-ai-grid {
+ display: grid;
+ grid-template-columns: repeat(4, 1fr);
+ gap: 12px;
+ }
+ @media (max-width: 1100px) { .rc-ai-grid { grid-template-columns: repeat(2, 1fr); } }
+ .rc-ai-card {
+ background: rgba(255,255,255,.02);
+ border: 1px solid rgba(255,255,255,.05);
+ border-radius: 12px;
+ padding: 16px;
+ display: flex;
+ flex-direction: column;
+ gap: 12px;
+ transition: background .2s, border-color .2s;
+ }
+ .rc-ai-card:hover { background: rgba(255,255,255,.035); border-color: rgba(255,255,255,.08); }
+ .rc-ai-card-header { display: flex; align-items: flex-start; gap: 10px; }
+ .rc-ai-card-icon {
+ width: 28px; height: 28px;
+ border-radius: 8px;
+ background: rgba(255,255,255,.04);
+ display: flex; align-items: center; justify-content: center;
+ font-size: 0.75rem; font-weight: 700;
+ flex-shrink: 0;
+ }
+ .rc-ai-card-title { font-size: 0.8125rem; font-weight: 600; color: rgba(255,255,255,.75); }
+ .rc-ai-card-desc { font-size: 0.6875rem; color: rgba(255,255,255,.3); margin-top: 2px; line-height: 1.4; }
+ .rc-ai-card-status {
+ display: inline-flex; align-items: center; gap: 5px;
+ font-size: 0.5625rem; font-weight: 500; text-transform: uppercase; letter-spacing: .5px;
+ color: rgba(255,255,255,.2); width: fit-content;
+ padding: 3px 8px; border-radius: 4px;
+ background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
+ }
+ .rc-ai-card-status.active {
+ color: rgba(74,222,128,.6);
+ background: rgba(74,222,128,.04);
+ border-color: rgba(74,222,128,.12);
+ }
+ .rc-ai-card-status.active::before {
+ content: ''; width: 5px; height: 5px; border-radius: 50%;
+ background: #4ade80; box-shadow: 0 0 4px rgba(74,222,128,.5);
+ }
+ .rc-ai-card-metric { display: flex; justify-content: space-between; align-items: baseline; }
+ .rc-ai-metric-label { font-size: 0.625rem; color: rgba(255,255,255,.2); text-transform: uppercase; letter-spacing: .5px; }
+ .rc-ai-metric-value { font-size: 0.8125rem; font-weight: 600; color: rgba(255,255,255,.55); }
 
  /* ============================================================
  Avatar Contact Popover
@@ -976,7 +1043,13 @@
  flex-direction: column;
  gap: 8px;
  margin-bottom: 20px;
+ max-height: 320px;
+ overflow-y: auto;
+ padding-right: 4px;
  }
+ .login-team-list::-webkit-scrollbar { width: 4px; }
+ .login-team-list::-webkit-scrollbar-track { background: transparent; }
+ .login-team-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 2px; }
 
  .login-team-btn {
  display: flex;
@@ -1001,6 +1074,7 @@
  background: rgba(229,64,64,.15); color: #e54040;
  display: flex; align-items: center; justify-content: center;
  font-size: 0.875rem; font-weight: 700; flex-shrink: 0;
+ overflow: hidden;
  }
 
  .login-or {
@@ -1308,89 +1382,90 @@
  background: rgba(255,255,255,.03);
  }
 
- /* ============================================================
- Slack View
- ============================================================ */
- .slack-layout {
- display: grid;
- grid-template-columns: 220px 1fr;
- gap: 16px;
- height: calc(100vh - var(--header-height) - 48px);
- }
 
- .slack-channels {
- background: rgba(255,255,255,.03);
- border: 1px solid var(--color-gray-200);
- border-radius: var(--border-radius);
- overflow-y: auto;
- }
 
- .slack-channel-item {
- display: flex;
- align-items: center;
- gap: 8px;
- padding: 10px 14px;
- cursor: pointer;
- font-size: 0.875rem;
- color: var(--color-gray-600);
- border-bottom: 1px solid var(--color-gray-100);
- transition: background .1s;
- }
+    /* ============================================================
+       Slack View
+       ============================================================ */
+    .slack-layout {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 16px;
+      height: calc(100vh - var(--header-height) - 48px);
+    }
 
- .slack-channel-item:hover { background: var(--color-gray-50); }
- .slack-channel-item.active { background: var(--color-primary-light); color: var(--color-primary-dark); font-weight: 600; }
+    .slack-channels {
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--color-gray-200);
+      border-radius: var(--border-radius);
+      overflow-y: auto;
+    }
 
- .slack-messages-pane {
- background: rgba(255,255,255,.03);
- border: 1px solid var(--color-gray-200);
- border-radius: var(--border-radius);
- display: flex;
- flex-direction: column;
- overflow: hidden;
- }
+    .slack-channel-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      color: var(--color-gray-600);
+      border-bottom: 1px solid var(--color-gray-100);
+      transition: background .1s;
+    }
 
- .slack-msg-list {
- flex: 1;
- overflow-y: auto;
- padding: 16px;
- display: flex;
- flex-direction: column;
- gap: 10px;
- }
+    .slack-channel-item:hover { background: var(--color-gray-50); }
+    .slack-channel-item.active { background: var(--color-primary-light); color: var(--color-primary-dark); font-weight: 600; }
 
- .slack-msg {
- display: flex;
- gap: 10px;
- font-size: 0.875rem;
- }
+    .slack-messages-pane {
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--color-gray-200);
+      border-radius: var(--border-radius);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
 
- .slack-msg-avatar {
- width: 32px;
- height: 32px;
- border-radius: 6px;
- background: rgba(229,64,64,.12);
- color: #e54040;
- font-size: 0.75rem;
- font-weight: 700;
- display: flex;
- align-items: center;
- justify-content: center;
- flex-shrink: 0;
- }
+    .slack-msg-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
 
- .slack-msg-content { flex: 1; min-width: 0; }
- .slack-msg-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 2px; }
- .slack-msg-user { font-weight: 600; font-size: 0.8125rem; }
- .slack-msg-time { font-size: 0.75rem; color: var(--color-gray-400); }
- .slack-msg-body { line-height: 1.5; }
+    .slack-msg {
+      display: flex;
+      gap: 10px;
+      font-size: 0.875rem;
+    }
 
- .slack-compose {
- padding: 12px 16px;
- border-top: 1px solid var(--color-gray-200);
- display: flex;
- gap: 8px;
- }
+    .slack-msg-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      background: rgba(229,64,64,.12);
+      color: #e54040;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
 
+    .slack-msg-content { flex: 1; min-width: 0; }
+    .slack-msg-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 2px; }
+    .slack-msg-user { font-weight: 600; font-size: 0.8125rem; }
+    .slack-msg-time { font-size: 0.75rem; color: var(--color-gray-400); }
+    .slack-msg-body { line-height: 1.5; }
+
+    .slack-compose {
+      padding: 12px 16px;
+      border-top: 1px solid var(--color-gray-200);
+      display: flex;
+      gap: 8px;
+    }
  /* ============================================================
  Integrations View
  ============================================================ */
@@ -1710,245 +1785,6 @@
  }
 
  /* ============================================================
- Huddle Widget (floating video call)
- ============================================================ */
- .huddle-widget {
- position: fixed;
- bottom: 160px;
- right: 24px;
- width: 360px;
- background: rgba(255,255,255,.03);
- border-radius: 14px;
- box-shadow: 0 10px 40px rgba(0,0,0,.25);
- z-index: 310;
- transition: opacity .2s, transform .2s;
- opacity: 0;
- transform: translateY(14px) scale(.97);
- pointer-events: none;
- overflow: hidden;
- display: flex;
- flex-direction: column;
- }
-
- .huddle-widget.open {
- opacity: 1;
- transform: translateY(0) scale(1);
- pointer-events: auto;
- }
-
- .huddle-widget.minimized .huddle-body { display: none; }
-
- .huddle-header {
- padding: 10px 14px;
- background: #1e1e2e;
- color: #fff;
- display: flex;
- align-items: center;
- gap: 8px;
- cursor: grab;
- user-select: none;
- flex-shrink: 0;
- border-radius: 14px 14px 0 0;
- }
-
- .huddle-header:active { cursor: grabbing; }
- .huddle-header h4 { font-size: 0.875rem; font-weight: 600; flex: 1; margin: 0; }
-
- .huddle-header-btns { display: flex; gap: 2px; }
-
- .huddle-icon-btn {
- background: none;
- border: none;
- color: rgba(255,255,255,.55);
- cursor: pointer;
- font-size: 1rem;
- line-height: 1;
- padding: 3px 6px;
- border-radius: 4px;
- transition: background .1s, color .1s;
- }
-
- .huddle-icon-btn:hover { background: rgba(255,255,255,.12); color: #fff; }
-
- .huddle-body { display: flex; flex-direction: column; }
-
- .huddle-lobby { padding: 16px; display: flex; flex-direction: column; gap: 10px; }
-
- .huddle-lobby-note {
- font-size: 0.8rem;
- color: var(--color-gray-500);
- background: var(--color-gray-50);
- border: 1px solid var(--color-gray-200);
- border-radius: var(--border-radius);
- padding: 10px 12px;
- }
-
- .huddle-meet-btn {
- display: flex;
- align-items: center;
- justify-content: center;
- gap: 8px;
- padding: 9px 14px;
- border-radius: var(--border-radius);
- background: #1a73e8;
- color: #fff;
- font-size: 0.875rem;
- font-weight: 500;
- border: none;
- cursor: pointer;
- width: 100%;
- transition: background .15s;
- text-decoration: none;
- }
-
- .huddle-meet-btn:hover { background: #1557b0; }
-
- .huddle-rooms-label {
- font-size: 0.7rem;
- font-weight: 700;
- color: var(--color-gray-400);
- text-transform: uppercase;
- letter-spacing: .6px;
- }
-
- .huddle-room-list { display: flex; flex-direction: column; gap: 6px; max-height: 130px; overflow-y: auto; }
-
- .huddle-room-item {
- display: flex;
- align-items: center;
- gap: 8px;
- padding: 8px 10px;
- border-radius: 6px;
- background: var(--color-gray-50);
- border: 1px solid var(--color-gray-200);
- font-size: 0.8125rem;
- }
-
- .huddle-room-item-name { flex: 1; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
- .huddle-call-frame {
- width: 100%;
- height: 280px;
- border: none;
- display: none;
- background: #000;
- }
-
- .huddle-call-frame.active { display: block; }
-
- .huddle-call-bar {
- display: none;
- align-items: center;
- gap: 8px;
- padding: 8px 12px;
- border-top: 1px solid var(--color-gray-200);
- background: var(--color-gray-50);
- }
-
- .huddle-call-bar.active { display: flex; }
-
- .fab-huddle { background: rgba(255,255,255,.05); }
-
- /* ============================================================
- Huddle Pre-join Panel
- ============================================================ */
- .huddle-prejoin {
- padding: 16px;
- display: flex;
- flex-direction: column;
- gap: 12px;
- }
-
- .huddle-prejoin h5 {
- font-size: 0.875rem;
- font-weight: 600;
- margin: 0 0 4px;
- color: var(--color-gray-800);
- }
-
- .huddle-prejoin .prejoin-room-label {
- font-size: 0.75rem;
- color: var(--color-gray-500);
- margin-bottom: 8px;
- }
-
- .huddle-prejoin .prejoin-toggles {
- display: flex;
- flex-direction: column;
- gap: 6px;
- }
-
- .huddle-prejoin .prejoin-toggles label {
- display: flex;
- align-items: center;
- gap: 8px;
- font-size: 0.8125rem;
- color: var(--color-gray-700);
- cursor: pointer;
- }
-
- .huddle-prejoin .prejoin-toggles input[type="checkbox"] {
- width: 15px;
- height: 15px;
- cursor: pointer;
- }
-
- .huddle-prejoin .prejoin-actions {
- display: flex;
- gap: 8px;
- margin-top: 4px;
- }
-
- .huddle-prejoin .prejoin-actions .btn { flex: 1; justify-content: center; }
-
- /* ============================================================
- Huddle Room Creation Options
- ============================================================ */
- .huddle-create-opts {
- padding: 0 16px 16px;
- display: flex;
- flex-direction: column;
- gap: 8px;
- }
-
- .huddle-create-opts-label {
- font-size: 0.7rem;
- font-weight: 700;
- color: var(--color-gray-400);
- text-transform: uppercase;
- letter-spacing: .6px;
- margin-bottom: 2px;
- }
-
- .huddle-create-opts .opt-row {
- display: flex;
- align-items: center;
- gap: 8px;
- }
-
- .huddle-create-opts .opt-row label {
- display: flex;
- align-items: center;
- gap: 6px;
- font-size: 0.8rem;
- color: var(--color-gray-600);
- cursor: pointer;
- flex: 1;
- }
-
- .huddle-secure-badge {
- display: inline-flex;
- align-items: center;
- gap: 4px;
- font-size: 0.7rem;
- color: #10b981;
- background: rgba(16,185,129,.1);
- padding: 2px 7px;
- border-radius: 9999px;
- font-weight: 600;
- }
-
- /* ============================================================
  Meetings View
  ============================================================ */
  .meetings-header-row {
@@ -2069,7 +1905,7 @@
 ============================================================ -->
 <div id="loginGate" style="display:none;">
  <div class="login-card">
- <h1> CallJamal</h1>
+ <h1> Noah Connect</h1>
  <p>Who are you? Pick your name to get started.</p>
  <div class="login-team-list" id="loginTeamList">
  <div style="color:var(--color-gray-400);font-size:0.875rem;padding:8px;">Loading team…</div>
@@ -2087,12 +1923,12 @@
 ============================================================ -->
 <aside class="sidebar">
  <div class="sidebar-logo">
- <h1>CallJamal</h1>
+ <h1>Noah Connect</h1>
  <p>Virtual Office</p>
  </div>
 
  <nav class="sidebar-nav">
- <button class="nav-item active" data-view="messages">
+ <button class="nav-item" data-view="messages">
  <svg class="nav-icon-svg" viewBox="0 0 20 20" fill="currentColor"><path d="M2 5a2 2 0 012-2h12a2 2 0 012 2v7a2 2 0 01-2 2H6l-4 3V5z"/></svg>
  <span>Messages</span>
  </button>
@@ -2100,7 +1936,7 @@
  <svg class="nav-icon-svg" viewBox="0 0 20 20" fill="currentColor"><path d="M2 4a1 1 0 011-1h14a1 1 0 011 1v1H2V4zm0 3h16v9a1 1 0 01-1 1H3a1 1 0 01-1-1V7zm3 2v2h4V9H5z"/></svg>
  <span>Conversations</span>
  </button>
- <button class="nav-item" data-view="users">
+ <button class="nav-item active" data-view="users">
  <svg class="nav-icon-svg" viewBox="0 0 20 20" fill="currentColor"><path d="M7 8a3 3 0 100-6 3 3 0 000 6zm7 0a3 3 0 100-6 3 3 0 000 6zm-7 2c-3.31 0-6 1.79-6 4v1h12v-1c0-2.21-2.69-4-6-4zm7 0c-.34 0-.67.03-1 .08C14.3 11.2 15 12.5 15 14v1h5v-1c0-2.21-2.69-4-6-4z"/></svg>
  <span>Team</span>
  </button>
@@ -2112,10 +1948,10 @@
  <svg class="nav-icon-svg" viewBox="0 0 20 20" fill="currentColor"><path d="M2 4a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V4zm2 0l6 4 6-4H4zm0 2v10h12V6l-6 4-6-4z"/></svg>
  <span>Gmail</span>
  </button>
- <button class="nav-item" data-view="slack">
- <svg class="nav-icon-svg" viewBox="0 0 20 20" fill="currentColor"><path d="M6 2a2 2 0 00-2 2v2H2a2 2 0 000 4h2v2a2 2 0 004 0v-2h2v2a2 2 0 004 0v-2h2a2 2 0 000-4h-2V4a2 2 0 00-4 0v2H8V4a2 2 0 00-2-2zm2 6h4v4H8V8z"/></svg>
- <span>Slack</span>
- </button>
+     <button class="nav-item" data-view="slack">
+     <svg class="nav-icon-svg" viewBox="0 0 20 20" fill="currentColor"><path d="M6 2a2 2 0 00-2 2v2H2a2 2 0 000 4h2v2a2 2 0 004 0v-2h2v2a2 2 0 004 0v-2h2a2 2 0 000-4h-2V4a2 2 0 00-4 0v2H8V4a2 2 0 00-2-2zm2 6h4v4H8V8z"/></svg>
+     <span>Slack</span>
+     </button>
  <button class="nav-item" data-view="integrations">
  <svg class="nav-icon-svg" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1.07A7.002 7.002 0 003.07 10H2a1 1 0 100 2h1.07A7.002 7.002 0 009 17.93V19a1 1 0 102 0v-1.07A7.002 7.002 0 0016.93 12H18a1 1 0 100-2h-1.07A7.002 7.002 0 0011 4.07V3zm-1 3a4 4 0 100 8 4 4 0 000-8z"/></svg>
  <span>Integrations</span>
@@ -2155,14 +1991,14 @@
 ============================================================ -->
 <main class="main">
  <header class="header">
- <span class="header-title" id="headerTitle">Messages</span>
+ <span class="header-title" id="headerTitle">Team</span>
  <button class="btn btn-secondary btn-sm" id="refreshBtn">Refresh</button>
  </header>
 
  <div class="content">
 
  <!-- ========== MESSAGES VIEW ========== -->
- <div class="view active" id="view-messages">
+ <div class="view" id="view-messages">
  <div class="grid-3" style="margin-bottom:24px;">
  <div class="stat-card">
  <div class="stat-label">Messages Today</div>
@@ -2245,7 +2081,7 @@
  <div class="card-body">
  <p style="font-size:0.8125rem;color:var(--color-gray-500);margin-bottom:12px;">
  Give each team member their own phone number so clients see a consistent, personal number.
- Powered by Twilio (~$1.15/mo per number).
+ Powered by RingCentral.
  </p>
  <div id="phoneNumbersList">
  <div class="empty-state"><div class="icon"></div><p>Loading…</p></div>
@@ -2301,10 +2137,18 @@
  </div>
 
  <!-- ========== USERS / TEAM VIEW ========== -->
- <div class="view" id="view-users">
+ <div class="view active" id="view-users">
  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
  <h2 style="font-size:1.125rem; font-weight:600;">Team Members</h2>
- <div style="display:flex; gap:8px;">
+ <div style="display:flex; gap:8px; align-items:center;">
+ <label id="demoToggleLabel" style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:0.6875rem;color:rgba(255,255,255,.35);font-weight:500;letter-spacing:.3px;user-select:none;">
+ <span style="position:relative;width:32px;height:18px;display:inline-block;">
+ <input type="checkbox" id="demoToggle" style="opacity:0;width:0;height:0;position:absolute;" />
+ <span id="demoToggleTrack" style="position:absolute;inset:0;border-radius:9px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);transition:background .2s,border-color .2s;"></span>
+ <span id="demoToggleThumb" style="position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,.3);transition:transform .2s,background .2s;"></span>
+ </span>
+ Demo
+ </label>
  <button class="btn btn-secondary btn-sm" id="syncRcPresenceBtn" title="Sync live presence from RingCentral">Live Sync</button>
  <button class="btn btn-secondary btn-sm" id="syncGwBtn">Sync Google Workspace</button>
  <button class="btn btn-primary btn-sm" id="addUserBtn">+ Add Member</button>
@@ -2340,6 +2184,72 @@
  </div>
  <div class="screen-share-grid" id="screenShareGrid">
  <div class="empty-state" style="padding:24px;"><p>No one is sharing their screen</p></div>
+ </div>
+ </div>
+
+ <!-- RingCentral AI Features Panel -->
+ <div id="rcAiPanel" class="rc-ai-panel">
+ <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+ <h2 style="font-size:0.6875rem;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.4);">RingCentral AI</h2>
+ <span class="rc-ai-status-dot" id="rcAiStatusDot"></span>
+ </div>
+ <div class="rc-ai-grid">
+ <div class="rc-ai-card">
+ <div class="rc-ai-card-header">
+ <div class="rc-ai-card-icon" style="color:#4ade80;">T</div>
+ <div>
+ <div class="rc-ai-card-title">Live Transcription</div>
+ <div class="rc-ai-card-desc">Real-time speech-to-text on active calls</div>
+ </div>
+ </div>
+ <div class="rc-ai-card-status active">Active</div>
+ <div class="rc-ai-card-metric">
+ <span class="rc-ai-metric-label">Today</span>
+ <span class="rc-ai-metric-value" id="rcAiTranscriptCount">12 calls transcribed</span>
+ </div>
+ </div>
+ <div class="rc-ai-card">
+ <div class="rc-ai-card-header">
+ <div class="rc-ai-card-icon" style="color:#f59e0b;">S</div>
+ <div>
+ <div class="rc-ai-card-title">Call Scoring</div>
+ <div class="rc-ai-card-desc">AI grades agent performance and compliance</div>
+ </div>
+ </div>
+ <div class="rc-ai-card-status active">Active</div>
+ <div class="rc-ai-card-metric">
+ <span class="rc-ai-metric-label">Avg Score</span>
+ <span class="rc-ai-metric-value" id="rcAiAvgScore">8.4 / 10</span>
+ </div>
+ </div>
+ <div class="rc-ai-card">
+ <div class="rc-ai-card-header">
+ <div class="rc-ai-card-icon" style="color:#a78bfa;">R</div>
+ <div>
+ <div class="rc-ai-card-title">Smart Routing</div>
+ <div class="rc-ai-card-desc">AI routes inbound calls to the best agent</div>
+ </div>
+ </div>
+ <div class="rc-ai-card-status active">Active</div>
+ <div class="rc-ai-card-metric">
+ <span class="rc-ai-metric-label">Routed Today</span>
+ <span class="rc-ai-metric-value" id="rcAiRoutedCount">34 calls</span>
+ </div>
+ </div>
+ <div class="rc-ai-card">
+ <div class="rc-ai-card-header">
+ <div class="rc-ai-card-icon" style="color:#e54040;">A</div>
+ <div>
+ <div class="rc-ai-card-title">AI Receptionist</div>
+ <div class="rc-ai-card-desc">Virtual receptionist handles after-hours and overflow</div>
+ </div>
+ </div>
+ <div class="rc-ai-card-status active">Active</div>
+ <div class="rc-ai-card-metric">
+ <span class="rc-ai-metric-label">Handled Today</span>
+ <span class="rc-ai-metric-value" id="rcAiReceptionistCount">8 calls</span>
+ </div>
+ </div>
  </div>
  </div>
  </div>
@@ -2440,11 +2350,11 @@
  </div>
  </div>
 
+
  <!-- ========== SLACK VIEW ========== -->
  <div class="view" id="view-slack">
  <div id="slackNotConfigured" style="display:none;">
  <div class="gmail-connect-banner">
- <span style="font-size:1.5rem;"></span>
  <div style="flex:1;">
  <strong>Configure Slack</strong>
  <div style="font-size:0.8125rem;color:var(--color-gray-600);margin-top:2px;">Set <code>SLACK_BOT_TOKEN</code> in your .env file to connect your Slack workspace.</div>
@@ -2453,7 +2363,6 @@
  </div>
 
  <div class="slack-layout" id="slackLayout">
- <!-- Channels sidebar -->
  <div class="slack-channels">
  <div style="padding:12px 14px;font-size:0.8125rem;font-weight:600;color:var(--color-gray-500);border-bottom:1px solid var(--color-gray-100);">CHANNELS</div>
  <div id="slackChannelList">
@@ -2461,7 +2370,6 @@
  </div>
  </div>
 
- <!-- Messages pane -->
  <div class="slack-messages-pane">
  <div class="card-header" style="flex-shrink:0;">
  <h3 id="slackChannelHeader">Select a channel</h3>
@@ -2493,7 +2401,7 @@
  <div class="card-header"><h3> Inbound Webhook</h3></div>
  <div class="card-body">
  <p style="font-size:0.875rem;color:var(--color-gray-600);margin-bottom:12px;">
- Point your Zapier Zap or n8n workflow to this URL to push data into CallJamal automatically.
+ Point your Zapier Zap to this URL to push data into Noah Connect automatically.
  Send a JSON POST with a <code>type</code> field (e.g. <code>new_lead</code>, <code>new_client</code>).
  </p>
  <div style="display:flex;gap:8px;align-items:center;">
@@ -2506,7 +2414,7 @@
  <div style="margin-top:24px;">
  <h3 style="font-size:1rem;font-weight:600;margin-bottom:12px;"> Automation Recipes</h3>
  <p style="font-size:0.8125rem;color:var(--color-gray-500);margin-bottom:12px;">
- These events fire to your Zapier/n8n webhook URL automatically. Connect them to 7,000+ apps.
+ These events fire to your Zapier webhook URL automatically. Connect them to 7,000+ apps.
  </p>
  <div class="integrations-grid" id="automationRecipes"></div>
  </div>
@@ -2543,7 +2451,7 @@
  <div id="meetingsNotConfigured" style="display:none;" class="card" style="margin-bottom:16px;">
  <div class="card-body">
  <p style="font-size:0.875rem;color:var(--color-gray-600);">
- Daily.co is not configured. Go to <strong>Integrations</strong> → Daily.co and enter your API key and domain to enable video meetings.
+ RingCentral Video is not configured. Go to <strong>Integrations</strong> → RingCentral and enter your credentials to enable video meetings.
  </p>
  </div>
  </div>
@@ -2678,10 +2586,6 @@
 
 <!-- FAB Buttons -->
 <div class="fab-group">
- <button class="fab fab-huddle" id="fabHuddle" title="Huddle">
- 
- <span class="fab-label">Huddle</span>
- </button>
  <button class="fab fab-ai" id="fabAi" title="Claude AI">
  <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M16.5 3C14.76 3 13.09 3.81 12 5.09 10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3z" fill="currentColor"/></svg>
  <span class="fab-label">Claude</span>
@@ -2742,83 +2646,6 @@
  </div>
 </div>
 
-<!-- Huddle Widget -->
-<div class="huddle-widget" id="huddleWidget">
- <div class="huddle-header" id="huddleHeader">
- <h4> Huddle</h4>
- <div style="display:flex;align-items:center;gap:6px;flex:1;">
- <span class="huddle-secure-badge" id="huddleSecureBadge" style="display:none;"> Secured</span>
- </div>
- <div class="huddle-header-btns">
- <button class="huddle-icon-btn" id="huddlePipBtn" title="Pop out">⧉</button>
- <button class="huddle-icon-btn" id="huddleMinimizeBtn" title="Minimize">−</button>
- <button class="huddle-icon-btn" id="huddleCloseBtn" title="Close"></button>
- </div>
- </div>
- <div class="huddle-body" id="huddleBody">
- <!-- Lobby -->
- <div class="huddle-lobby" id="huddleLobby">
- <div class="huddle-lobby-note" id="huddleNote">Start a video huddle with your team or jump into Google Meet.</div>
- <button class="btn btn-primary" style="width:100%;" id="huddleStartBtn"> Start New Huddle</button>
- <button class="huddle-meet-btn" id="huddleMeetBtn"> Open Google Meet</button>
- <div id="huddleRoomSection" style="display:none;">
- <div class="huddle-rooms-label">Active Rooms</div>
- <div class="huddle-room-list" id="huddleRoomList"></div>
- </div>
- </div>
- <!-- Room creation options (collapsible) -->
- <div class="huddle-create-opts" id="huddleCreateOpts" style="display:none;">
- <div class="huddle-create-opts-label">Room Settings</div>
- <div class="form-group" style="margin-bottom:8px;">
- <label class="form-label" style="font-size:0.75rem;">Room Name (optional)</label>
- <input class="form-control" id="huddleRoomNameInput" placeholder="e.g. team-standup" maxlength="40" style="font-size:0.8125rem;padding:6px 10px;" />
- </div>
- <div class="opt-row">
- <select class="form-control" id="huddleExpirySelect" style="font-size:0.8rem;padding:5px 8px;">
- <option value="30">30 min</option>
- <option value="60" selected>1 hour</option>
- <option value="120">2 hours</option>
- <option value="240">4 hours</option>
- <option value="480">8 hours</option>
- </select>
- <span style="font-size:0.75rem;color:var(--color-gray-500);white-space:nowrap;">room duration</span>
- </div>
- <div class="opt-row">
- <label><input type="checkbox" id="huddleWaitingRoom"> Waiting room</label>
- </div>
- <div class="opt-row">
- <label><input type="checkbox" id="huddleRecording"> Enable recording</label>
- </div>
- </div>
- <!-- Pre-join panel -->
- <div class="huddle-prejoin" id="huddlePrejoin" style="display:none;">
- <h5>Ready to join?</h5>
- <div class="prejoin-room-label" id="prejoinRoomLabel">Room: —</div>
- <div class="form-group" style="margin-bottom:8px;">
- <label class="form-label" style="font-size:0.75rem;">Your display name</label>
- <input class="form-control" id="prejoinName" placeholder="Enter your name" maxlength="50" style="font-size:0.8125rem;padding:6px 10px;" />
- </div>
- <div class="prejoin-toggles">
- <label><input type="checkbox" id="prejoinMicOff"> Start with mic muted</label>
- <label><input type="checkbox" id="prejoinCamOff"> Start with camera off</label>
- </div>
- <div class="prejoin-actions">
- <button class="btn btn-secondary btn-sm" id="prejoinCancelBtn">Cancel</button>
- <button class="btn btn-primary btn-sm" id="prejoinJoinBtn"> Join Meeting</button>
- </div>
- </div>
- <!-- Active call frame -->
- <iframe id="huddleFrame" class="huddle-call-frame"
- allow="camera; microphone; fullscreen; display-capture; autoplay; picture-in-picture"
- allowfullscreen></iframe>
- <!-- Call controls bar -->
- <div class="huddle-call-bar" id="huddleCallBar">
- <span style="flex:1;font-size:0.8125rem;color:var(--color-gray-600);" id="huddleRoomLabel">In a huddle</span>
- <button class="btn btn-secondary btn-sm" id="huddlePipCallBtn">⧉ Pop out</button>
- <button class="btn btn-danger btn-sm" id="huddleLeaveBtn"> Leave</button>
- </div>
- </div>
-</div>
 
 <!-- ============================================================
  MODALS
@@ -3271,7 +3098,7 @@
 ============================================================ -->
 <script>
  const API = ''; // Same origin
- let currentView = 'messages';
+ let currentView = 'users';
  let allClients = [];
  let allConversations = [];
  let selectedClientForSms = null;
@@ -3313,12 +3140,11 @@
  // Try to populate with real team members
  try {
  const data = await apiFetch('/api/users/team');
- const team = (data.team || []).map(tm => ({ ...tm.user, role: tm.role, extension: tm.extension }));
+ let team = (data.team || []).map(tm => ({ ...tm.user, role: tm.role, extension: tm.extension }));
+ if (!team.length) team = DEMO_USERS;
  renderLoginTeamList(team);
  } catch {
- // If DB not configured yet show manual entry only
- document.getElementById('loginTeamList').innerHTML =
- '<div style="color:var(--color-gray-400);font-size:0.8125rem;padding:4px 0;">No team members yet — type your name below.</div>';
+ renderLoginTeamList(DEMO_USERS);
  }
  }
 
@@ -3331,9 +3157,12 @@
  list.innerHTML = team.map(u => {
  const initials = (u.name || 'U').split(' ').map(s => s[0]).join('').slice(0, 2).toUpperCase();
  const title = u.job_title || u.role || '';
+ const avatarInner = u.avatar_url
+ ? `<img src="${escAttr(u.avatar_url)}" alt="${escAttr(u.name)}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" />`
+ : escHtml(initials);
  return `
  <button class="login-team-btn" data-id="${escAttr(u.id)}" data-name="${escAttr(u.name)}" data-email="${escAttr(u.email || '')}">
- <div class="login-team-avatar">${escHtml(initials)}</div>
+ <div class="login-team-avatar">${avatarInner}</div>
  <div>
  <div>${escHtml(u.name)}</div>
  ${title ? `<div style="font-size:0.75rem;font-weight:400;color:var(--color-gray-500);">${escHtml(title)}</div>` : ''}
@@ -3345,7 +3174,7 @@
  const user = { id: btn.dataset.id, name: btn.dataset.name, email: btn.dataset.email || null };
  storeUser(user);
  applyCurrentUser(user);
- loadView('messages');
+ loadView('users');
  });
  });
  }
@@ -3356,7 +3185,7 @@
  const user = { id: null, name };
  storeUser(user);
  applyCurrentUser(user);
- loadView('messages');
+ loadView('users');
  });
  document.getElementById('loginNameInput').addEventListener('keydown', e => {
  if (e.key === 'Enter') document.getElementById('loginNameBtn').click();
@@ -3367,11 +3196,59 @@
  const stored = getStoredUser();
  if (stored && stored.name) {
  applyCurrentUser(stored);
- loadView('messages');
+ loadView('users');
  } else {
  showLoginGate();
  }
  })();
+ // ============================================================
+ // Demo Mode — pre-populated team with avatar photos
+ // ============================================================
+ let demoMode = localStorage.getItem('nc_demo_mode') !== 'false';
+
+ function makeDemoAvatar(seed, hue, initials) {
+ const bg = `hsl(${hue},35%,18%)`;
+ const fg = `hsl(${hue},50%,65%)`;
+ const accent = `hsl(${(hue + 40) % 360},45%,55%)`;
+ const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 150"><rect width="150" height="150" fill="${bg}"/><circle cx="75" cy="55" r="30" fill="${fg}" opacity=".9"/><ellipse cx="75" cy="130" rx="45" ry="35" fill="${fg}" opacity=".7"/><circle cx="65" cy="50" r="4" fill="${bg}"/><circle cx="85" cy="50" r="4" fill="${bg}"/><path d="M67 62 Q75 70 83 62" stroke="${bg}" stroke-width="2" fill="none"/><rect x="${55+seed%15}" y="2" width="${18+seed%12}" height="${14+seed%8}" rx="4" fill="${accent}" opacity=".6"/></svg>`;
+ return 'data:image/svg+xml,' + encodeURIComponent(svg);
+ }
+
+ const DEMO_USERS = [
+ { id: 'demo-1', name: 'Chris B', email: 'chris@noahconnect.com', status: 'online', job_title: 'Sales', phone: '+14155550101', avatar_url: makeDemoAvatar(1, 0, 'CB'), activity: 'on-call', activity_label: 'On Call' },
+ { id: 'demo-2', name: 'Jon D', email: 'jon@noahconnect.com', status: 'online', job_title: 'Admin', phone: '+14155550102', avatar_url: makeDemoAvatar(2, 200, 'JD'), activity: 'idle-activity', activity_label: 'Available' },
+ { id: 'demo-3', name: 'Mike B', email: 'mike@noahconnect.com', status: 'busy', job_title: 'Dispatch', phone: '+14155550103', avatar_url: makeDemoAvatar(3, 30, 'MB'), activity: 'in-meeting', activity_label: 'In Meeting' },
+ { id: 'demo-4', name: 'Matt B', email: 'matt@noahconnect.com', status: 'online', job_title: 'Sales', phone: '+14155550104', avatar_url: makeDemoAvatar(4, 160, 'MB'), activity: 'idle-activity', activity_label: 'Drafting Email' },
+ ];
+
+ function applyDemoToggleUI() {
+ const toggle = document.getElementById('demoToggle');
+ const track = document.getElementById('demoToggleTrack');
+ const thumb = document.getElementById('demoToggleThumb');
+ if (!toggle) return;
+ toggle.checked = demoMode;
+ if (demoMode) {
+ track.style.background = 'rgba(229,64,64,.15)';
+ track.style.borderColor = 'rgba(229,64,64,.35)';
+ thumb.style.transform = 'translateX(14px)';
+ thumb.style.background = '#e54040';
+ } else {
+ track.style.background = 'rgba(255,255,255,.08)';
+ track.style.borderColor = 'rgba(255,255,255,.1)';
+ thumb.style.transform = 'translateX(0)';
+ thumb.style.background = 'rgba(255,255,255,.3)';
+ }
+ }
+
+ document.getElementById('demoToggle')?.addEventListener('change', (e) => {
+ demoMode = e.target.checked;
+ localStorage.setItem('nc_demo_mode', demoMode);
+ applyDemoToggleUI();
+ loadTeam();
+ });
+
+ applyDemoToggleUI();
+
  // Virtual office floor plan rooms (status → room mapping)
  const OFFICE_ROOMS = [
  { icon: '', name: 'Main Office', slug: 'lobby', statuses: ['online'] },
@@ -3410,7 +3287,7 @@
  else if (view === 'users') loadTeam();
  else if (view === 'clients') loadClients();
  else if (view === 'gmail') loadGmail();
- else if (view === 'slack') loadSlack();
+    else if (view === 'slack') loadSlack();
  else if (view === 'integrations') loadIntegrations();
  else if (view === 'meetings') loadMeetingsView();
  else if (view === 'templates') loadTemplates();
@@ -3655,28 +3532,30 @@
  // Team / Users
  // ============================================================
  async function loadTeam() {
+ let users = [];
  try {
  const data = await apiFetch('/api/users/team');
  const team = data.team || [];
-
- if (!team.length) {
- // Fallback: try getting all users
+ if (team.length) {
+ users = team.map(tm => ({ ...tm.user, role: tm.role, extension: tm.extension, employee_number: tm.employee_number }));
+ } else {
  const usersData = await apiFetch('/api/users');
- renderUsers(usersData.users || []);
- return;
+ users = usersData.users || [];
  }
-
- const users = team.map(tm => ({ ...tm.user, role: tm.role, extension: tm.extension, employee_number: tm.employee_number }));
- renderUsers(users);
- checkRcOnLoad();
  } catch (err) {
  console.error('Load team error:', err.message);
  try {
  const data = await apiFetch('/api/users');
- renderUsers(data.users || []);
- checkRcOnLoad();
+ users = data.users || [];
  } catch (e) { /* ignore */ }
  }
+ if (demoMode) {
+ const realIds = new Set(users.map(u => u.id));
+ const demoToAdd = DEMO_USERS.filter(d => !realIds.has(d.id));
+ users = [...users, ...demoToAdd];
+ }
+ renderUsers(users);
+ checkRcOnLoad();
  }
 
  // ============================================================
@@ -3901,63 +3780,102 @@
  return;
  }
 
- function officeAvatarHtml(u) {
+ const activityIcons = {
+ 'on-call': '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>',
+ 'in-meeting': '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>',
+ 'idle-activity': '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+ };
+
+ function teamCardHtml(u) {
  const status = u.status || 'offline';
  const initials = (u.name || 'U').split(' ').map(s => s[0]).join('').slice(0, 2).toUpperCase();
- const inner = u.avatar_url
+ const avatarInner = u.avatar_url
  ? `<img src="${escAttr(u.avatar_url)}" alt="${escAttr(u.name)}" />`
- : `<div class="office-avatar-initials">${escHtml(initials)}</div>`;
- const tooltipParts = [u.name];
+ : `<div class="tc-initials">${escHtml(initials)}</div>`;
  const roleLabel = u.job_title || u.role || u.department || '';
- if (roleLabel) tooltipParts.push(roleLabel);
- if (u.extension) tooltipParts.push(`Ext. ${u.extension}`);
+ const activity = u.activity || 'idle-activity';
+ const activityLabel = u.activity_label || 'Available';
+ const actIcon = activityIcons[activity] || activityIcons['idle-activity'];
+
  return `
- <div class="office-avatar js-avatar-click" data-user-id="${escAttr(u.id)}" data-status="${escAttr(status)}" data-msg="${escAttr(u.status_message || '')}" data-name="${escAttr(u.name || '')}" data-phone="${escAttr(u.phone || '')}" data-email="${escAttr(u.email || '')}" data-avatar="${escAttr(u.avatar_url || '')}" data-role="${escAttr(roleLabel)}" title="${escAttr(tooltipParts.join(' – '))}" style="cursor:pointer;">
- <div class="office-avatar-ring ${status}">${inner}</div>
- <div class="office-avatar-label">${escHtml((u.name || '').split(' ')[0])}</div>
+ <div class="team-card js-team-card" data-user-id="${escAttr(u.id)}" data-name="${escAttr(u.name || '')}" data-phone="${escAttr(u.phone || '')}" data-email="${escAttr(u.email || '')}" data-avatar="${escAttr(u.avatar_url || '')}" data-role="${escAttr(roleLabel)}" data-status="${escAttr(status)}">
+ <div class="team-card-top">
+ <div class="team-card-avatar">
+ ${avatarInner}
+ <span class="team-card-status-dot ${status}"></span>
+ </div>
+ <div class="team-card-info">
+ <div class="team-card-name">${escHtml(u.name || 'Unknown')}</div>
+ <div class="team-card-role">${escHtml(roleLabel || 'Team Member')}</div>
+ </div>
+ <div class="team-card-activity ${activity}">
+ <span class="team-card-activity-icon">${actIcon}</span>
+ ${escHtml(activityLabel)}
+ </div>
+ </div>
+ <div class="team-card-channels">
+ <div class="tc-channel-grid">
+ <button class="tc-channel-btn js-tc-action" data-action="call" data-phone="${escAttr(u.phone || '')}">
+ <span class="tc-ch-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></span>
+ Call
+ </button>
+ <button class="tc-channel-btn js-tc-action" data-action="sms" data-phone="${escAttr(u.phone || '')}" data-name="${escAttr(u.name || '')}">
+ <span class="tc-ch-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></span>
+ SMS
+ </button>
+ <button class="tc-channel-btn js-tc-action" data-action="email" data-email="${escAttr(u.email || '')}">
+ <span class="tc-ch-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22,7 12,13 2,7"/></svg></span>
+ Email
+ </button>
+ <button class="tc-channel-btn js-tc-action" data-action="slack" data-name="${escAttr(u.name || '')}">
+ <span class="tc-ch-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2a2.5 2.5 0 000 5H17V4.5A2.5 2.5 0 0014.5 2z"/><path d="M2 14.5a2.5 2.5 0 015 0V17H4.5A2.5 2.5 0 012 14.5z"/><path d="M22 9.5a2.5 2.5 0 01-5 0V7h2.5A2.5 2.5 0 0122 9.5z"/><path d="M9.5 22a2.5 2.5 0 010-5H12v2.5A2.5 2.5 0 019.5 22z"/></svg></span>
+ Slack
+ </button>
+ <button class="tc-channel-btn js-tc-action" data-action="video" data-name="${escAttr(u.name || '')}">
+ <span class="tc-ch-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></span>
+ Video
+ </button>
+ <button class="tc-channel-btn js-tc-action" data-action="status" data-user-id="${escAttr(u.id)}" data-status="${escAttr(status)}">
+ <span class="tc-ch-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></span>
+ Status
+ </button>
+ </div>
+ </div>
  </div>`;
  }
 
- const rooms = OFFICE_ROOMS;
+ el.innerHTML = `<div class="team-cards-grid">${users.map(teamCardHtml).join('')}</div>`;
 
- const offlineUsers = users.filter(u => (u.status || 'offline') === 'offline');
-
- const floorHtml = rooms.map(room => {
- const roomUsers = users.filter(u => room.statuses.includes(u.status || 'offline'));
- const count = roomUsers.length;
- return `
- <div class="office-room room-${room.slug}">
- <div class="room-header">
- <span class="room-status-dot room-dot-${room.slug}"></span>
- <span class="room-name">${room.name}</span>
- ${count ? `<span class="room-count">${count}</span>` : ''}
- <button class="room-join-btn js-room-join" data-room="${escAttr(room.slug)}" data-label="${escAttr(room.name)}">Join</button>
- </div>
- <div class="room-avatars">
- ${count ? roomUsers.map(officeAvatarHtml).join('') : '<span class="room-empty">&mdash;</span>'}
- </div>
- </div>`;
- }).join('');
-
- const offlineHtml = offlineUsers.length ? `
- <div class="offline-row">
- <span class="offline-row-label">Offline</span>
- ${offlineUsers.map(officeAvatarHtml).join('')}
- </div>` : '';
-
- el.innerHTML = `<div class="office-floor">${floorHtml}</div>${offlineHtml}`;
-
- el.querySelectorAll('.js-avatar-click').forEach(avatar => {
- avatar.addEventListener('click', (e) => {
- e.stopPropagation();
- showAvatarPopover(avatar, avatar.dataset);
+ el.querySelectorAll('.js-team-card').forEach(card => {
+ card.addEventListener('click', (e) => {
+ if (e.target.closest('.js-tc-action')) return;
+ card.classList.toggle('expanded');
  });
  });
 
- el.querySelectorAll('.js-room-join').forEach(btn => {
+ el.querySelectorAll('.js-tc-action').forEach(btn => {
  btn.addEventListener('click', (e) => {
  e.stopPropagation();
- joinOfficeRoom(btn.dataset.room, btn.dataset.label);
+ const action = btn.dataset.action;
+ if (action === 'call' && btn.dataset.phone) {
+ window.open(`tel:${btn.dataset.phone}`);
+ } else if (action === 'sms') {
+ navigate('messages');
+ } else if (action === 'email' && btn.dataset.email) {
+ openModal('gmailComposeModal');
+ setTimeout(() => {
+ document.getElementById('gmailTo').value = btn.dataset.email;
+ document.getElementById('gmailSubject').value = '';
+ document.getElementById('gmailBody').value = '';
+ document.getElementById('gmailSubject').focus();
+ }, 100);
+ } else if (action === 'slack') {
+ navigate('slack');
+ } else if (action === 'video') {
+ toast('Starting video huddle with ' + (btn.dataset.name || 'team member') + '...', 'info');
+ } else if (action === 'status') {
+ openUserStatus(btn.dataset.userId, btn.dataset.status, '');
+ }
  });
  });
  }
@@ -4533,7 +4451,7 @@
  })();
 
  // ============================================================
- // Phone Numbers (Twilio)
+ // Phone Numbers (RingCentral)
  // ============================================================
  let userPhoneNumbers = [];
 
@@ -4649,153 +4567,149 @@
  });
  document.getElementById('searchAvailableBtn').addEventListener('click', loadAvailableNumbers);
 
- // ============================================================
- // Slack
- // ============================================================
- let slackChannels = [];
- let selectedSlackChannel = null;
 
- async function loadSlack() {
- try {
- const status = await apiFetch('/api/slack/status');
- const notConfigured = document.getElementById('slackNotConfigured');
- const layout = document.getElementById('slackLayout');
- if (!status.connected) {
- notConfigured.style.display = 'block';
- layout.style.display = 'none';
- return;
- }
- notConfigured.style.display = 'none';
- layout.style.display = '';
- loadSlackChannels();
- } catch (err) {
- console.error('Slack status error:', err.message);
- }
- }
+    // ============================================================
+    // Slack
+    // ============================================================
+    let slackChannels = [];
+    let selectedSlackChannel = null;
 
- async function loadSlackChannels() {
- try {
- const data = await apiFetch('/api/slack/channels');
- slackChannels = data.channels || [];
- renderSlackChannels();
- } catch (err) {
- document.getElementById('slackChannelList').innerHTML = `<div style="padding:12px;font-size:.8125rem;color:var(--color-danger);">${escHtml(err.message)}</div>`;
- }
- }
+    async function loadSlack() {
+      try {
+        const status = await apiFetch('/api/slack/status');
+        const notConfigured = document.getElementById('slackNotConfigured');
+        const layout = document.getElementById('slackLayout');
+        if (!status.connected) {
+          notConfigured.style.display = 'block';
+          layout.style.display = 'none';
+          return;
+        }
+        notConfigured.style.display = 'none';
+        layout.style.display = '';
+        loadSlackChannels();
+      } catch (err) {
+        console.error('Slack status error:', err.message);
+      }
+    }
 
- function renderSlackChannels() {
- const list = document.getElementById('slackChannelList');
- if (!slackChannels.length) {
- list.innerHTML = `<div style="padding:12px;font-size:.8125rem;color:var(--color-gray-400);">No channels found</div>`;
- return;
- }
- list.innerHTML = slackChannels.map(c =>
- `<div class="slack-channel-item${selectedSlackChannel === c.id ? ' active' : ''}" data-id="${escAttr(c.id)}" data-name="${escAttr(c.name)}"># ${escHtml(c.name)}</div>`
- ).join('');
+    async function loadSlackChannels() {
+      try {
+        const data = await apiFetch('/api/slack/channels');
+        slackChannels = data.channels || [];
+        renderSlackChannels();
+      } catch (err) {
+        document.getElementById('slackChannelList').innerHTML = `<div style="padding:12px;font-size:.8125rem;color:var(--color-danger);">${escHtml(err.message)}</div>`;
+      }
+    }
 
- list.querySelectorAll('.slack-channel-item').forEach(item => {
- item.addEventListener('click', () => selectSlackChannel(item.dataset.id, item.dataset.name));
- });
- }
+    function renderSlackChannels() {
+      const list = document.getElementById('slackChannelList');
+      if (!slackChannels.length) {
+        list.innerHTML = `<div style="padding:16px;font-size:0.8125rem;color:var(--color-gray-400);">No channels found</div>`;
+        return;
+      }
+      list.innerHTML = slackChannels.map(c =>
+        `<div class="slack-channel-item${selectedSlackChannel === c.id ? ' active' : ''}" data-id="${escAttr(c.id)}" data-name="${escAttr(c.name)}"># ${escHtml(c.name)}</div>`
+      ).join('');
 
- async function selectSlackChannel(channelId, channelName) {
- selectedSlackChannel = channelId;
- renderSlackChannels();
- document.getElementById('slackChannelHeader').textContent = `# ${channelName}`;
- await loadSlackMessages(channelId);
- }
+      list.querySelectorAll('.slack-channel-item').forEach(item => {
+        item.addEventListener('click', () => selectSlackChannel(item.dataset.id, item.dataset.name));
+      });
+    }
 
- async function loadSlackMessages(channelId) {
- const msgList = document.getElementById('slackMsgList');
- msgList.innerHTML = `<div class="empty-state"><div class="icon"></div><p>Loading…</p></div>`;
- try {
- const data = await apiFetch(`/api/slack/channels/${encodeURIComponent(channelId)}/history?limit=50`);
- renderSlackMessages(data.messages || []);
- } catch (err) {
- msgList.innerHTML = `<div class="empty-state"><div class="icon"></div><p>${escHtml(err.message)}</p></div>`;
- }
- }
+    async function selectSlackChannel(channelId, channelName) {
+      selectedSlackChannel = channelId;
+      renderSlackChannels();
+      document.getElementById('slackChannelHeader').textContent = `# ${channelName}`;
+      await loadSlackMessages(channelId);
+    }
 
- function renderSlackMessages(messages) {
- const msgList = document.getElementById('slackMsgList');
- if (!messages.length) {
- msgList.innerHTML = `<div class="empty-state"><div class="icon"></div><p>No messages in this channel</p></div>`;
- return;
- }
- const sorted = [...messages].reverse();
- msgList.innerHTML = sorted.map(m => {
- const user = m.user || m.username || 'Unknown';
- const initials = user.slice(0, 2).toUpperCase();
- const time = m.ts ? new Date(parseFloat(m.ts) * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
- return `
- <div class="slack-msg">
- <div class="slack-msg-avatar">${escHtml(initials)}</div>
- <div class="slack-msg-content">
- <div class="slack-msg-meta">
- <span class="slack-msg-user">${escHtml(user)}</span>
- <span class="slack-msg-time">${escHtml(time)}</span>
- </div>
- <div class="slack-msg-body">${escHtml(m.text || '')}</div>
- </div>
- </div>
- `;
- }).join('');
- msgList.scrollTop = msgList.scrollHeight;
- }
+    async function loadSlackMessages(channelId) {
+      const msgList = document.getElementById('slackMsgList');
+      msgList.innerHTML = `<div class="empty-state"><div class="icon"></div><p>Loading…</p></div>`;
+      try {
+        const data = await apiFetch(`/api/slack/channels/${encodeURIComponent(channelId)}/history?limit=50`);
+        renderSlackMessages(data.messages || []);
+      } catch (err) {
+        msgList.innerHTML = `<div class="empty-state"><div class="icon"></div><p>${escHtml(err.message)}</p></div>`;
+      }
+    }
 
- async function sendSlackMessage() {
- if (!selectedSlackChannel) { toast('Select a channel first.', 'warning'); return; }
- const text = document.getElementById('slackComposeInput').value.trim();
- if (!text) return;
+    function renderSlackMessages(messages) {
+      const msgList = document.getElementById('slackMsgList');
+      if (!messages.length) {
+        msgList.innerHTML = `<div class="empty-state"><div class="icon"></div><p>No messages in this channel</p></div>`;
+        return;
+      }
+      const sorted = [...messages].reverse();
+      msgList.innerHTML = sorted.map(m => {
+        const user = m.user || m.username || 'Unknown';
+        const initials = user.slice(0, 2).toUpperCase();
+        const time = m.ts ? new Date(parseFloat(m.ts) * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+        return `
+          <div class="slack-msg">
+            <div class="slack-msg-avatar">${escHtml(initials)}</div>
+            <div class="slack-msg-content">
+              <div class="slack-msg-meta">
+                <span class="slack-msg-user">${escHtml(user)}</span>
+                <span class="slack-msg-time">${escHtml(time)}</span>
+              </div>
+              <div class="slack-msg-body">${escHtml(m.text || '')}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      msgList.scrollTop = msgList.scrollHeight;
+    }
 
- const btn = document.getElementById('slackSendBtn');
- btn.disabled = true;
- try {
- await apiFetch('/api/slack/send', { method: 'POST', body: JSON.stringify({ channel: selectedSlackChannel, text }) });
- document.getElementById('slackComposeInput').value = '';
- toast('Message sent to Slack!', 'success');
- await loadSlackMessages(selectedSlackChannel);
- } catch (err) {
- toast(`Error: ${err.message}`, 'error');
- } finally {
- btn.disabled = false;
- }
- }
+    async function sendSlackMessage() {
+      if (!selectedSlackChannel) { toast('Select a channel first.', 'warning'); return; }
+      const text = document.getElementById('slackComposeInput').value.trim();
+      if (!text) return;
 
+      const btn = document.getElementById('slackSendBtn');
+      btn.disabled = true;
+      try {
+        await apiFetch('/api/slack/send', { method: 'POST', body: JSON.stringify({ channel: selectedSlackChannel, text }) });
+        document.getElementById('slackComposeInput').value = '';
+        toast('Message sent to Slack!', 'success');
+        await loadSlackMessages(selectedSlackChannel);
+      } catch (err) {
+        toast(`Error: ${err.message}`, 'error');
+      } finally {
+        btn.disabled = false;
+      }
+    }
  // ============================================================
  // Integrations / Webhooks
  // ============================================================
- let slackIsConnected = false;
+ let rcIsConfigured = false;
  let aiIsConfigured = false;
- let huddleIsConfigured = false;
+    let clicksendIsConfigured = false;
 
  // Integration key → vault group key mapping
  const INTEGRATION_GROUP_KEYS = {
  'Gmail': 'google',
- 'Slack': 'slack',
+ 'RingCentral': 'ringcentral',
  'Zapier': 'zapier',
- 'n8n': 'n8n',
  'AI Assistant': 'ai',
- 'Daily.co Huddles': 'daily',
  'Supabase': 'supabase',
- 'SlickText SMS': 'slicktext',
- 'Twilio (Personal Numbers)': 'twilio',
+      'ClickSend': 'clicksend',
  };
 
  async function loadIntegrations() {
  try {
- const [webhookData, slackStatus, aiStatus, meetingsStatus, smsStatus, twilioStatus] = await Promise.all([
+ const [webhookData, rcStatus, aiStatus, configData] = await Promise.all([
  apiFetch('/api/webhooks/status'),
- apiFetch('/api/slack/status').catch(() => ({ connected: false })),
+ apiFetch('/api/ringcentral/status').catch(() => ({ configured: false })),
  apiFetch('/api/ai/status').catch(() => ({ configured: false })),
- apiFetch('/api/meetings/status').catch(() => ({ configured: false })),
- apiFetch('/api/sms/status').catch(() => ({ configured: false })),
- apiFetch('/api/phone-numbers/status').catch(() => ({ configured: false })),
+    apiFetch('/api/integrations-config').catch(() => ({ groups: [] })),
  ]);
- slackIsConnected = slackStatus.connected;
+ rcIsConfigured = rcStatus.configured;
  aiIsConfigured = aiStatus.configured;
- huddleIsConfigured = meetingsStatus.configured;
- renderIntegrationCards({ ...webhookData, sms: smsStatus, twilio: twilioStatus });
+    const csGroup = (configData.groups || []).find(g => g.key === 'clicksend');
+    clicksendIsConfigured = csGroup ? csGroup.vars.some(v => v.hasValue) : false;
+ renderIntegrationCards(webhookData);
  document.getElementById('inboundWebhookUrl').textContent = webhookData.inboundUrl || '';
  } catch (err) {
  console.error('Integrations load error:', err.message);
@@ -4808,34 +4722,18 @@
  const cards = [
  {
  icon: '',
+ title: 'RingCentral',
+ desc: 'Phone, SMS, video meetings, team chat, presence, AI call intelligence, and Slack integration.',
+ connected: rcIsConfigured,
+ groupKey: 'ringcentral',
+ },
+ {
+ icon: '',
  title: 'Gmail',
  desc: 'Read and send emails from your Google Workspace inbox.',
  connected: gmailConnected,
- extraAction: gmailConnected ? null : `<a href="/auth/google" class="btn btn-primary btn-sm" style="display:inline-flex;align-items:center;gap:6px;"> Connect Google</a>`,
+ extraAction: gmailConnected ? null : `<a href="/auth/google" class="btn btn-primary btn-sm" style="display:inline-flex;align-items:center;gap:6px;">Connect Google</a>`,
  groupKey: 'google',
- },
- {
- icon: '',
- title: 'Slack',
- desc: 'Send and receive Slack channel messages.',
- connected: slackIsConnected,
- groupKey: 'slack',
- },
- {
- icon: '',
- title: 'Zapier',
- desc: 'Trigger Zaps from CallJamal events.',
- connected: data.zapier?.configured,
- url: data.zapier?.url,
- groupKey: 'zapier',
- },
- {
- icon: '',
- title: 'n8n',
- desc: 'Trigger n8n workflows from CallJamal events.',
- connected: data.n8n?.configured,
- url: data.n8n?.url,
- groupKey: 'n8n',
  },
  {
  icon: '',
@@ -4846,31 +4744,25 @@
  },
  {
  icon: '',
- title: 'Daily.co Huddles',
- desc: 'Instant video huddles with screen share, chat, and recording.',
- connected: huddleIsConfigured,
- groupKey: 'daily',
+ title: 'Zapier',
+ desc: 'Trigger Zaps from Noah Connect events.',
+ connected: data.zapier?.configured,
+ url: data.zapier?.url,
+ groupKey: 'zapier',
  },
+      {
+        icon: '',
+        title: 'ClickSend',
+        desc: 'Mass SMS campaigns and bulk texting (admin only).',
+        connected: clicksendIsConfigured,
+        groupKey: 'clicksend',
+      },
  {
  icon: '',
  title: 'Supabase',
  desc: 'Database for contacts, messages, and team data.',
  connected: true,
  groupKey: 'supabase',
- },
- {
- icon: '',
- title: 'SlickText SMS',
- desc: 'Send and receive SMS with clients via shared number.',
- connected: Boolean(data.sms?.configured),
- groupKey: 'slicktext',
- },
- {
- icon: '',
- title: 'Twilio (Personal Numbers)',
- desc: 'Give each team member their own phone number for personal client texting.',
- connected: Boolean(data.twilio?.configured),
- groupKey: 'twilio',
  },
  ];
 
@@ -4898,7 +4790,7 @@
  }
 
  function renderAutomationRecipes(data) {
- const hasWebhook = data.zapier?.configured || data.n8n?.configured;
+ const hasWebhook = data.zapier?.configured;
  const recipes = [
  { icon: '', title: 'Auto-CRM on Inbound SMS', desc: 'When a client texts, create a HubSpot/Salesforce contact and notify your team on Slack.', trigger: 'sms_received', apps: 'Slack, HubSpot, Google Sheets' },
  { icon: '', title: 'AI Auto-Reply to Texts', desc: 'When a client texts after hours, auto-respond with a smart AI-generated message.', trigger: 'sms_received', apps: 'OpenAI, Slack, SMS' },
@@ -4922,7 +4814,7 @@
  <div style="margin-top:8px;font-size:0.7rem;color:var(--color-gray-400);">Works with: ${escHtml(r.apps)}</div>
  ${hasWebhook
  ? '<div style="margin-top:8px;"><span class="status-badge connected">Ready</span></div>'
- : '<div style="margin-top:8px;"><span class="status-badge disconnected">Configure Zapier or n8n first</span></div>'}
+ : '<div style="margin-top:8px;"><span class="status-badge disconnected">Configure Zapier first</span></div>'}
  </div>
  `).join('');
  }
@@ -5104,8 +4996,8 @@
  grid.innerHTML = rooms.map(r => {
  const expiry = r.expiresAt ? new Date(r.expiresAt).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'No expiry';
  const badges = [
- r.waitingRoom ? '<span class="huddle-secure-badge"> Waiting Room</span>' : '',
- r.recordingEnabled ? '<span style="display:inline-flex;align-items:center;gap:4px;font-size:0.7rem;color:#dc2626;background:#fee2e2;padding:2px 7px;border-radius:9999px;font-weight:600;"> Recording</span>' : '',
+ r.waitingRoom ? '<span style="display:inline-flex;align-items:center;gap:4px;font-size:0.7rem;color:#10b981;background:rgba(16,185,129,.1);padding:2px 7px;border-radius:9999px;font-weight:600;"> Waiting Room</span>' : '',
+ r.recordingEnabled ? '<span style="display:inline-flex;align-items:center;gap:4px;font-size:0.7rem;color:#dc2626;background:rgba(220,38,38,.1);padding:2px 7px;border-radius:9999px;font-weight:600;"> Recording</span>' : '',
  ].filter(Boolean).join(' ');
  return `
  <div class="meeting-room-card">
@@ -5126,7 +5018,7 @@
  }).join('');
 
  grid.querySelectorAll('[data-room-url]').forEach(btn => {
- btn.addEventListener('click', () => openPrejoin(btn.dataset.roomUrl, btn.dataset.roomName));
+ btn.addEventListener('click', () => { window.open(btn.dataset.roomUrl, '_blank'); toast(`Joining ${btn.dataset.roomName || 'meeting'}...`, 'success'); });
  });
  grid.querySelectorAll('[data-copy-url]').forEach(btn => {
  btn.addEventListener('click', () => {
@@ -5138,7 +5030,7 @@
  async function openNewMeetingModal() {
  const status = await apiFetch('/api/meetings/status').catch(() => ({ configured: false }));
  if (!status.configured) {
- toast('Daily.co is not configured. Set it up in Integrations first.', 'warning');
+ toast('RingCentral Video is not configured. Set it up in Integrations first.', 'warning');
  return;
  }
  document.getElementById('newMeetingName').value = '';
@@ -5169,7 +5061,7 @@
  }),
  });
  document.getElementById('newMeetingModal').classList.remove('open');
- openPrejoin(data.url, data.name);
+ window.open(data.url, "_blank"); toast("Joining " + (data.name || "meeting") + "...", "success");
  if (currentView === 'meetings') loadMeetingsView();
  } catch (err) {
  toast(`Error: ${err.message}`, 'error');
@@ -5504,395 +5396,6 @@
  // Initial badge load after boot
  setTimeout(loadInboxFeed, 3000);
 
- // ============================================================
- // Join Office Room → Huddle
- // ============================================================
- async function joinOfficeRoom(roomSlug, roomLabel) {
- try {
- const status = await apiFetch('/api/meetings/status');
- if (!status.configured) {
- toast('Daily.co not configured — go to Integrations to set it up.', 'warning');
- return;
- }
-
- const data = await apiFetch('/api/meetings/create', {
- method: 'POST',
- body: JSON.stringify({
- name: `office-${roomSlug}`,
- expiryMinutes: 480,
- }),
- });
-
- openPrejoin(data.url, roomLabel || roomSlug);
- } catch (err) {
- toast(`Could not start huddle: ${err.message}`, 'error');
- }
- }
-
- // ============================================================
- // Huddle Widget (Daily.co video calls + PiP)
- // ============================================================
- let huddleOpen = false;
- let huddleMinimized = false;
- let huddleInCall = false;
- let huddleDailyConfigured = false;
- let currentHuddleUrl = null;
- let currentHuddleRoomName = null;
- let prejoinPendingUrl = null;
- let prejoinPendingName = null;
-
- // Restore persisted state from sessionStorage on load
- (function restoreHuddle() {
- try {
- const saved = JSON.parse(sessionStorage.getItem('cj_huddle') || 'null');
- if (!saved) return;
- if (saved.url) {
- currentHuddleUrl = saved.url;
- currentHuddleRoomName = saved.roomName || null;
- huddleInCall = true;
- document.getElementById('huddleFrame').src = saved.url;
- document.getElementById('huddleFrame').classList.add('active');
- document.getElementById('huddleLobby').style.display = 'none';
- document.getElementById('huddleCallBar').classList.add('active');
- document.getElementById('huddleSecureBadge').style.display = saved.secured ? '' : 'none';
- const roomIdentifier = saved.roomName || saved.url.split('/').pop();
- document.getElementById('huddleRoomLabel').textContent = roomIdentifier ? `Room: ${escHtml(roomIdentifier)}` : 'In a huddle';
- }
- if (saved.open) {
- huddleOpen = true;
- document.getElementById('huddleWidget').classList.add('open');
- }
- if (saved.minimized) {
- huddleMinimized = true;
- document.getElementById('huddleWidget').classList.add('minimized');
- }
- if (saved.right) document.getElementById('huddleWidget').style.right = saved.right;
- if (saved.bottom) document.getElementById('huddleWidget').style.bottom = saved.bottom;
- } catch { /* ignore */ }
- })();
-
- function saveHuddleState(secured) {
- try {
- const widget = document.getElementById('huddleWidget');
- sessionStorage.setItem('cj_huddle', JSON.stringify({
- url: currentHuddleUrl,
- roomName: currentHuddleRoomName,
- secured: Boolean(secured),
- open: huddleOpen,
- minimized: huddleMinimized,
- right: widget.style.right || '',
- bottom: widget.style.bottom || '',
- }));
- } catch { /* ignore */ }
- }
-
- async function openHuddleWidget() {
- huddleOpen = true;
- document.getElementById('huddleWidget').classList.add('open');
- if (!huddleInCall) await loadHuddleLobby();
- saveHuddleState();
- }
-
- function closeHuddleWidget() {
- huddleOpen = false;
- document.getElementById('huddleWidget').classList.remove('open');
- saveHuddleState();
- }
-
- function toggleHuddle() {
- if (huddleOpen) closeHuddleWidget();
- else openHuddleWidget();
- }
-
- function toggleHuddleMinimize() {
- huddleMinimized = !huddleMinimized;
- document.getElementById('huddleWidget').classList.toggle('minimized', huddleMinimized);
- document.getElementById('huddleMinimizeBtn').textContent = huddleMinimized ? '+' : '−';
- saveHuddleState();
- }
-
- async function loadHuddleLobby() {
- const note = document.getElementById('huddleNote');
- const roomSection = document.getElementById('huddleRoomSection');
- const roomList = document.getElementById('huddleRoomList');
- const startBtn = document.getElementById('huddleStartBtn');
- const createOpts = document.getElementById('huddleCreateOpts');
- const prejoin = document.getElementById('huddlePrejoin');
-
- // Ensure lobby is visible
- document.getElementById('huddleLobby').style.display = '';
- prejoin.style.display = 'none';
-
- try {
- const status = await apiFetch('/api/meetings/status');
- huddleDailyConfigured = status.configured;
-
- if (!huddleDailyConfigured) {
- startBtn.disabled = true;
- startBtn.textContent = ' Configure Daily.co first';
- note.textContent = 'Go to Integrations → Daily.co to enter your API key and domain.';
- roomSection.style.display = 'none';
- createOpts.style.display = 'none';
- return;
- }
-
- startBtn.disabled = false;
- startBtn.textContent = ' Start New Huddle';
- note.textContent = 'Start a video huddle with your team or jump into Google Meet.';
- createOpts.style.display = '';
-
- // Load active rooms
- const data = await apiFetch('/api/meetings/rooms');
- const rooms = data.rooms || [];
- if (rooms.length) {
- roomSection.style.display = 'block';
- roomList.innerHTML = rooms.map(r => `
- <div class="huddle-room-item">
- <span class="huddle-room-item-name" title="${escAttr(r.name)}"> ${escHtml(r.name)}</span>
- <button class="btn btn-primary btn-sm js-join-room" data-url="${escAttr(r.url)}" data-name="${escAttr(r.name)}">Join</button>
- </div>
- `).join('');
- roomList.querySelectorAll('.js-join-room').forEach(btn => {
- btn.addEventListener('click', () => openPrejoin(btn.dataset.url, btn.dataset.name));
- });
- } else {
- roomSection.style.display = 'none';
- }
- } catch (err) {
- note.textContent = `Could not load status: ${err.message}`;
- }
- }
-
- async function startNewHuddle() {
- const btn = document.getElementById('huddleStartBtn');
- btn.disabled = true;
- btn.innerHTML = '<span class="spinner" style="border-color:rgba(255,255,255,.3);border-top-color:#fff;"></span>';
- try {
- const data = await apiFetch('/api/meetings/create', {
- method: 'POST',
- body: JSON.stringify({
- name: document.getElementById('huddleRoomNameInput').value.trim(),
- expiryMinutes: parseInt(document.getElementById('huddleExpirySelect').value),
- waitingRoom: document.getElementById('huddleWaitingRoom').checked,
- enableRecording: document.getElementById('huddleRecording').checked,
- }),
- });
- openPrejoin(data.url, data.name);
- } catch (err) {
- toast(`Huddle error: ${err.message}`, 'error');
- } finally {
- btn.disabled = false;
- btn.textContent = ' Start New Huddle';
- }
- }
-
- // openPrejoin: show pre-join name/settings before loading the iframe
- // Called from both lobby and meetings view
- function openPrejoin(url, roomName) {
- prejoinPendingUrl = url;
- prejoinPendingName = roomName;
-
- // Open the huddle widget if not already open
- if (!huddleOpen) {
- huddleOpen = true;
- document.getElementById('huddleWidget').classList.add('open');
- }
-
- document.getElementById('huddleLobby').style.display = 'none';
- document.getElementById('huddleCreateOpts').style.display = 'none';
- document.getElementById('huddleFrame').classList.remove('active');
- document.getElementById('huddleCallBar').classList.remove('active');
-
- document.getElementById('prejoinRoomLabel').textContent = `Room: ${escHtml(roomName || url.split('/').pop())}`;
- document.getElementById('huddlePrejoin').style.display = '';
- document.getElementById('prejoinName').focus();
- }
-
- async function confirmPrejoin() {
- if (!prejoinPendingUrl) return;
-
- const userName = document.getElementById('prejoinName').value.trim();
- const startAudioOff = document.getElementById('prejoinMicOff').checked;
- const startVideoOff = document.getElementById('prejoinCamOff').checked;
- const btn = document.getElementById('prejoinJoinBtn');
- btn.disabled = true;
- btn.textContent = 'Joining…';
-
- // Extract room name from URL safely
- let rawRoomName = prejoinPendingName;
- if (!rawRoomName) {
- try {
- const parsedUrl = new URL(prejoinPendingUrl);
- rawRoomName = parsedUrl.pathname.split('/').filter(Boolean).pop() || 'meeting';
- } catch {
- rawRoomName = 'meeting';
- }
- }
- let finalUrl = prejoinPendingUrl;
- let secured = false;
-
- try {
- // Attempt to get a meeting token for secure access
- const tokenData = await apiFetch('/api/meetings/token', {
- method: 'POST',
- body: JSON.stringify({
- roomName: rawRoomName,
- userName: userName || undefined,
- startAudioOff,
- startVideoOff,
- }),
- });
- if (tokenData.token) {
- const baseUrl = prejoinPendingUrl.split('?')[0];
- finalUrl = `${baseUrl}?t=${encodeURIComponent(tokenData.token)}`;
- secured = true;
- }
- } catch {
- // Token unavailable — join without token (Daily.co configured but token API failed)
- // Still set user name via URL param if supported
- if (userName) {
- const sep = finalUrl.includes('?') ? '&' : '?';
- finalUrl = `${finalUrl}${sep}userName=${encodeURIComponent(userName)}`;
- }
- }
-
- joinHuddleRoomFinal(finalUrl, rawRoomName, secured);
- btn.disabled = false;
- btn.textContent = ' Join Meeting';
- }
-
- function cancelPrejoin() {
- prejoinPendingUrl = null;
- prejoinPendingName = null;
- document.getElementById('huddlePrejoin').style.display = 'none';
- document.getElementById('huddleLobby').style.display = '';
- document.getElementById('huddleCreateOpts').style.display = '';
- }
-
- function joinHuddleRoomFinal(url, name, secured) {
- if (!url) return;
- currentHuddleUrl = url;
- currentHuddleRoomName = name;
- huddleInCall = true;
- prejoinPendingUrl = null;
- prejoinPendingName = null;
-
- document.getElementById('huddlePrejoin').style.display = 'none';
-
- const frame = document.getElementById('huddleFrame');
- frame.src = url;
- frame.classList.add('active');
-
- document.getElementById('huddleLobby').style.display = 'none';
- document.getElementById('huddleCallBar').classList.add('active');
- document.getElementById('huddleRoomLabel').textContent = name ? `Room: ${escHtml(name)}` : 'In a huddle';
-
- const secureBadge = document.getElementById('huddleSecureBadge');
- secureBadge.style.display = secured ? '' : 'none';
-
- const startBtn = document.getElementById('huddleStartBtn');
- startBtn.disabled = false;
- startBtn.textContent = ' Start New Huddle';
-
- saveHuddleState(secured);
- toast(`Joined huddle: ${name || url}`, 'success');
- }
-
- function leaveHuddle() {
- huddleInCall = false;
- currentHuddleUrl = null;
- currentHuddleRoomName = null;
-
- const frame = document.getElementById('huddleFrame');
- frame.src = '';
- frame.classList.remove('active');
-
- document.getElementById('huddlePrejoin').style.display = 'none';
- document.getElementById('huddleLobby').style.display = '';
- document.getElementById('huddleCreateOpts').style.display = '';
- document.getElementById('huddleCallBar').classList.remove('active');
- document.getElementById('huddleSecureBadge').style.display = 'none';
-
- sessionStorage.removeItem('cj_huddle');
- loadHuddleLobby();
- }
-
- function openGoogleMeet() {
- window.open('https://meet.new', '_blank', 'noopener,noreferrer');
- }
-
- // Picture-in-Picture: use Document PiP API if available, otherwise open popup
- async function requestHuddlePiP() {
- if (!currentHuddleUrl) {
- toast('No active huddle to pop out.', 'warning');
- return;
- }
-
- if (window.documentPictureInPicture) {
- try {
- const pipWin = await window.documentPictureInPicture.requestWindow({ width: 420, height: 320 });
- const iframe = pipWin.document.createElement('iframe');
- iframe.src = currentHuddleUrl;
- iframe.setAttribute('allow', 'camera; microphone; fullscreen; display-capture; autoplay; picture-in-picture');
- iframe.style.cssText = 'width:100%;height:100%;border:none;background:#000;';
- pipWin.document.body.style.cssText = 'margin:0;padding:0;background:#000;overflow:hidden;';
- pipWin.document.body.appendChild(iframe);
- toast('Huddle popped out!', 'success');
- return;
- } catch (err) {
- // Fall through to popup
- }
- }
- // Fallback: open in a small popup window
- window.open(
- currentHuddleUrl,
- 'huddlePiP',
- 'width=440,height=340,resizable=yes,scrollbars=no,toolbar=no,menubar=no,location=no,status=no'
- );
- toast('Huddle opened in popup window.', 'success');
- }
-
- // Draggable huddle widget
- (function initHuddleDrag() {
- const widget = document.getElementById('huddleWidget');
- const handle = document.getElementById('huddleHeader');
- let dragging = false, startX, startY, origRight, origBottom;
-
- handle.addEventListener('mousedown', (e) => {
- // Don't drag when clicking header buttons
- if (e.target.closest('.huddle-header-btns')) return;
- dragging = true;
- const rect = widget.getBoundingClientRect();
- startX = e.clientX;
- startY = e.clientY;
- origRight = window.innerWidth - rect.right;
- origBottom = window.innerHeight - rect.bottom;
- widget.style.right = origRight + 'px';
- widget.style.bottom = origBottom + 'px';
- widget.style.left = 'auto';
- widget.style.top = 'auto';
- widget.style.transition = 'none';
- document.body.style.userSelect = 'none';
- });
-
- document.addEventListener('mousemove', (e) => {
- if (!dragging) return;
- const dx = e.clientX - startX;
- const dy = e.clientY - startY;
- const newRight = Math.max(0, origRight - dx);
- const newBottom = Math.max(0, origBottom - dy);
- widget.style.right = Math.min(newRight, window.innerWidth - 60) + 'px';
- widget.style.bottom = Math.min(newBottom, window.innerHeight - 40) + 'px';
- });
-
- document.addEventListener('mouseup', () => {
- if (!dragging) return;
- dragging = false;
- widget.style.transition = '';
- document.body.style.userSelect = '';
- saveHuddleState();
- });
- })();
 
  // ============================================================
  // New event listeners
@@ -5909,6 +5412,8 @@
  loadGmailFolder(gmailCurrentFolder || 'INBOX');
  });
  document.getElementById('gmailRefreshBtn').addEventListener('click', () => loadGmailFolder(gmailCurrentFolder));
+    document.getElementById('slackSendBtn').addEventListener('click', sendSlackMessage);
+    document.getElementById('slackComposeInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') sendSlackMessage(); });
 
  // Sidebar folder navigation
  document.querySelectorAll('.gmail-sidebar-btn[data-label]').forEach(btn => {
@@ -5964,23 +5469,10 @@
  toast(`Label applied to ${ids.length} message(s)`, 'success');
  });
 
- document.getElementById('slackSendBtn').addEventListener('click', sendSlackMessage);
- document.getElementById('slackComposeInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') sendSlackMessage(); });
 
  document.getElementById('testWebhookBtn').addEventListener('click', testWebhook);
  document.getElementById('copyWebhookUrlBtn').addEventListener('click', copyWebhookUrl);
 
- document.getElementById('fabHuddle').addEventListener('click', toggleHuddle);
- document.getElementById('huddleCloseBtn').addEventListener('click', closeHuddleWidget);
- document.getElementById('huddleMinimizeBtn').addEventListener('click', toggleHuddleMinimize);
- document.getElementById('huddlePipBtn').addEventListener('click', requestHuddlePiP);
- document.getElementById('huddleStartBtn').addEventListener('click', startNewHuddle);
- document.getElementById('huddleMeetBtn').addEventListener('click', openGoogleMeet);
- document.getElementById('huddleLeaveBtn').addEventListener('click', leaveHuddle);
- document.getElementById('huddlePipCallBtn').addEventListener('click', requestHuddlePiP);
- document.getElementById('prejoinJoinBtn').addEventListener('click', confirmPrejoin);
- document.getElementById('prejoinCancelBtn').addEventListener('click', cancelPrejoin);
- document.getElementById('prejoinName').addEventListener('keydown', (e) => { if (e.key === 'Enter') confirmPrejoin(); });
 
  document.getElementById('fabAi').addEventListener('click', toggleAiChat);
  document.getElementById('closeAiChat').addEventListener('click', toggleAiChat);
@@ -6743,7 +6235,7 @@
  pop.addEventListener('click', (e) => e.stopPropagation());
 
  let actionsHtml = '';
- actionsHtml += `<button data-action="slack"><span class="pop-icon"></span>Message on Slack</button>`;
+    actionsHtml += `<button data-action="slack"><span class="pop-icon"></span>Message on Slack</button>`;
  if (email) {
  actionsHtml += `<button data-action="email"><span class="pop-icon"></span>Send Email</button>`;
  }
@@ -6778,9 +6270,8 @@
  btn.addEventListener('click', () => {
  const action = btn.dataset.action;
  closeAvatarPopover();
- if (action === 'slack') {
- navigate('slack');
- } else if (action === 'email' && email) {
+      if (action === 'slack') { navigate('slack'); } else
+ if (action === 'email' && email) {
  openModal('gmailComposeModal');
  setTimeout(() => {
  document.getElementById('gmailTo').value = email;
@@ -6834,9 +6325,6 @@
 
  document.getElementById('saveStatusBtn').addEventListener('click', saveUserStatus);
 
- // ============================================================
- // Fix SlickText status in integrations — handled in loadIntegrations() above
- // ============================================================
 </script>
 
 </body>
