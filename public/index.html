@@ -331,105 +331,200 @@
  #view-users .btn-primary:hover { background: rgba(229,64,64,.06); border-color: rgba(229,64,64,.4); }
  #view-users .empty-state { color: rgba(255,255,255,.2); }
 
- /* ── Floor Plan ── */
- .office-floor {
- position: relative;
+ /* ── Team Member Cards ── */
+ .team-cards-grid {
  display: grid;
- grid-template-columns: 1.6fr 1fr 1fr;
- grid-template-rows: 1fr 1fr;
- gap: 1px;
- padding: 0;
+ grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+ gap: 16px;
+ }
+ @media (max-width: 640px) { .team-cards-grid { grid-template-columns: 1fr; } }
+
+ .team-card {
  background: rgba(255,255,255,.02);
- border-radius: 16px;
- overflow: hidden;
- min-height: 520px;
  border: 1px solid rgba(255,255,255,.06);
- box-shadow: 0 1px 0 rgba(255,255,255,.03);
- }
- .office-floor::before {
- content: '';
- position: absolute;
- inset: 0;
- background: radial-gradient(ellipse 60% 50% at 30% 50%, rgba(229,64,64,.015), transparent);
- pointer-events: none;
- z-index: 0;
- }
-
- .office-room {
- position: relative;
- z-index: 1;
- background: rgba(255,255,255,.01);
- border-right: 1px solid rgba(255,255,255,.04);
- border-bottom: 1px solid rgba(255,255,255,.04);
+ border-radius: 14px;
  padding: 20px;
- min-height: 200px;
- display: flex;
- flex-direction: column;
- transition: background .3s;
+ cursor: pointer;
+ transition: background .25s, border-color .25s, transform .2s;
  backdrop-filter: blur(20px);
+ position: relative;
+ overflow: hidden;
  }
- .office-room:hover {
- background: rgba(255,255,255,.025);
+ .team-card:hover {
+ background: rgba(255,255,255,.035);
+ border-color: rgba(255,255,255,.1);
+ transform: translateY(-2px);
+ }
+ .team-card.expanded {
+ border-color: rgba(229,64,64,.2);
+ background: rgba(255,255,255,.03);
  }
 
- .office-room.room-lobby { grid-column: 1; grid-row: 1 / 3; border-radius: 15px 0 0 15px; border-right: 1px solid rgba(255,255,255,.05); }
- .office-room.room-conference { grid-column: 2; grid-row: 1; }
- .office-room.room-breakroom { grid-column: 3; grid-row: 1; border-radius: 0 15px 0 0; border-right: none; }
- .office-room.room-focus { grid-column: 2; grid-row: 2; border-bottom: none; }
- .office-room.room-lounge { grid-column: 3; grid-row: 2; border-radius: 0 0 15px 0; border-right: none; border-bottom: none; }
- .office-room.room-lobby { border-bottom: none; }
-
- .room-header {
+ .team-card-top {
  display: flex;
  align-items: center;
- gap: 8px;
- margin-bottom: 18px;
+ gap: 14px;
+ flex-wrap: wrap;
  }
 
- .room-status-dot {
- width: 6px; height: 6px;
+ .team-card-avatar {
+ position: relative;
+ width: 52px;
+ height: 52px;
  border-radius: 50%;
  flex-shrink: 0;
+ overflow: hidden;
+ border: 2px solid rgba(255,255,255,.08);
  }
- .room-dot-lobby { background: #4ade80; box-shadow: 0 0 6px rgba(74,222,128,.3); }
- .room-dot-conference { background: #ef4444; box-shadow: 0 0 6px rgba(239,68,68,.3); }
- .room-dot-breakroom { background: #fbbf24; box-shadow: 0 0 6px rgba(251,191,36,.3); }
- .room-dot-focus { background: #a78bfa; box-shadow: 0 0 6px rgba(167,139,250,.3); }
- .room-dot-lounge { background: #64748b; box-shadow: 0 0 6px rgba(100,116,139,.2); }
+ .team-card-avatar img {
+ width: 100%;
+ height: 100%;
+ object-fit: cover;
+ border-radius: 50%;
+ }
+ .team-card-avatar .tc-initials {
+ width: 100%;
+ height: 100%;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ background: #111;
+ color: rgba(255,255,255,.6);
+ font-size: 0.8125rem;
+ font-weight: 500;
+ letter-spacing: 1px;
+ }
 
- .room-name {
+ .team-card-status-dot {
+ position: absolute;
+ bottom: 1px;
+ right: 1px;
+ width: 12px;
+ height: 12px;
+ border-radius: 50%;
+ border: 2px solid #0c0c0c;
+ z-index: 2;
+ }
+ .team-card-status-dot.online { background: #4ade80; box-shadow: 0 0 6px rgba(74,222,128,.4); }
+ .team-card-status-dot.busy { background: #ef4444; box-shadow: 0 0 6px rgba(239,68,68,.4); }
+ .team-card-status-dot.away { background: #fbbf24; box-shadow: 0 0 6px rgba(251,191,36,.4); }
+ .team-card-status-dot.dnd { background: #a78bfa; box-shadow: 0 0 6px rgba(167,139,250,.4); }
+ .team-card-status-dot.offline { background: #374151; }
+
+ .team-card-info {
+ flex: 1;
+ min-width: 80px;
+ }
+ .team-card-name {
+ font-size: 0.9375rem;
+ font-weight: 600;
+ color: rgba(255,255,255,.9);
+ white-space: nowrap;
+ overflow: hidden;
+ text-overflow: ellipsis;
+ }
+ .team-card-role {
+ font-size: 0.6875rem;
+ color: rgba(255,255,255,.35);
+ margin-top: 2px;
+ }
+
+ .team-card-activity {
+ display: flex;
+ align-items: center;
+ gap: 6px;
+ margin-left: auto;
+ flex-shrink: 0;
+ padding: 4px 10px;
+ border-radius: 6px;
+ background: rgba(255,255,255,.03);
+ border: 1px solid rgba(255,255,255,.06);
  font-size: 0.625rem;
  font-weight: 500;
- color: rgba(255,255,255,.3);
+ color: rgba(255,255,255,.4);
  text-transform: uppercase;
- letter-spacing: 2px;
+ letter-spacing: .5px;
  }
- .room-count {
- font-size: 0.5625rem;
- color: rgba(255,255,255,.2);
- font-weight: 400;
+ .team-card-activity-icon {
+ font-size: 0.75rem;
+ line-height: 1;
+ }
+ .team-card-activity.on-call {
+ background: rgba(229,64,64,.06);
+ border-color: rgba(229,64,64,.2);
+ color: rgba(229,64,64,.8);
+ }
+ .team-card-activity.on-call .team-card-activity-icon::after {
+ content: '';
+ display: inline-block;
+ width: 5px; height: 5px;
+ border-radius: 50%;
+ background: #e54040;
+ margin-left: 4px;
+ animation: callPulse 2s ease-in-out infinite;
+ vertical-align: middle;
+ }
+ .team-card-activity.in-meeting {
+ background: rgba(167,139,250,.06);
+ border-color: rgba(167,139,250,.2);
+ color: rgba(167,139,250,.8);
+ }
+ .team-card-activity.idle-activity {
+ background: rgba(255,255,255,.02);
+ border-color: rgba(255,255,255,.04);
+ color: rgba(255,255,255,.25);
  }
 
- .room-avatars {
- display: flex;
- flex-wrap: wrap;
- gap: 18px;
- align-items: flex-start;
- flex: 1;
- align-content: flex-start;
- padding-top: 4px;
+ .team-card-channels {
+ display: none;
+ margin-top: 16px;
+ padding-top: 14px;
+ border-top: 1px solid rgba(255,255,255,.06);
  }
+ .team-card.expanded .team-card-channels { display: block; }
 
- .office-avatar {
+ .tc-channel-grid {
+ display: grid;
+ grid-template-columns: repeat(3, 1fr);
+ gap: 8px;
+ }
+ @media (max-width: 360px) { .tc-channel-grid { grid-template-columns: repeat(2, 1fr); } }
+
+ .tc-channel-btn {
  display: flex;
  flex-direction: column;
  align-items: center;
- gap: 8px;
+ gap: 6px;
+ padding: 12px 8px;
+ border-radius: 10px;
+ background: rgba(255,255,255,.02);
+ border: 1px solid rgba(255,255,255,.06);
+ color: rgba(255,255,255,.45);
+ font-size: 0.625rem;
+ font-weight: 500;
+ letter-spacing: .3px;
  cursor: pointer;
- transition: transform .2s ease;
+ transition: all .2s;
+ text-transform: uppercase;
  }
- .office-avatar:hover { transform: translateY(-2px); }
+ .tc-channel-btn:hover {
+ background: rgba(229,64,64,.04);
+ border-color: rgba(229,64,64,.2);
+ color: rgba(229,64,64,.8);
+ }
+ .tc-channel-btn .tc-ch-icon {
+ font-size: 1.125rem;
+ line-height: 1;
+ }
 
+ .team-card-status-text {
+ margin-top: 8px;
+ font-size: 0.6875rem;
+ color: rgba(255,255,255,.2);
+ font-style: italic;
+ }
+
+ /* keep old avatar ring classes for popover reuse */
  .office-avatar-ring {
  width: 48px;
  height: 48px;
@@ -439,15 +534,11 @@
  transition: box-shadow .3s;
  position: relative;
  }
- .office-avatar:hover .office-avatar-ring {
- box-shadow: 0 0 20px rgba(255,255,255,.06);
- }
 
  .office-avatar-ring.online {
  background: rgba(255,255,255,.1);
  box-shadow: 0 0 0 1px rgba(74,222,128,.3);
  }
- .office-avatar:hover .office-avatar-ring.online { box-shadow: 0 0 12px rgba(74,222,128,.2), 0 0 0 1px rgba(74,222,128,.4); }
  .office-avatar-ring.away {
  background: rgba(255,255,255,.08);
  box-shadow: 0 0 0 1px rgba(251,191,36,.25);
@@ -456,98 +547,11 @@
  background: rgba(255,255,255,.08);
  box-shadow: 0 0 0 1px rgba(239,68,68,.3);
  }
- .office-avatar:hover .office-avatar-ring.busy { box-shadow: 0 0 12px rgba(239,68,68,.15), 0 0 0 1px rgba(239,68,68,.4); }
- .office-avatar-ring.dnd {
- background: rgba(255,255,255,.06);
- box-shadow: 0 0 0 1px rgba(167,139,250,.25);
- }
- .office-avatar-ring.idle {
- background: rgba(255,255,255,.05);
- box-shadow: 0 0 0 1px rgba(100,116,139,.2);
+ .office-avatar-ring.busy {
+ background: rgba(255,255,255,.08);
+ box-shadow: 0 0 0 1px rgba(239,68,68,.3);
  }
  .office-avatar-ring.offline { background: rgba(255,255,255,.03); box-shadow: none; }
-
- .office-avatar-ring img {
- width: 100%; height: 100%;
- border-radius: 50%;
- object-fit: cover;
- display: block;
- border: 2px solid #0a0a0f;
- }
-
- .office-avatar-initials {
- width: 100%; height: 100%;
- border-radius: 50%;
- background: #111111;
- color: rgba(255,255,255,.7);
- font-size: 0.75rem; font-weight: 500;
- display: flex; align-items: center; justify-content: center;
- border: 2px solid #0a0a0f;
- letter-spacing: 1px;
- }
-
- .office-avatar-label {
- font-size: 0.625rem;
- font-weight: 400;
- color: rgba(255,255,255,.3);
- text-align: center;
- max-width: 64px;
- white-space: nowrap;
- overflow: hidden;
- text-overflow: ellipsis;
- letter-spacing: .3px;
- }
- .office-avatar:hover .office-avatar-label { color: rgba(255,255,255,.55); }
-
- .room-empty {
- font-size: 0.6875rem;
- color: rgba(255,255,255,.08);
- font-weight: 400;
- padding: 20px 0;
- }
-
- .room-join-btn {
- display: inline-flex; align-items: center;
- padding: 4px 10px; border-radius: 4px;
- border: 1px solid rgba(255,255,255,.07);
- background: transparent;
- color: rgba(255,255,255,.2);
- font-size: 0.5625rem; font-weight: 500;
- cursor: pointer; transition: all .2s;
- margin-left: auto;
- text-transform: uppercase;
- letter-spacing: 1px;
- }
- .room-join-btn:hover {
- border-color: rgba(229,64,64,.3);
- color: rgba(229,64,64,.7);
- background: rgba(229,64,64,.04);
- }
-
- .offline-row {
- margin-top: 12px;
- padding: 14px 20px;
- background: rgba(255,255,255,.01);
- border-radius: 12px;
- border: 1px solid rgba(255,255,255,.04);
- display: flex;
- align-items: center;
- flex-wrap: wrap;
- gap: 14px;
- }
-
- .offline-row-label {
- font-size: 0.5625rem;
- font-weight: 500;
- color: rgba(255,255,255,.12);
- text-transform: uppercase;
- letter-spacing: 2px;
- white-space: nowrap;
- margin-right: 4px;
- }
- .offline-row .office-avatar-ring { width: 32px; height: 32px; }
- .offline-row .office-avatar-initials { font-size: 0.5625rem; }
- .offline-row .office-avatar-label { font-size: 0.5rem; }
 
  /* ── Call Activity ── */
  .call-activity-panel {
@@ -3211,10 +3215,10 @@
  }
 
  const DEMO_USERS = [
- { id: 'demo-1', name: 'Chris B', email: 'chris@noahconnect.com', status: 'online', job_title: 'Sales', phone: '+14155550101', avatar_url: makeDemoAvatar(1, 0, 'CB') },
- { id: 'demo-2', name: 'Jon D', email: 'jon@noahconnect.com', status: 'online', job_title: 'Admin', phone: '+14155550102', avatar_url: makeDemoAvatar(2, 200, 'JD') },
- { id: 'demo-3', name: 'Mike B', email: 'mike@noahconnect.com', status: 'busy', job_title: 'Dispatch', phone: '+14155550103', avatar_url: makeDemoAvatar(3, 30, 'MB') },
- { id: 'demo-4', name: 'Matt B', email: 'matt@noahconnect.com', status: 'online', job_title: 'Sales', phone: '+14155550104', avatar_url: makeDemoAvatar(4, 160, 'MB') },
+ { id: 'demo-1', name: 'Chris B', email: 'chris@noahconnect.com', status: 'online', job_title: 'Sales', phone: '+14155550101', avatar_url: makeDemoAvatar(1, 0, 'CB'), activity: 'on-call', activity_label: 'On Call' },
+ { id: 'demo-2', name: 'Jon D', email: 'jon@noahconnect.com', status: 'online', job_title: 'Admin', phone: '+14155550102', avatar_url: makeDemoAvatar(2, 200, 'JD'), activity: 'idle-activity', activity_label: 'Available' },
+ { id: 'demo-3', name: 'Mike B', email: 'mike@noahconnect.com', status: 'busy', job_title: 'Dispatch', phone: '+14155550103', avatar_url: makeDemoAvatar(3, 30, 'MB'), activity: 'in-meeting', activity_label: 'In Meeting' },
+ { id: 'demo-4', name: 'Matt B', email: 'matt@noahconnect.com', status: 'online', job_title: 'Sales', phone: '+14155550104', avatar_url: makeDemoAvatar(4, 160, 'MB'), activity: 'idle-activity', activity_label: 'Drafting Email' },
  ];
 
  function applyDemoToggleUI() {
@@ -3776,63 +3780,102 @@
  return;
  }
 
- function officeAvatarHtml(u) {
+ const activityIcons = {
+ 'on-call': '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>',
+ 'in-meeting': '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>',
+ 'idle-activity': '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+ };
+
+ function teamCardHtml(u) {
  const status = u.status || 'offline';
  const initials = (u.name || 'U').split(' ').map(s => s[0]).join('').slice(0, 2).toUpperCase();
- const inner = u.avatar_url
+ const avatarInner = u.avatar_url
  ? `<img src="${escAttr(u.avatar_url)}" alt="${escAttr(u.name)}" />`
- : `<div class="office-avatar-initials">${escHtml(initials)}</div>`;
- const tooltipParts = [u.name];
+ : `<div class="tc-initials">${escHtml(initials)}</div>`;
  const roleLabel = u.job_title || u.role || u.department || '';
- if (roleLabel) tooltipParts.push(roleLabel);
- if (u.extension) tooltipParts.push(`Ext. ${u.extension}`);
+ const activity = u.activity || 'idle-activity';
+ const activityLabel = u.activity_label || 'Available';
+ const actIcon = activityIcons[activity] || activityIcons['idle-activity'];
+
  return `
- <div class="office-avatar js-avatar-click" data-user-id="${escAttr(u.id)}" data-status="${escAttr(status)}" data-msg="${escAttr(u.status_message || '')}" data-name="${escAttr(u.name || '')}" data-phone="${escAttr(u.phone || '')}" data-email="${escAttr(u.email || '')}" data-avatar="${escAttr(u.avatar_url || '')}" data-role="${escAttr(roleLabel)}" title="${escAttr(tooltipParts.join(' – '))}" style="cursor:pointer;">
- <div class="office-avatar-ring ${status}">${inner}</div>
- <div class="office-avatar-label">${escHtml((u.name || '').split(' ')[0])}</div>
+ <div class="team-card js-team-card" data-user-id="${escAttr(u.id)}" data-name="${escAttr(u.name || '')}" data-phone="${escAttr(u.phone || '')}" data-email="${escAttr(u.email || '')}" data-avatar="${escAttr(u.avatar_url || '')}" data-role="${escAttr(roleLabel)}" data-status="${escAttr(status)}">
+ <div class="team-card-top">
+ <div class="team-card-avatar">
+ ${avatarInner}
+ <span class="team-card-status-dot ${status}"></span>
+ </div>
+ <div class="team-card-info">
+ <div class="team-card-name">${escHtml(u.name || 'Unknown')}</div>
+ <div class="team-card-role">${escHtml(roleLabel || 'Team Member')}</div>
+ </div>
+ <div class="team-card-activity ${activity}">
+ <span class="team-card-activity-icon">${actIcon}</span>
+ ${escHtml(activityLabel)}
+ </div>
+ </div>
+ <div class="team-card-channels">
+ <div class="tc-channel-grid">
+ <button class="tc-channel-btn js-tc-action" data-action="call" data-phone="${escAttr(u.phone || '')}">
+ <span class="tc-ch-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></span>
+ Call
+ </button>
+ <button class="tc-channel-btn js-tc-action" data-action="sms" data-phone="${escAttr(u.phone || '')}" data-name="${escAttr(u.name || '')}">
+ <span class="tc-ch-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></span>
+ SMS
+ </button>
+ <button class="tc-channel-btn js-tc-action" data-action="email" data-email="${escAttr(u.email || '')}">
+ <span class="tc-ch-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22,7 12,13 2,7"/></svg></span>
+ Email
+ </button>
+ <button class="tc-channel-btn js-tc-action" data-action="slack" data-name="${escAttr(u.name || '')}">
+ <span class="tc-ch-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2a2.5 2.5 0 000 5H17V4.5A2.5 2.5 0 0014.5 2z"/><path d="M2 14.5a2.5 2.5 0 015 0V17H4.5A2.5 2.5 0 012 14.5z"/><path d="M22 9.5a2.5 2.5 0 01-5 0V7h2.5A2.5 2.5 0 0122 9.5z"/><path d="M9.5 22a2.5 2.5 0 010-5H12v2.5A2.5 2.5 0 019.5 22z"/></svg></span>
+ Slack
+ </button>
+ <button class="tc-channel-btn js-tc-action" data-action="video" data-name="${escAttr(u.name || '')}">
+ <span class="tc-ch-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></span>
+ Video
+ </button>
+ <button class="tc-channel-btn js-tc-action" data-action="status" data-user-id="${escAttr(u.id)}" data-status="${escAttr(status)}">
+ <span class="tc-ch-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></span>
+ Status
+ </button>
+ </div>
+ </div>
  </div>`;
  }
 
- const rooms = OFFICE_ROOMS;
+ el.innerHTML = `<div class="team-cards-grid">${users.map(teamCardHtml).join('')}</div>`;
 
- const offlineUsers = users.filter(u => (u.status || 'offline') === 'offline');
-
- const floorHtml = rooms.map(room => {
- const roomUsers = users.filter(u => room.statuses.includes(u.status || 'offline'));
- const count = roomUsers.length;
- return `
- <div class="office-room room-${room.slug}">
- <div class="room-header">
- <span class="room-status-dot room-dot-${room.slug}"></span>
- <span class="room-name">${room.name}</span>
- ${count ? `<span class="room-count">${count}</span>` : ''}
- <button class="room-join-btn js-room-join" data-room="${escAttr(room.slug)}" data-label="${escAttr(room.name)}">Join</button>
- </div>
- <div class="room-avatars">
- ${count ? roomUsers.map(officeAvatarHtml).join('') : '<span class="room-empty">&mdash;</span>'}
- </div>
- </div>`;
- }).join('');
-
- const offlineHtml = offlineUsers.length ? `
- <div class="offline-row">
- <span class="offline-row-label">Offline</span>
- ${offlineUsers.map(officeAvatarHtml).join('')}
- </div>` : '';
-
- el.innerHTML = `<div class="office-floor">${floorHtml}</div>${offlineHtml}`;
-
- el.querySelectorAll('.js-avatar-click').forEach(avatar => {
- avatar.addEventListener('click', (e) => {
- e.stopPropagation();
- showAvatarPopover(avatar, avatar.dataset);
+ el.querySelectorAll('.js-team-card').forEach(card => {
+ card.addEventListener('click', (e) => {
+ if (e.target.closest('.js-tc-action')) return;
+ card.classList.toggle('expanded');
  });
  });
 
- el.querySelectorAll('.js-room-join').forEach(btn => {
+ el.querySelectorAll('.js-tc-action').forEach(btn => {
  btn.addEventListener('click', (e) => {
  e.stopPropagation();
- toast('RingCentral Video not yet configured for office rooms.', 'info');
+ const action = btn.dataset.action;
+ if (action === 'call' && btn.dataset.phone) {
+ window.open(`tel:${btn.dataset.phone}`);
+ } else if (action === 'sms') {
+ navigate('messages');
+ } else if (action === 'email' && btn.dataset.email) {
+ openModal('gmailComposeModal');
+ setTimeout(() => {
+ document.getElementById('gmailTo').value = btn.dataset.email;
+ document.getElementById('gmailSubject').value = '';
+ document.getElementById('gmailBody').value = '';
+ document.getElementById('gmailSubject').focus();
+ }, 100);
+ } else if (action === 'slack') {
+ navigate('slack');
+ } else if (action === 'video') {
+ toast('Starting video huddle with ' + (btn.dataset.name || 'team member') + '...', 'info');
+ } else if (action === 'status') {
+ openUserStatus(btn.dataset.userId, btn.dataset.status, '');
+ }
  });
  });
  }
