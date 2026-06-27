@@ -297,40 +297,54 @@
     ============================================================ */
     .team-grid { display: block; }
 
-    /* Dark workspace wrapper for Team/Office view */
+    /* ============================================================
+       Dark Workspace Theme — Team/Office View
+       Inspired by Ro.am / Gather / Linear dark aesthetics
+    ============================================================ */
     #view-users { color: rgba(255,255,255,.85); }
-    #view-users h2 { color: rgba(255,255,255,.9); }
+    #view-users h2 { color: rgba(255,255,255,.9); font-size: 0.8125rem; font-weight: 600; letter-spacing: .3px; }
     #view-users .btn-secondary {
-      background: rgba(255,255,255,.06);
-      color: rgba(255,255,255,.7);
-      border-color: rgba(255,255,255,.1);
+      background: rgba(255,255,255,.04);
+      color: rgba(255,255,255,.55);
+      border: 1px solid rgba(255,255,255,.08);
+      font-size: 0.75rem;
+      backdrop-filter: blur(8px);
     }
-    #view-users .btn-secondary:hover { background: rgba(255,255,255,.1); }
+    #view-users .btn-secondary:hover { background: rgba(255,255,255,.08); color: rgba(255,255,255,.8); border-color: rgba(255,255,255,.14); }
     #view-users .btn-primary {
-      background: #6366f1;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border: none;
+      font-size: 0.75rem;
+      box-shadow: 0 2px 12px rgba(99,102,241,.25);
     }
-    #view-users .empty-state { color: rgba(255,255,255,.4); }
+    #view-users .btn-primary:hover { box-shadow: 0 4px 20px rgba(99,102,241,.35); }
+    #view-users .empty-state { color: rgba(255,255,255,.3); }
 
+    /* ── Office Floor Plan ── */
     .office-floor {
       position: relative;
       display: grid;
-      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-columns: 1.8fr 1fr 1fr;
       grid-template-rows: 1fr 1fr;
-      gap: 2px;
+      gap: 1px;
       padding: 0;
-      background: #0f0f17;
-      border-radius: 16px;
+      background: rgba(255,255,255,.03);
+      border-radius: 20px;
       overflow: hidden;
-      min-height: 520px;
-      box-shadow: 0 0 60px rgba(99,102,241,.08), inset 0 0 80px rgba(0,0,0,.3);
+      min-height: 540px;
+      border: 1px solid rgba(255,255,255,.05);
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,.03),
+        0 4px 40px rgba(0,0,0,.4),
+        0 0 80px rgba(99,102,241,.04);
     }
     .office-floor::before {
       content: '';
       position: absolute;
       inset: 0;
       background:
-        repeating-linear-gradient(0deg, transparent, transparent 31px, rgba(255,255,255,.02) 31px, rgba(255,255,255,.02) 32px),
-        repeating-linear-gradient(90deg, transparent, transparent 31px, rgba(255,255,255,.02) 31px, rgba(255,255,255,.02) 32px);
+        radial-gradient(ellipse 80% 60% at 20% 40%, rgba(99,102,241,.03), transparent),
+        radial-gradient(ellipse 50% 50% at 80% 70%, rgba(168,85,247,.02), transparent);
       pointer-events: none;
       z-index: 0;
     }
@@ -338,303 +352,323 @@
     .office-room {
       position: relative;
       z-index: 1;
-      background: rgba(255,255,255,.03);
-      border: 1px solid rgba(255,255,255,.06);
-      padding: 20px 18px 24px;
-      min-height: 200px;
-      transition: background .25s, border-color .25s, box-shadow .25s;
+      background: rgba(255,255,255,.015);
+      border: 1px solid rgba(255,255,255,.04);
+      padding: 22px 20px 28px;
+      min-height: 220px;
+      display: flex;
+      flex-direction: column;
+      transition: background .3s ease, border-color .3s ease, box-shadow .3s ease;
     }
     .office-room:hover {
-      background: rgba(255,255,255,.06);
-      border-color: rgba(99,102,241,.3);
-      box-shadow: inset 0 0 40px rgba(99,102,241,.04);
+      background: rgba(255,255,255,.035);
+      border-color: rgba(255,255,255,.08);
     }
-    .office-room.room-lobby     { grid-column: 1; grid-row: 1 / 3; border-radius: 14px 0 0 14px; }
-    .office-room.room-conference { grid-column: 2; grid-row: 1; }
-    .office-room.room-breakroom  { grid-column: 3; grid-row: 1; border-radius: 0 14px 0 0; }
-    .office-room.room-focus      { grid-column: 2; grid-row: 2; }
-    .office-room.room-lounge     { grid-column: 3; grid-row: 2; border-radius: 0 0 14px 0; }
 
-    .office-room.room-lobby { background: rgba(99,102,241,.04); }
-    .office-room.room-conference { background: rgba(239,68,68,.03); }
-    .office-room.room-breakroom { background: rgba(245,158,11,.03); }
-    .office-room.room-focus { background: rgba(168,85,247,.03); }
-    .office-room.room-lounge { background: rgba(99,102,241,.03); }
+    .office-room.room-lobby {
+      grid-column: 1; grid-row: 1 / 3;
+      border-radius: 19px 0 0 19px;
+      background: linear-gradient(160deg, rgba(99,102,241,.04) 0%, rgba(99,102,241,.01) 100%);
+    }
+    .office-room.room-lobby:hover { background: linear-gradient(160deg, rgba(99,102,241,.07) 0%, rgba(99,102,241,.02) 100%); }
+    .office-room.room-conference { grid-column: 2; grid-row: 1; background: linear-gradient(160deg, rgba(239,68,68,.025) 0%, transparent 100%); }
+    .office-room.room-conference:hover { background: linear-gradient(160deg, rgba(239,68,68,.05) 0%, transparent 100%); }
+    .office-room.room-breakroom  { grid-column: 3; grid-row: 1; border-radius: 0 19px 0 0; background: linear-gradient(160deg, rgba(245,158,11,.025) 0%, transparent 100%); }
+    .office-room.room-breakroom:hover { background: linear-gradient(160deg, rgba(245,158,11,.05) 0%, transparent 100%); }
+    .office-room.room-focus      { grid-column: 2; grid-row: 2; background: linear-gradient(160deg, rgba(168,85,247,.025) 0%, transparent 100%); }
+    .office-room.room-focus:hover { background: linear-gradient(160deg, rgba(168,85,247,.05) 0%, transparent 100%); }
+    .office-room.room-lounge     { grid-column: 3; grid-row: 2; border-radius: 0 0 19px 0; background: linear-gradient(160deg, rgba(99,102,241,.025) 0%, transparent 100%); }
+    .office-room.room-lounge:hover { background: linear-gradient(160deg, rgba(99,102,241,.05) 0%, transparent 100%); }
 
     .room-header {
       display: flex;
       align-items: center;
-      gap: 8px;
-      margin-bottom: 16px;
+      gap: 10px;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(255,255,255,.04);
     }
 
-    .room-icon { font-size: 1rem; line-height: 1; opacity: .7; }
+    .room-icon { font-size: 0.875rem; line-height: 1; filter: grayscale(.3); }
     .room-name {
       font-size: 0.6875rem;
-      font-weight: 700;
-      color: rgba(255,255,255,.4);
+      font-weight: 600;
+      color: rgba(255,255,255,.35);
       text-transform: uppercase;
-      letter-spacing: 1.5px;
+      letter-spacing: 1.8px;
     }
     .room-count {
-      margin-left: auto;
-      font-size: 0.625rem;
-      color: rgba(255,255,255,.3);
+      font-size: 0.5625rem;
+      color: rgba(255,255,255,.25);
       font-weight: 500;
-      background: rgba(255,255,255,.06);
-      padding: 2px 8px;
-      border-radius: 8px;
+      background: rgba(255,255,255,.04);
+      padding: 3px 8px;
+      border-radius: 6px;
+      letter-spacing: .3px;
     }
 
     .room-avatars {
       display: flex;
       flex-wrap: wrap;
-      gap: 18px;
+      gap: 20px;
       align-items: flex-start;
+      flex: 1;
+      align-content: flex-start;
     }
 
     .office-avatar {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
       cursor: pointer;
-      transition: transform .2s;
+      transition: transform .25s cubic-bezier(.34,1.56,.64,1);
     }
-    .office-avatar:hover { transform: translateY(-4px) scale(1.04); }
+    .office-avatar:hover { transform: translateY(-3px); }
 
     .office-avatar-ring {
-      width: 48px;
-      height: 48px;
+      width: 52px;
+      height: 52px;
       border-radius: 50%;
-      padding: 2.5px;
-      background: rgba(255,255,255,.12);
-      box-shadow: 0 0 12px rgba(0,0,0,.3);
-      transition: transform .2s, box-shadow .2s;
+      padding: 3px;
+      background: rgba(255,255,255,.08);
+      transition: transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .3s;
       position: relative;
     }
     .office-avatar:hover .office-avatar-ring {
-      transform: scale(1.15);
-      box-shadow: 0 0 20px rgba(99,102,241,.3);
+      transform: scale(1.08);
     }
 
     .office-avatar-ring.online {
-      background: linear-gradient(135deg, #22c55e, #16a34a);
-      box-shadow: 0 0 14px rgba(34,197,94,.35);
+      background: conic-gradient(from 0deg, #22c55e, #4ade80, #22c55e);
+      box-shadow: 0 0 16px rgba(34,197,94,.25), 0 0 4px rgba(34,197,94,.15);
     }
     .office-avatar-ring.away {
-      background: linear-gradient(135deg, #f59e0b, #d97706);
-      box-shadow: 0 0 14px rgba(245,158,11,.3);
+      background: conic-gradient(from 0deg, #f59e0b, #fbbf24, #f59e0b);
+      box-shadow: 0 0 16px rgba(245,158,11,.2), 0 0 4px rgba(245,158,11,.12);
     }
     .office-avatar-ring.busy {
-      background: linear-gradient(135deg, #ef4444, #dc2626);
-      box-shadow: 0 0 14px rgba(239,68,68,.35);
+      background: conic-gradient(from 0deg, #ef4444, #f87171, #ef4444);
+      box-shadow: 0 0 16px rgba(239,68,68,.25), 0 0 4px rgba(239,68,68,.15);
     }
     .office-avatar-ring.dnd {
-      background: linear-gradient(135deg, #a855f7, #7c3aed);
-      box-shadow: 0 0 14px rgba(168,85,247,.35);
+      background: conic-gradient(from 0deg, #a855f7, #c084fc, #a855f7);
+      box-shadow: 0 0 16px rgba(168,85,247,.25), 0 0 4px rgba(168,85,247,.15);
     }
     .office-avatar-ring.idle {
-      background: linear-gradient(135deg, #6366f1, #4f46e5);
-      box-shadow: 0 0 14px rgba(99,102,241,.3);
+      background: conic-gradient(from 0deg, #6366f1, #818cf8, #6366f1);
+      box-shadow: 0 0 16px rgba(99,102,241,.2), 0 0 4px rgba(99,102,241,.12);
     }
-    .office-avatar-ring.offline { background: rgba(255,255,255,.1); box-shadow: none; }
+    .office-avatar-ring.offline { background: rgba(255,255,255,.06); box-shadow: none; }
 
     .office-avatar-ring img {
-      width: 43px; height: 43px;
+      width: 100%; height: 100%;
       border-radius: 50%;
       object-fit: cover;
       display: block;
-      border: 2px solid #1a1a2e;
+      border: 2.5px solid #12121e;
     }
 
     .office-avatar-initials {
-      width: 43px; height: 43px;
+      width: 100%; height: 100%;
       border-radius: 50%;
-      background: #1e1e36;
-      color: rgba(255,255,255,.9);
-      font-size: 0.875rem; font-weight: 700;
+      background: linear-gradient(145deg, #1c1c34, #16162a);
+      color: rgba(255,255,255,.85);
+      font-size: 0.8125rem; font-weight: 600;
       display: flex; align-items: center; justify-content: center;
-      border: 2px solid #1a1a2e;
+      border: 2.5px solid #12121e;
+      letter-spacing: .5px;
     }
 
     .office-avatar-label {
-      font-size: 0.625rem;
-      font-weight: 600;
-      color: rgba(255,255,255,.55);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      color: rgba(255,255,255,.45);
       text-align: center;
-      max-width: 64px;
+      max-width: 68px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      letter-spacing: .2px;
     }
+    .office-avatar:hover .office-avatar-label { color: rgba(255,255,255,.7); }
 
     .room-empty {
       font-size: 0.75rem;
-      color: rgba(255,255,255,.15);
-      font-style: italic;
-      padding: 24px 0;
+      color: rgba(255,255,255,.1);
+      font-style: normal;
+      font-weight: 400;
+      padding: 32px 0;
+      letter-spacing: .3px;
     }
 
     .room-join-btn {
       display: inline-flex; align-items: center; gap: 4px;
-      padding: 4px 10px; border-radius: 8px;
-      border: 1px solid rgba(99,102,241,.2);
-      background: rgba(99,102,241,.1);
-      color: rgba(165,170,255,.8);
+      padding: 5px 12px; border-radius: 8px;
+      border: 1px solid rgba(99,102,241,.15);
+      background: rgba(99,102,241,.08);
+      color: rgba(165,170,255,.7);
       font-size: 0.625rem; font-weight: 600;
-      cursor: pointer; transition: all .2s;
+      cursor: pointer; transition: all .25s;
       margin-left: auto;
       text-transform: uppercase;
-      letter-spacing: .5px;
+      letter-spacing: .8px;
+      backdrop-filter: blur(4px);
     }
     .room-join-btn:hover {
-      background: rgba(99,102,241,.25);
-      border-color: rgba(99,102,241,.4);
-      color: #fff;
-      box-shadow: 0 0 12px rgba(99,102,241,.2);
+      background: rgba(99,102,241,.2);
+      border-color: rgba(99,102,241,.35);
+      color: #c7d2fe;
+      box-shadow: 0 0 16px rgba(99,102,241,.15);
+      transform: translateY(-1px);
     }
 
     .offline-row {
-      margin-top: 2px;
-      padding: 14px 20px;
-      background: rgba(255,255,255,.02);
-      border-radius: 0 0 16px 16px;
+      margin-top: 8px;
+      padding: 16px 22px;
+      background: rgba(255,255,255,.015);
+      border-radius: 14px;
       border: 1px solid rgba(255,255,255,.04);
       display: flex;
       align-items: center;
       flex-wrap: wrap;
-      gap: 14px;
+      gap: 16px;
     }
 
     .offline-row-label {
       font-size: 0.625rem;
-      font-weight: 700;
-      color: rgba(255,255,255,.2);
+      font-weight: 600;
+      color: rgba(255,255,255,.18);
       text-transform: uppercase;
-      letter-spacing: 1.2px;
+      letter-spacing: 1.5px;
       white-space: nowrap;
-      margin-right: 4px;
+      margin-right: 6px;
     }
+    .offline-row .office-avatar-ring { width: 36px; height: 36px; }
+    .offline-row .office-avatar-label { font-size: 0.5625rem; }
 
-    /* ============================================================
-       Call Activity & Screen Share Panels — Dark Theme
-    ============================================================ */
+    /* ── Call Activity Panel ── */
     .call-activity-panel {
-      margin-top: 16px;
-      background: #12121e;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,.06);
+      margin-top: 20px;
+      background: rgba(255,255,255,.02);
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.05);
       overflow: hidden;
+      backdrop-filter: blur(8px);
     }
     .call-activity-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 14px 18px;
-      border-bottom: 1px solid rgba(255,255,255,.06);
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(255,255,255,.04);
     }
-    .call-activity-header h3 { font-size: 0.875rem; font-weight: 700; margin: 0; color: rgba(255,255,255,.8); }
+    .call-activity-header h3 { font-size: 0.8125rem; font-weight: 600; margin: 0; color: rgba(255,255,255,.7); letter-spacing: .2px; }
     .call-activity-badge {
-      font-size: 0.6875rem;
-      font-weight: 700;
-      padding: 3px 10px;
+      font-size: 0.625rem;
+      font-weight: 600;
+      padding: 4px 10px;
       border-radius: 10px;
-      background: rgba(239,68,68,.2);
+      background: rgba(239,68,68,.12);
       color: #f87171;
-      letter-spacing: .5px;
+      letter-spacing: .3px;
     }
-    .call-activity-badge.idle { background: rgba(255,255,255,.06); color: rgba(255,255,255,.3); }
+    .call-activity-badge.idle { background: rgba(255,255,255,.04); color: rgba(255,255,255,.25); }
     .call-activity-list { max-height: 260px; overflow-y: auto; }
     .call-activity-item {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 10px 18px;
-      border-bottom: 1px solid rgba(255,255,255,.04);
+      padding: 12px 20px;
+      border-bottom: 1px solid rgba(255,255,255,.03);
       font-size: 0.8125rem;
-      color: rgba(255,255,255,.7);
-      transition: background .15s;
+      color: rgba(255,255,255,.6);
+      transition: background .2s;
     }
-    .call-activity-item:hover { background: rgba(255,255,255,.03); }
-    .call-activity-item .agent-name { font-weight: 600; min-width: 100px; color: rgba(255,255,255,.9); }
+    .call-activity-item:hover { background: rgba(255,255,255,.02); }
+    .call-activity-item .agent-name { font-weight: 600; min-width: 100px; color: rgba(255,255,255,.85); }
     .call-activity-item .call-direction {
-      font-size: 0.625rem;
-      padding: 2px 8px;
+      font-size: 0.5625rem;
+      padding: 3px 8px;
       border-radius: 6px;
-      font-weight: 700;
+      font-weight: 600;
       text-transform: uppercase;
       letter-spacing: .5px;
     }
-    .call-direction.inbound { background: rgba(34,197,94,.15); color: #4ade80; }
-    .call-direction.outbound { background: rgba(99,102,241,.15); color: #a5b4fc; }
-    .call-activity-item .call-target { color: rgba(255,255,255,.4); flex: 1; }
+    .call-direction.inbound { background: rgba(34,197,94,.1); color: #4ade80; }
+    .call-direction.outbound { background: rgba(99,102,241,.1); color: #a5b4fc; }
+    .call-activity-item .call-target { color: rgba(255,255,255,.35); flex: 1; }
     .call-activity-item .call-pulse {
       width: 8px; height: 8px;
       border-radius: 50%;
       background: #ef4444;
-      box-shadow: 0 0 8px rgba(239,68,68,.5);
-      animation: callPulse 1.2s ease-in-out infinite;
+      box-shadow: 0 0 8px rgba(239,68,68,.4);
+      animation: callPulse 1.5s ease-in-out infinite;
     }
     @keyframes callPulse {
       0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: .4; transform: scale(1.5); }
+      50% { opacity: .3; transform: scale(1.6); }
     }
 
-    .call-log-toggle { padding: 10px 18px; border-top: 1px solid rgba(255,255,255,.06); }
+    .call-log-toggle { padding: 12px 20px; border-top: 1px solid rgba(255,255,255,.04); }
     .call-log-list {
       max-height: 300px;
       overflow-y: auto;
-      border-top: 1px solid rgba(255,255,255,.06);
+      border-top: 1px solid rgba(255,255,255,.04);
     }
     .call-log-item {
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 8px 18px;
+      padding: 10px 20px;
       font-size: 0.8125rem;
-      color: rgba(255,255,255,.6);
-      border-bottom: 1px solid rgba(255,255,255,.03);
+      color: rgba(255,255,255,.5);
+      border-bottom: 1px solid rgba(255,255,255,.025);
+      transition: background .2s;
     }
+    .call-log-item:hover { background: rgba(255,255,255,.02); }
     .call-log-item .call-result {
-      font-size: 0.625rem;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-weight: 700;
+      font-size: 0.5625rem;
+      padding: 3px 7px;
+      border-radius: 5px;
+      font-weight: 600;
       letter-spacing: .3px;
+      text-transform: uppercase;
     }
-    .call-result.accepted { background: rgba(34,197,94,.15); color: #4ade80; }
-    .call-result.missed { background: rgba(239,68,68,.15); color: #f87171; }
-    .call-result.voicemail { background: rgba(245,158,11,.12); color: #fbbf24; }
-    .call-log-item .call-duration { color: rgba(255,255,255,.3); font-size: 0.75rem; }
+    .call-result.accepted { background: rgba(34,197,94,.1); color: #4ade80; }
+    .call-result.missed { background: rgba(239,68,68,.1); color: #f87171; }
+    .call-result.voicemail { background: rgba(245,158,11,.08); color: #fbbf24; }
+    .call-log-item .call-duration { color: rgba(255,255,255,.25); font-size: 0.75rem; }
 
+    /* ── Screen Share Panel ── */
     .screen-share-panel {
-      margin-top: 16px;
-      background: #12121e;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,.06);
+      margin-top: 20px;
+      background: rgba(255,255,255,.02);
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.05);
       overflow: hidden;
+      backdrop-filter: blur(8px);
     }
     .screen-share-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 14px 18px;
-      border-bottom: 1px solid rgba(255,255,255,.06);
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(255,255,255,.04);
     }
-    .screen-share-header h3 { font-size: 0.875rem; font-weight: 700; margin: 0; color: rgba(255,255,255,.8); }
+    .screen-share-header h3 { font-size: 0.8125rem; font-weight: 600; margin: 0; color: rgba(255,255,255,.7); }
     .screen-share-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
       gap: 12px;
-      padding: 14px;
+      padding: 16px;
     }
     .screen-share-tile {
       position: relative;
-      border-radius: 10px;
+      border-radius: 12px;
       overflow: hidden;
-      border: 1px solid rgba(255,255,255,.08);
-      background: #090912;
+      border: 1px solid rgba(255,255,255,.06);
+      background: rgba(0,0,0,.3);
       aspect-ratio: 16/9;
     }
     .screen-share-tile video {
@@ -643,71 +677,74 @@
     }
     .screen-share-tile .share-label {
       position: absolute;
-      bottom: 8px;
-      left: 8px;
-      background: rgba(0,0,0,.75);
-      color: rgba(255,255,255,.8);
+      bottom: 10px;
+      left: 10px;
+      background: rgba(0,0,0,.65);
+      color: rgba(255,255,255,.75);
       font-size: 0.6875rem;
-      padding: 3px 10px;
-      border-radius: 6px;
-      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 8px;
+      font-weight: 500;
+      backdrop-filter: blur(8px);
+      letter-spacing: .2px;
     }
     .screen-share-tile .share-live-dot {
       position: absolute;
-      top: 10px;
-      right: 10px;
-      width: 10px; height: 10px;
+      top: 12px;
+      right: 12px;
+      width: 8px; height: 8px;
       border-radius: 50%;
       background: #ef4444;
-      box-shadow: 0 0 8px rgba(239,68,68,.5);
-      animation: callPulse 1.2s ease-in-out infinite;
+      box-shadow: 0 0 8px rgba(239,68,68,.4);
+      animation: callPulse 1.5s ease-in-out infinite;
     }
 
-    /* On-call indicator on office avatars */
-    .office-avatar-ring.on-call::after {
-      content: '📞';
-      position: absolute;
-      bottom: -2px;
-      right: -2px;
-      font-size: 0.625rem;
-      background: #1a1a2e;
-      border-radius: 50%;
-      width: 18px; height: 18px;
-      display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 0 6px rgba(239,68,68,.4);
-      border: 1px solid rgba(239,68,68,.3);
-    }
+    /* ── On-call indicator ── */
     .office-avatar-ring { position: relative; }
-
-    /* AI Call Intelligence Modal */
-    .ai-insight-card {
-      background: linear-gradient(135deg, rgba(99,102,241,.06) 0%, rgba(168,85,247,.06) 100%);
-      border-radius: 12px;
-      padding: 18px;
-      margin-bottom: 12px;
-      border: 1px solid rgba(99,102,241,.12);
+    .office-avatar-ring.on-call::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      right: -1px;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: #ef4444;
+      border: 2px solid #12121e;
+      box-shadow: 0 0 8px rgba(239,68,68,.4);
+      animation: callPulse 1.5s ease-in-out infinite;
     }
-    .ai-insight-card h4 { font-size: 0.8125rem; font-weight: 700; margin: 0 0 8px; }
+
+    /* ── AI Call Intelligence ── */
+    .ai-insight-card {
+      background: rgba(255,255,255,.02);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 14px;
+      border: 1px solid rgba(255,255,255,.05);
+    }
+    .ai-insight-card h4 { font-size: 0.8125rem; font-weight: 600; margin: 0 0 10px; color: rgba(255,255,255,.7); letter-spacing: .2px; }
     .ai-insight-card .sentiment-badge {
       display: inline-block;
-      font-size: 0.6875rem;
-      font-weight: 700;
-      padding: 3px 10px;
+      font-size: 0.625rem;
+      font-weight: 600;
+      padding: 4px 12px;
       border-radius: 8px;
       text-transform: uppercase;
+      letter-spacing: .5px;
     }
-    .sentiment-badge.positive { background: rgba(34,197,94,.15); color: #4ade80; }
-    .sentiment-badge.neutral { background: rgba(255,255,255,.08); color: rgba(255,255,255,.5); }
-    .sentiment-badge.negative { background: rgba(239,68,68,.15); color: #f87171; }
+    .sentiment-badge.positive { background: rgba(34,197,94,.1); color: #4ade80; }
+    .sentiment-badge.neutral { background: rgba(255,255,255,.05); color: rgba(255,255,255,.4); }
+    .sentiment-badge.negative { background: rgba(239,68,68,.1); color: #f87171; }
     .coaching-tip {
       display: flex;
       align-items: flex-start;
       gap: 8px;
       font-size: 0.8125rem;
       padding: 6px 0;
-      color: rgba(255,255,255,.6);
+      color: rgba(255,255,255,.5);
+      line-height: 1.5;
     }
-    .coaching-tip::before { content: '💡'; flex-shrink: 0; }
+    .coaching-tip::before { content: ''; width: 4px; height: 4px; border-radius: 50%; background: rgba(99,102,241,.5); flex-shrink: 0; margin-top: 7px; }
 
     /* ============================================================
        Avatar Contact Popover
@@ -3899,11 +3936,11 @@
           <div class="room-header">
             <span class="room-icon">${room.icon}</span>
             <span class="room-name">${room.name}</span>
-            ${count ? `<span class="room-count">${count} ${count === 1 ? 'person' : 'people'}</span>` : ''}
-            <button class="room-join-btn js-room-join" data-room="${escAttr(room.slug)}" data-label="${escAttr(room.name)}">📹 Join</button>
+            ${count ? `<span class="room-count">${count}</span>` : ''}
+            <button class="room-join-btn js-room-join" data-room="${escAttr(room.slug)}" data-label="${escAttr(room.name)}">Join</button>
           </div>
           <div class="room-avatars">
-            ${count ? roomUsers.map(officeAvatarHtml).join('') : '<span class="room-empty">Empty</span>'}
+            ${count ? roomUsers.map(officeAvatarHtml).join('') : '<span class="room-empty">No one here</span>'}
           </div>
         </div>`;
     }).join('');
