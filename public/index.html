@@ -309,7 +309,8 @@
  /* ============================================================
  Dark Workspace — Black / Red / White — Glassmorphism
  ============================================================ */
- #view-users { color: rgba(255,255,255,.8); }
+ #view-users { color: rgba(255,255,255,.8); display: none; flex-direction: column; min-height: 100%; }
+ #view-users.active { display: flex; }
  #view-users h2 { color: rgba(255,255,255,.6); font-size: 0.6875rem; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; }
  #view-users .btn-secondary {
  background: transparent;
@@ -800,6 +801,45 @@
  line-height: 1.5;
  }
  .coaching-tip::before { content: ''; width: 3px; height: 3px; border-radius: 50%; background: rgba(229,64,64,.35); flex-shrink: 0; margin-top: 7px; }
+
+ /* ── Noah Chat Composer ── */
+ .noah-chat-composer {
+ position: sticky;
+ bottom: 0;
+ background: rgba(10,10,10,.92);
+ backdrop-filter: blur(24px);
+ border-top: 1px solid rgba(255,255,255,.06);
+ padding: 12px 16px;
+ display: flex;
+ align-items: center;
+ gap: 10px;
+ margin-top: auto;
+ }
+ .noah-chat-input {
+ flex: 1;
+ background: rgba(255,255,255,.04);
+ border: 1px solid rgba(255,255,255,.08);
+ border-radius: 10px;
+ padding: 10px 14px;
+ color: rgba(255,255,255,.85);
+ font-size: 0.8125rem;
+ outline: none;
+ transition: border-color .15s;
+ }
+ .noah-chat-input::placeholder { color: rgba(255,255,255,.2); }
+ .noah-chat-input:focus { border-color: rgba(229,64,64,.35); }
+ .noah-chat-send {
+ width: 36px; height: 36px;
+ border-radius: 10px;
+ background: rgba(229,64,64,.12);
+ border: 1px solid rgba(229,64,64,.2);
+ color: #e54040;
+ display: flex; align-items: center; justify-content: center;
+ cursor: pointer;
+ transition: all .15s;
+ flex-shrink: 0;
+ }
+ .noah-chat-send:hover { background: rgba(229,64,64,.2); border-color: rgba(229,64,64,.35); }
 
  /* ── RingCentral AI Panel ── */
  .rc-ai-panel {
@@ -1989,10 +2029,6 @@
  <svg class="nav-icon-svg" viewBox="0 0 20 20" fill="currentColor"><path d="M7 8a3 3 0 100-6 3 3 0 000 6zm7 0a3 3 0 100-6 3 3 0 000 6zm-7 2c-3.31 0-6 1.79-6 4v1h12v-1c0-2.21-2.69-4-6-4zm7 0c-.34 0-.67.03-1 .08C14.3 11.2 15 12.5 15 14v1h5v-1c0-2.21-2.69-4-6-4z"/></svg>
  <span>Team</span>
  </button>
- <button class="nav-item" data-view="clients">
- <svg class="nav-icon-svg" viewBox="0 0 20 20" fill="currentColor"><path d="M9 2a1 1 0 00-1 1v1H4a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1V5a1 1 0 00-1-1h-4V3a1 1 0 00-1-1H9zm0 2h2v1H9V4zM6 8h8v1H6V8zm0 3h8v1H6v-1zm0 3h5v1H6v-1z"/></svg>
- <span>Clients</span>
- </button>
  <button class="nav-item" data-view="gmail">
  <svg class="nav-icon-svg" viewBox="0 0 20 20" fill="currentColor"><path d="M2 4a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V4zm2 0l6 4 6-4H4zm0 2v10h12V6l-6 4-6-4z"/></svg>
  <span>Gmail</span>
@@ -2240,6 +2276,14 @@
  </div>
  </div>
 
+ <!-- Noah Chat Composer -->
+ <div class="noah-chat-composer">
+ <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="1.5"><path d="M2 5a2 2 0 012-2h12a2 2 0 012 2v7a2 2 0 01-2 2H6l-4 3V5z"/></svg>
+ <input class="noah-chat-input" id="noahChatInput" type="text" placeholder="Message the team or type / for commands..." autocomplete="off" />
+ <button class="noah-chat-send" id="noahChatSend" title="Send">
+ <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 10l7-7m0 0l7 7m-7-7v14"/></svg>
+ </button>
+ </div>
  </div>
 
  <!-- ========== RC AI VIEW ========== -->
@@ -2315,34 +2359,6 @@
  </div>
  </div>
  </div>
- </div>
- </div>
-
- <!-- ========== CLIENTS VIEW ========== -->
- <div class="view" id="view-clients">
- <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
- <div class="search-bar" style="width:280px;">
- <span class="search-icon"></span>
- <input class="form-control" id="clientSearchInput" type="text" placeholder="Search clients…" />
- </div>
- <button class="btn btn-primary btn-sm" id="addClientBtn">+ Add Client</button>
- </div>
- <div class="card">
- <table class="clients-table">
- <thead>
- <tr>
- <th>Name</th>
- <th>Company</th>
- <th>Phone</th>
- <th>Email</th>
- <th>Last Contacted</th>
- <th>Actions</th>
- </tr>
- </thead>
- <tbody id="clientTableBody">
- <tr><td colspan="6" style="text-align:center; padding:32px; color:#9ca3af;">Loading clients…</td></tr>
- </tbody>
- </table>
  </div>
  </div>
 
@@ -3337,7 +3353,7 @@
  document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.dataset.view === view));
  document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === `view-${view}`));
 
- const titles = { messages: 'Messages', conversations: 'Conversations', users: 'Team', clients: 'Clients', gmail: 'Gmail', slack: 'Slack', rcai: 'RingCentral AI', integrations: 'Integrations', meetings: 'Meetings', templates: 'Templates', brand: 'Brand Settings', activity: 'Activity Log' };
+ const titles = { messages: 'Messages', conversations: 'Conversations', users: 'Team', gmail: 'Gmail', slack: 'Slack', rcai: 'RingCentral AI', integrations: 'Integrations', meetings: 'Meetings', templates: 'Templates', brand: 'Brand Settings', activity: 'Activity Log' };
  document.getElementById('headerTitle').textContent = titles[view] || view;
 
  loadView(view);
@@ -3349,7 +3365,6 @@
  if (view === 'messages') { loadMessages(); loadStats(); loadClientOptions(); loadPhoneNumbers(); }
  else if (view === 'conversations') loadConversations();
  else if (view === 'users') loadTeam();
- else if (view === 'clients') loadClients();
  else if (view === 'gmail') loadGmail();
     else if (view === 'slack') loadSlack();
  else if (view === 'integrations') loadIntegrations();
@@ -3803,6 +3818,27 @@
  document.getElementById('startScreenShareBtn').style.display = '';
  document.getElementById('stopScreenShareBtn').style.display = 'none';
  }
+
+ // Noah Chat composer
+ function sendNoahChat() {
+ const input = document.getElementById('noahChatInput');
+ const msg = input?.value.trim();
+ if (!msg) return;
+ input.value = '';
+ if (msg.startsWith('/')) {
+ toast(`Command: ${msg}`, 'info');
+ } else {
+ apiFetch('/api/internal-messages', {
+ method: 'POST',
+ body: JSON.stringify({ content: msg }),
+ }).then(() => toast('Message sent to team', 'success'))
+ .catch(() => toast('Failed to send message', 'error'));
+ }
+ }
+ document.getElementById('noahChatSend')?.addEventListener('click', sendNoahChat);
+ document.getElementById('noahChatInput')?.addEventListener('keydown', (e) => {
+ if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendNoahChat(); }
+ });
 
  // RingCentral presence sync button + auto-poll
  document.getElementById('syncRcPresenceBtn')?.addEventListener('click', async () => {
