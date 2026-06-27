@@ -206,11 +206,11 @@
  Cards & Panels
  ============================================================ */
  .card {
- background: rgba(255,255,255,.03);
+ background: rgba(255,255,255,.10);
  border-radius: var(--border-radius);
- box-shadow: none;
- border: 1px solid rgba(255,255,255,.06);
- backdrop-filter: blur(12px);
+ box-shadow: 0 8px 32px rgba(0,0,0,.25);
+ border: 1px solid rgba(255,255,255,.15);
+ backdrop-filter: blur(16px);
  }
 
  .card-header {
@@ -345,18 +345,19 @@
  grid-template-columns: 1.6fr 1fr 1fr;
  grid-template-rows: auto auto;
  gap: 0;
- background: rgba(255,255,255,.015);
+ background: rgba(255,255,255,.08);
  border-radius: 20px;
  overflow: hidden;
- border: 1px solid rgba(255,255,255,.06);
+ border: 1px solid rgba(255,255,255,.12);
  position: relative;
- box-shadow: 0 8px 32px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.03);
+ box-shadow: 0 12px 40px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.05);
+ backdrop-filter: blur(16px);
  }
 
  .office-room {
- background: rgba(255,255,255,.008);
- border-right: 1px solid rgba(255,255,255,.035);
- border-bottom: 1px solid rgba(255,255,255,.035);
+ background: rgba(255,255,255,.04);
+ border-right: 1px solid rgba(255,255,255,.08);
+ border-bottom: 1px solid rgba(255,255,255,.08);
  padding: 20px;
  min-height: 200px;
  display: flex;
@@ -448,13 +449,14 @@
 
  /* ── Person Cards (inside rooms) ── */
  .team-card {
- background: rgba(255,255,255,.025);
- border: 1px solid rgba(255,255,255,.06);
+ background: rgba(255,255,255,.09);
+ border: 1px solid rgba(255,255,255,.14);
  border-radius: 12px;
  padding: 14px 16px;
  transition: all .2s ease;
  position: relative;
  overflow: hidden;
+ box-shadow: 0 4px 16px rgba(0,0,0,.2);
  }
  .team-card::before {
  content: '';
@@ -631,11 +633,12 @@
  /* ── Call Activity ── */
  .call-activity-panel {
  margin-top: 20px;
- background: rgba(255,255,255,.015);
+ background: rgba(255,255,255,.09);
  border-radius: 12px;
- border: 1px solid rgba(255,255,255,.05);
+ border: 1px solid rgba(255,255,255,.12);
  overflow: hidden;
- backdrop-filter: blur(16px);
+ backdrop-filter: blur(20px);
+ box-shadow: 0 8px 24px rgba(0,0,0,.2);
  }
  .call-activity-header {
  display: flex;
@@ -724,11 +727,12 @@
  /* ── Screen Share ── */
  .screen-share-panel {
  margin-top: 20px;
- background: rgba(255,255,255,.015);
+ background: rgba(255,255,255,.09);
  border-radius: 12px;
- border: 1px solid rgba(255,255,255,.05);
+ border: 1px solid rgba(255,255,255,.12);
  overflow: hidden;
- backdrop-filter: blur(16px);
+ backdrop-filter: blur(20px);
+ box-shadow: 0 8px 24px rgba(0,0,0,.2);
  }
  .screen-share-header {
  display: flex;
@@ -796,11 +800,13 @@
 
  /* ── AI Insight ── */
  .ai-insight-card {
- background: rgba(255,255,255,.015);
+ background: rgba(255,255,255,.08);
  border-radius: 10px;
  padding: 18px;
  margin-bottom: 12px;
- border: 1px solid rgba(255,255,255,.04);
+ border: 1px solid rgba(255,255,255,.12);
+ box-shadow: 0 4px 12px rgba(0,0,0,.15);
+ backdrop-filter: blur(12px);
  }
  .ai-insight-card h4 { font-size: 0.75rem; font-weight: 500; margin: 0 0 10px; color: rgba(255,255,255,.5); letter-spacing: .3px; }
  .ai-insight-card .sentiment-badge {
@@ -869,11 +875,12 @@
  /* ── RingCentral AI Panel ── */
  .rc-ai-panel {
  margin-top: 24px;
- background: rgba(255,255,255,.015);
- border: 1px solid rgba(255,255,255,.06);
+ background: rgba(255,255,255,.09);
+ border: 1px solid rgba(255,255,255,.12);
  border-radius: 16px;
  padding: 20px;
  backdrop-filter: blur(20px);
+ box-shadow: 0 8px 24px rgba(0,0,0,.2);
  }
  .rc-ai-status-dot {
  width: 8px; height: 8px; border-radius: 50%;
@@ -888,16 +895,18 @@
  }
  @media (max-width: 1100px) { .rc-ai-grid { grid-template-columns: repeat(2, 1fr); } }
  .rc-ai-card {
- background: rgba(255,255,255,.02);
- border: 1px solid rgba(255,255,255,.05);
+ background: rgba(255,255,255,.07);
+ border: 1px solid rgba(255,255,255,.10);
  border-radius: 12px;
  padding: 16px;
  display: flex;
  flex-direction: column;
  gap: 12px;
  transition: background .2s, border-color .2s;
+ box-shadow: 0 4px 12px rgba(0,0,0,.15);
+ backdrop-filter: blur(12px);
  }
- .rc-ai-card:hover { background: rgba(255,255,255,.035); border-color: rgba(255,255,255,.08); }
+ .rc-ai-card:hover { background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.15); }
  .rc-ai-card-header { display: flex; align-items: flex-start; gap: 10px; }
  .rc-ai-card-icon {
  width: 28px; height: 28px;
@@ -1110,12 +1119,12 @@
  Stat Cards
  ============================================================ */
  .stat-card {
- background: rgba(255,255,255,.03);
- border: 1px solid rgba(255,255,255,.06);
+ background: rgba(255,255,255,.10);
+ border: 1px solid rgba(255,255,255,.15);
  border-radius: var(--border-radius);
  padding: 20px;
- box-shadow: none;
- backdrop-filter: blur(12px);
+ box-shadow: 0 8px 32px rgba(0,0,0,.25);
+ backdrop-filter: blur(16px);
  }
 
  .stat-label { font-size: 0.8125rem; color: rgba(255,255,255,.4); margin-bottom: 4px; }
@@ -1337,12 +1346,13 @@
  .gmail-item-date { font-size: 0.75rem; color: rgba(255,255,255,.25); flex-shrink: 0; }
 
  .gmail-thread {
- background: rgba(255,255,255,.02);
- border: 1px solid rgba(255,255,255,.06);
+ background: rgba(255,255,255,.08);
+ border: 1px solid rgba(255,255,255,.12);
  border-radius: var(--border-radius);
  padding: 20px;
  min-height: 300px;
- backdrop-filter: blur(12px);
+ backdrop-filter: blur(16px);
+ box-shadow: 0 4px 12px rgba(0,0,0,.15);
  }
 
  .gmail-thread-subject { font-size: 1rem; font-weight: 600; margin-bottom: 8px; color: rgba(255,255,255,.85); }
@@ -1366,17 +1376,18 @@
  grid-template-columns: 200px 1fr 1.4fr;
  gap: 0;
  align-items: start;
- border: 1px solid rgba(255,255,255,.06);
+ border: 1px solid rgba(255,255,255,.12);
  border-radius: 12px;
  overflow: hidden;
  min-height: 620px;
- background: rgba(255,255,255,.015);
- backdrop-filter: blur(16px);
+ background: rgba(255,255,255,.08);
+ backdrop-filter: blur(20px);
+ box-shadow: 0 12px 40px rgba(0,0,0,.25);
  }
 
  .gmail-sidebar {
- background: rgba(255,255,255,.02);
- border-right: 1px solid rgba(255,255,255,.05);
+ background: rgba(255,255,255,.06);
+ border-right: 1px solid rgba(255,255,255,.10);
  height: 100%;
  overflow-y: auto;
  }
@@ -1516,16 +1527,17 @@
       grid-template-columns: 220px 1fr;
       gap: 0;
       height: calc(100vh - var(--header-height) - 48px);
-      border: 1px solid rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
       border-radius: 12px;
       overflow: hidden;
-      background: rgba(255,255,255,.015);
-      backdrop-filter: blur(16px);
+      background: rgba(255,255,255,.08);
+      backdrop-filter: blur(20px);
+      box-shadow: 0 12px 40px rgba(0,0,0,.25);
     }
 
     .slack-channels {
-      background: rgba(255,255,255,.02);
-      border-right: 1px solid rgba(255,255,255,.05);
+      background: rgba(255,255,255,.06);
+      border-right: 1px solid rgba(255,255,255,.10);
       overflow-y: auto;
     }
 
@@ -1604,12 +1616,12 @@
  }
 
  .integration-card {
- background: rgba(255,255,255,.025);
- border: 1px solid rgba(255,255,255,.06);
+ background: rgba(255,255,255,.09);
+ border: 1px solid rgba(255,255,255,.14);
  border-radius: 12px;
  padding: 20px;
- box-shadow: none;
- backdrop-filter: blur(12px);
+ box-shadow: 0 8px 24px rgba(0,0,0,.2);
+ backdrop-filter: blur(16px);
  transition: background .2s, border-color .2s;
  position: relative;
  overflow: hidden;
@@ -1665,19 +1677,19 @@
  width: 44px;
  height: 44px;
  border-radius: 50%;
- border: 1px solid rgba(255,255,255,.1);
+ border: 1px solid rgba(255,255,255,.15);
  cursor: pointer;
  font-size: 1.2rem;
  display: flex;
  align-items: center;
  justify-content: center;
- box-shadow: 0 4px 12px rgba(0,0,0,.3);
+ box-shadow: 0 8px 20px rgba(0,0,0,.4);
  transition: transform .15s, box-shadow .15s;
  position: relative;
  flex-shrink: 0;
- background: rgba(255,255,255,.04);
- backdrop-filter: blur(12px);
- color: rgba(255,255,255,.6);
+ background: rgba(255,255,255,.12);
+ backdrop-filter: blur(16px);
+ color: rgba(255,255,255,.7);
  }
 
  .fab:hover { transform: scale(1.06); box-shadow: 0 6px 16px rgba(0,0,0,.4); border-color: rgba(255,255,255,.2); color: rgba(255,255,255,.9); }
@@ -1741,9 +1753,10 @@
  right: 24px;
  width: 340px;
  height: 460px;
- background: rgba(255,255,255,.03);
+ background: rgba(255,255,255,.11);
+ border: 1px solid rgba(255,255,255,.12);
  border-radius: 12px;
- box-shadow: 0 8px 30px rgba(0,0,0,.18);
+ box-shadow: 0 12px 40px rgba(0,0,0,.3);
  display: flex;
  flex-direction: column;
  overflow: hidden;
@@ -1752,6 +1765,7 @@
  opacity: 0;
  transform: translateY(12px) scale(.97);
  pointer-events: none;
+ backdrop-filter: blur(16px);
  }
 
  .chat-panel.open {
@@ -1943,12 +1957,12 @@
  }
 
  .meeting-room-card {
- background: rgba(255,255,255,.025);
- border: 1px solid rgba(255,255,255,.06);
+ background: rgba(255,255,255,.09);
+ border: 1px solid rgba(255,255,255,.14);
  border-radius: 12px;
  padding: 20px;
- box-shadow: none;
- backdrop-filter: blur(12px);
+ box-shadow: 0 8px 24px rgba(0,0,0,.2);
+ backdrop-filter: blur(16px);
  transition: background .2s, border-color .2s;
  position: relative;
  overflow: hidden;
