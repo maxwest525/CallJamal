@@ -56,6 +56,15 @@ const CONFIG_GROUPS = [
     ],
   },
   {
+    key: 'clicksend',
+    title: 'ClickSend',
+    vars: [
+      { name: 'CLICKSEND_USERNAME', label: 'API Username', type: 'text' },
+      { name: 'CLICKSEND_API_KEY', label: 'API Key', type: 'password' },
+      { name: 'CLICKSEND_SENDER_ID', label: 'Sender ID / Number', type: 'text' },
+    ],
+  },
+  {
     key: 'supabase',
     title: 'Supabase',
     vars: [

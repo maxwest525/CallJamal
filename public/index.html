@@ -1309,6 +1309,89 @@
  }
 
 
+
+    /* ============================================================
+       Slack View
+       ============================================================ */
+    .slack-layout {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 16px;
+      height: calc(100vh - var(--header-height) - 48px);
+    }
+
+    .slack-channels {
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--color-gray-200);
+      border-radius: var(--border-radius);
+      overflow-y: auto;
+    }
+
+    .slack-channel-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      color: var(--color-gray-600);
+      border-bottom: 1px solid var(--color-gray-100);
+      transition: background .1s;
+    }
+
+    .slack-channel-item:hover { background: var(--color-gray-50); }
+    .slack-channel-item.active { background: var(--color-primary-light); color: var(--color-primary-dark); font-weight: 600; }
+
+    .slack-messages-pane {
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--color-gray-200);
+      border-radius: var(--border-radius);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .slack-msg-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .slack-msg {
+      display: flex;
+      gap: 10px;
+      font-size: 0.875rem;
+    }
+
+    .slack-msg-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      background: rgba(229,64,64,.12);
+      color: #e54040;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .slack-msg-content { flex: 1; min-width: 0; }
+    .slack-msg-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 2px; }
+    .slack-msg-user { font-weight: 600; font-size: 0.8125rem; }
+    .slack-msg-time { font-size: 0.75rem; color: var(--color-gray-400); }
+    .slack-msg-body { line-height: 1.5; }
+
+    .slack-compose {
+      padding: 12px 16px;
+      border-top: 1px solid var(--color-gray-200);
+      display: flex;
+      gap: 8px;
+    }
  /* ============================================================
  Integrations View
  ============================================================ */
@@ -1791,6 +1874,10 @@
  <svg class="nav-icon-svg" viewBox="0 0 20 20" fill="currentColor"><path d="M2 4a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V4zm2 0l6 4 6-4H4zm0 2v10h12V6l-6 4-6-4z"/></svg>
  <span>Gmail</span>
  </button>
+     <button class="nav-item" data-view="slack">
+     <svg class="nav-icon-svg" viewBox="0 0 20 20" fill="currentColor"><path d="M6 2a2 2 0 00-2 2v2H2a2 2 0 000 4h2v2a2 2 0 004 0v-2h2v2a2 2 0 004 0v-2h2a2 2 0 000-4h-2V4a2 2 0 00-4 0v2H8V4a2 2 0 00-2-2zm2 6h4v4H8V8z"/></svg>
+     <span>Slack</span>
+     </button>
  <button class="nav-item" data-view="integrations">
  <svg class="nav-icon-svg" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1.07A7.002 7.002 0 003.07 10H2a1 1 0 100 2h1.07A7.002 7.002 0 009 17.93V19a1 1 0 102 0v-1.07A7.002 7.002 0 0016.93 12H18a1 1 0 100-2h-1.07A7.002 7.002 0 0011 4.07V3zm-1 3a4 4 0 100 8 4 4 0 000-8z"/></svg>
  <span>Integrations</span>
@@ -2115,6 +2202,40 @@
  </div>
  </div>
 
+
+ <!-- ========== SLACK VIEW ========== -->
+ <div class="view" id="view-slack">
+ <div id="slackNotConfigured" style="display:none;">
+ <div class="gmail-connect-banner">
+ <div style="flex:1;">
+ <strong>Configure Slack</strong>
+ <div style="font-size:0.8125rem;color:var(--color-gray-600);margin-top:2px;">Set <code>SLACK_BOT_TOKEN</code> in your .env file to connect your Slack workspace.</div>
+ </div>
+ </div>
+ </div>
+
+ <div class="slack-layout" id="slackLayout">
+ <div class="slack-channels">
+ <div style="padding:12px 14px;font-size:0.8125rem;font-weight:600;color:var(--color-gray-500);border-bottom:1px solid var(--color-gray-100);">CHANNELS</div>
+ <div id="slackChannelList">
+ <div style="padding:16px;font-size:0.8125rem;color:var(--color-gray-400);">Loading…</div>
+ </div>
+ </div>
+
+ <div class="slack-messages-pane">
+ <div class="card-header" style="flex-shrink:0;">
+ <h3 id="slackChannelHeader">Select a channel</h3>
+ </div>
+ <div class="slack-msg-list" id="slackMsgList">
+ <div class="empty-state"><div class="icon"></div><p>Select a channel to view messages</p></div>
+ </div>
+ <div class="slack-compose">
+ <input class="form-control" id="slackComposeInput" placeholder="Message…" maxlength="1000" />
+ <button class="btn btn-primary btn-sm" id="slackSendBtn">Send</button>
+ </div>
+ </div>
+ </div>
+ </div>
 
  <!-- ========== INTEGRATIONS VIEW ========== -->
  <div class="view" id="view-integrations">
@@ -2954,7 +3075,7 @@
  document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.dataset.view === view));
  document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === `view-${view}`));
 
- const titles = { messages: 'Messages', conversations: 'Conversations', users: 'Team', clients: 'Clients', gmail: 'Gmail', integrations: 'Integrations', meetings: 'Meetings', templates: 'Templates', brand: 'Brand Settings', activity: 'Activity Log' };
+ const titles = { messages: 'Messages', conversations: 'Conversations', users: 'Team', clients: 'Clients', gmail: 'Gmail', slack: 'Slack', integrations: 'Integrations', meetings: 'Meetings', templates: 'Templates', brand: 'Brand Settings', activity: 'Activity Log' };
  document.getElementById('headerTitle').textContent = titles[view] || view;
 
  loadView(view);
@@ -2968,6 +3089,7 @@
  else if (view === 'users') loadTeam();
  else if (view === 'clients') loadClients();
  else if (view === 'gmail') loadGmail();
+    else if (view === 'slack') loadSlack();
  else if (view === 'integrations') loadIntegrations();
  else if (view === 'meetings') loadMeetingsView();
  else if (view === 'templates') loadTemplates();
@@ -4206,11 +4328,125 @@
  });
  document.getElementById('searchAvailableBtn').addEventListener('click', loadAvailableNumbers);
 
+
+    // ============================================================
+    // Slack
+    // ============================================================
+    let slackChannels = [];
+    let selectedSlackChannel = null;
+
+    async function loadSlack() {
+      try {
+        const status = await apiFetch('/api/slack/status');
+        const notConfigured = document.getElementById('slackNotConfigured');
+        const layout = document.getElementById('slackLayout');
+        if (!status.connected) {
+          notConfigured.style.display = 'block';
+          layout.style.display = 'none';
+          return;
+        }
+        notConfigured.style.display = 'none';
+        layout.style.display = '';
+        loadSlackChannels();
+      } catch (err) {
+        console.error('Slack status error:', err.message);
+      }
+    }
+
+    async function loadSlackChannels() {
+      try {
+        const data = await apiFetch('/api/slack/channels');
+        slackChannels = data.channels || [];
+        renderSlackChannels();
+      } catch (err) {
+        document.getElementById('slackChannelList').innerHTML = `<div style="padding:12px;font-size:.8125rem;color:var(--color-danger);">${escHtml(err.message)}</div>`;
+      }
+    }
+
+    function renderSlackChannels() {
+      const list = document.getElementById('slackChannelList');
+      if (!slackChannels.length) {
+        list.innerHTML = `<div style="padding:16px;font-size:0.8125rem;color:var(--color-gray-400);">No channels found</div>`;
+        return;
+      }
+      list.innerHTML = slackChannels.map(c =>
+        `<div class="slack-channel-item${selectedSlackChannel === c.id ? ' active' : ''}" data-id="${escAttr(c.id)}" data-name="${escAttr(c.name)}"># ${escHtml(c.name)}</div>`
+      ).join('');
+
+      list.querySelectorAll('.slack-channel-item').forEach(item => {
+        item.addEventListener('click', () => selectSlackChannel(item.dataset.id, item.dataset.name));
+      });
+    }
+
+    async function selectSlackChannel(channelId, channelName) {
+      selectedSlackChannel = channelId;
+      renderSlackChannels();
+      document.getElementById('slackChannelHeader').textContent = `# ${channelName}`;
+      await loadSlackMessages(channelId);
+    }
+
+    async function loadSlackMessages(channelId) {
+      const msgList = document.getElementById('slackMsgList');
+      msgList.innerHTML = `<div class="empty-state"><div class="icon"></div><p>Loading…</p></div>`;
+      try {
+        const data = await apiFetch(`/api/slack/channels/${encodeURIComponent(channelId)}/history?limit=50`);
+        renderSlackMessages(data.messages || []);
+      } catch (err) {
+        msgList.innerHTML = `<div class="empty-state"><div class="icon"></div><p>${escHtml(err.message)}</p></div>`;
+      }
+    }
+
+    function renderSlackMessages(messages) {
+      const msgList = document.getElementById('slackMsgList');
+      if (!messages.length) {
+        msgList.innerHTML = `<div class="empty-state"><div class="icon"></div><p>No messages in this channel</p></div>`;
+        return;
+      }
+      const sorted = [...messages].reverse();
+      msgList.innerHTML = sorted.map(m => {
+        const user = m.user || m.username || 'Unknown';
+        const initials = user.slice(0, 2).toUpperCase();
+        const time = m.ts ? new Date(parseFloat(m.ts) * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+        return `
+          <div class="slack-msg">
+            <div class="slack-msg-avatar">${escHtml(initials)}</div>
+            <div class="slack-msg-content">
+              <div class="slack-msg-meta">
+                <span class="slack-msg-user">${escHtml(user)}</span>
+                <span class="slack-msg-time">${escHtml(time)}</span>
+              </div>
+              <div class="slack-msg-body">${escHtml(m.text || '')}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      msgList.scrollTop = msgList.scrollHeight;
+    }
+
+    async function sendSlackMessage() {
+      if (!selectedSlackChannel) { toast('Select a channel first.', 'warning'); return; }
+      const text = document.getElementById('slackComposeInput').value.trim();
+      if (!text) return;
+
+      const btn = document.getElementById('slackSendBtn');
+      btn.disabled = true;
+      try {
+        await apiFetch('/api/slack/send', { method: 'POST', body: JSON.stringify({ channel: selectedSlackChannel, text }) });
+        document.getElementById('slackComposeInput').value = '';
+        toast('Message sent to Slack!', 'success');
+        await loadSlackMessages(selectedSlackChannel);
+      } catch (err) {
+        toast(`Error: ${err.message}`, 'error');
+      } finally {
+        btn.disabled = false;
+      }
+    }
  // ============================================================
  // Integrations / Webhooks
  // ============================================================
  let rcIsConfigured = false;
  let aiIsConfigured = false;
+    let clicksendIsConfigured = false;
 
  // Integration key → vault group key mapping
  const INTEGRATION_GROUP_KEYS = {
@@ -4219,17 +4455,21 @@
  'Zapier': 'zapier',
  'AI Assistant': 'ai',
  'Supabase': 'supabase',
+      'ClickSend': 'clicksend',
  };
 
  async function loadIntegrations() {
  try {
- const [webhookData, rcStatus, aiStatus] = await Promise.all([
+ const [webhookData, rcStatus, aiStatus, configData] = await Promise.all([
  apiFetch('/api/webhooks/status'),
  apiFetch('/api/ringcentral/status').catch(() => ({ configured: false })),
  apiFetch('/api/ai/status').catch(() => ({ configured: false })),
+    apiFetch('/api/integrations-config').catch(() => ({ groups: [] })),
  ]);
  rcIsConfigured = rcStatus.configured;
  aiIsConfigured = aiStatus.configured;
+    const csGroup = (configData.groups || []).find(g => g.key === 'clicksend');
+    clicksendIsConfigured = csGroup ? csGroup.vars.some(v => v.hasValue) : false;
  renderIntegrationCards(webhookData);
  document.getElementById('inboundWebhookUrl').textContent = webhookData.inboundUrl || '';
  } catch (err) {
@@ -4271,6 +4511,13 @@
  url: data.zapier?.url,
  groupKey: 'zapier',
  },
+      {
+        icon: '',
+        title: 'ClickSend',
+        desc: 'Mass SMS campaigns and bulk texting (admin only).',
+        connected: clicksendIsConfigured,
+        groupKey: 'clicksend',
+      },
  {
  icon: '',
  title: 'Supabase',
@@ -4926,6 +5173,8 @@
  loadGmailFolder(gmailCurrentFolder || 'INBOX');
  });
  document.getElementById('gmailRefreshBtn').addEventListener('click', () => loadGmailFolder(gmailCurrentFolder));
+    document.getElementById('slackSendBtn').addEventListener('click', sendSlackMessage);
+    document.getElementById('slackComposeInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') sendSlackMessage(); });
 
  // Sidebar folder navigation
  document.querySelectorAll('.gmail-sidebar-btn[data-label]').forEach(btn => {
@@ -5747,6 +5996,7 @@
  pop.addEventListener('click', (e) => e.stopPropagation());
 
  let actionsHtml = '';
+    actionsHtml += `<button data-action="slack"><span class="pop-icon"></span>Message on Slack</button>`;
  if (email) {
  actionsHtml += `<button data-action="email"><span class="pop-icon"></span>Send Email</button>`;
  }
@@ -5781,6 +6031,7 @@
  btn.addEventListener('click', () => {
  const action = btn.dataset.action;
  closeAvatarPopover();
+      if (action === 'slack') { navigate('slack'); } else
  if (action === 'email' && email) {
  openModal('gmailComposeModal');
  setTimeout(() => {
