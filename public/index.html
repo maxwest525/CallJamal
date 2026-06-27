@@ -44,6 +44,11 @@
  overflow: hidden;
  }
 
+ ::-webkit-scrollbar { width: 6px; height: 6px; }
+ ::-webkit-scrollbar-track { background: transparent; }
+ ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.08); border-radius: 3px; }
+ ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,.15); }
+
  /* ============================================================
  Sidebar
  ============================================================ */
@@ -268,11 +273,13 @@
 
  .message-item {
  padding: 12px 16px;
- border-bottom: 1px solid var(--color-gray-100);
+ border-bottom: 1px solid rgba(255,255,255,.04);
  font-size: 0.875rem;
+ transition: background .15s;
  }
 
  .message-item:last-child { border-bottom: none; }
+ .message-item:hover { background: rgba(255,255,255,.02); }
 
  .message-item .meta {
  display: flex;
@@ -281,9 +288,9 @@
  margin-bottom: 4px;
  }
 
- .message-item .sender { font-weight: 600; font-size: 0.8125rem; }
- .message-item .timestamp { font-size: 0.75rem; color: var(--color-gray-400); }
- .message-item .body { color: var(--color-gray-600); }
+ .message-item .sender { font-weight: 600; font-size: 0.8125rem; color: rgba(255,255,255,.8); }
+ .message-item .timestamp { font-size: 0.75rem; color: rgba(255,255,255,.2); }
+ .message-item .body { color: rgba(255,255,255,.45); }
 
  .badge {
  display: inline-flex;
@@ -337,74 +344,90 @@
  display: grid;
  grid-template-columns: 1.6fr 1fr 1fr;
  grid-template-rows: auto auto;
- gap: 1px;
- background: rgba(255,255,255,.02);
- border-radius: 16px;
+ gap: 0;
+ background: rgba(255,255,255,.015);
+ border-radius: 20px;
  overflow: hidden;
  border: 1px solid rgba(255,255,255,.06);
  position: relative;
+ box-shadow: 0 8px 32px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.03);
  }
 
  .office-room {
- background: rgba(255,255,255,.01);
- border-right: 1px solid rgba(255,255,255,.04);
- border-bottom: 1px solid rgba(255,255,255,.04);
- padding: 18px;
- min-height: 180px;
+ background: rgba(255,255,255,.008);
+ border-right: 1px solid rgba(255,255,255,.035);
+ border-bottom: 1px solid rgba(255,255,255,.035);
+ padding: 20px;
+ min-height: 200px;
  display: flex;
  flex-direction: column;
  transition: background .3s;
- backdrop-filter: blur(20px);
+ position: relative;
  }
- .office-room:hover { background: rgba(255,255,255,.02); }
+ .office-room:hover { background: rgba(255,255,255,.018); }
+ .office-room::before {
+ content: '';
+ position: absolute; inset: 0;
+ background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.02) 0%, transparent 70%);
+ pointer-events: none;
+ }
 
- .office-room.room-lobby { grid-column: 1; grid-row: 1 / 3; border-radius: 15px 0 0 15px; border-bottom: none; }
+ .office-room.room-lobby { grid-column: 1; grid-row: 1 / 3; border-radius: 19px 0 0 19px; border-bottom: none; }
+ .office-room.room-lobby::before { background: radial-gradient(ellipse at 30% 20%, rgba(74,222,128,.03) 0%, transparent 60%); }
  .office-room.room-conference { grid-column: 2; grid-row: 1; }
- .office-room.room-breakroom { grid-column: 3; grid-row: 1; border-radius: 0 15px 0 0; border-right: none; }
+ .office-room.room-conference::before { background: radial-gradient(ellipse at 50% 30%, rgba(239,68,68,.025) 0%, transparent 60%); }
+ .office-room.room-breakroom { grid-column: 3; grid-row: 1; border-radius: 0 19px 0 0; border-right: none; }
+ .office-room.room-breakroom::before { background: radial-gradient(ellipse at 50% 30%, rgba(251,191,36,.02) 0%, transparent 60%); }
  .office-room.room-focus { grid-column: 2; grid-row: 2; border-bottom: none; }
- .office-room.room-lounge { grid-column: 3; grid-row: 2; border-radius: 0 0 15px 0; border-right: none; border-bottom: none; }
+ .office-room.room-focus::before { background: radial-gradient(ellipse at 50% 30%, rgba(167,139,250,.02) 0%, transparent 60%); }
+ .office-room.room-lounge { grid-column: 3; grid-row: 2; border-radius: 0 0 19px 0; border-right: none; border-bottom: none; }
 
  .room-header {
  display: flex;
  align-items: center;
  gap: 8px;
- margin-bottom: 14px;
+ margin-bottom: 16px;
+ position: relative;
+ z-index: 1;
  }
  .room-status-dot {
- width: 6px; height: 6px;
+ width: 7px; height: 7px;
  border-radius: 50%;
  flex-shrink: 0;
  }
- .room-dot-lobby { background: #4ade80; box-shadow: 0 0 6px rgba(74,222,128,.3); }
- .room-dot-conference { background: #ef4444; box-shadow: 0 0 6px rgba(239,68,68,.3); }
- .room-dot-breakroom { background: #fbbf24; box-shadow: 0 0 6px rgba(251,191,36,.3); }
- .room-dot-focus { background: #a78bfa; box-shadow: 0 0 6px rgba(167,139,250,.3); }
- .room-dot-lounge { background: #64748b; box-shadow: 0 0 6px rgba(100,116,139,.2); }
+ .room-dot-lobby { background: #4ade80; box-shadow: 0 0 8px rgba(74,222,128,.4); }
+ .room-dot-conference { background: #ef4444; box-shadow: 0 0 8px rgba(239,68,68,.4); }
+ .room-dot-breakroom { background: #fbbf24; box-shadow: 0 0 8px rgba(251,191,36,.4); }
+ .room-dot-focus { background: #a78bfa; box-shadow: 0 0 8px rgba(167,139,250,.4); }
+ .room-dot-lounge { background: #64748b; box-shadow: 0 0 6px rgba(100,116,139,.25); }
  .room-name {
- font-size: 0.625rem;
- font-weight: 500;
- color: rgba(255,255,255,.3);
+ font-size: 0.6875rem;
+ font-weight: 600;
+ color: rgba(255,255,255,.35);
  text-transform: uppercase;
- letter-spacing: 2px;
+ letter-spacing: 1.5px;
  }
  .room-count {
  font-size: 0.5625rem;
- color: rgba(255,255,255,.15);
+ color: rgba(255,255,255,.18);
+ background: rgba(255,255,255,.04);
+ padding: 1px 6px;
+ border-radius: 8px;
  }
  .room-join-btn {
- padding: 3px 8px; border-radius: 4px;
+ padding: 4px 10px; border-radius: 6px;
  border: 1px solid rgba(255,255,255,.06);
- background: transparent;
- color: rgba(255,255,255,.18);
- font-size: 0.5rem; font-weight: 500;
+ background: rgba(255,255,255,.02);
+ color: rgba(255,255,255,.2);
+ font-size: 0.5625rem; font-weight: 500;
  cursor: pointer; transition: all .2s;
  margin-left: auto;
- text-transform: uppercase; letter-spacing: 1px;
+ text-transform: uppercase; letter-spacing: .8px;
  }
  .room-join-btn:hover {
- border-color: rgba(229,64,64,.25);
- color: rgba(229,64,64,.6);
- background: rgba(229,64,64,.03);
+ border-color: rgba(229,64,64,.3);
+ color: rgba(229,64,64,.7);
+ background: rgba(229,64,64,.05);
  }
 
  .room-cards {
@@ -412,58 +435,84 @@
  flex-direction: column;
  gap: 10px;
  flex: 1;
+ position: relative;
+ z-index: 1;
  }
- .room-empty {
+ .room-empty-msg {
  font-size: 0.6875rem;
- color: rgba(255,255,255,.07);
- padding: 16px 0;
+ color: rgba(255,255,255,.08);
+ padding: 20px 0;
+ text-align: center;
+ font-style: italic;
  }
 
  /* ── Person Cards (inside rooms) ── */
  .team-card {
  background: rgba(255,255,255,.025);
  border: 1px solid rgba(255,255,255,.06);
- border-radius: 10px;
- padding: 12px 14px;
- cursor: pointer;
- transition: background .2s, border-color .2s;
+ border-radius: 12px;
+ padding: 14px 16px;
+ transition: all .2s ease;
+ position: relative;
+ overflow: hidden;
+ }
+ .team-card::before {
+ content: '';
+ position: absolute; top: 0; left: 0; right: 0; height: 1px;
+ background: linear-gradient(90deg, transparent, rgba(255,255,255,.06), transparent);
  }
  .team-card:hover {
  background: rgba(255,255,255,.04);
  border-color: rgba(255,255,255,.1);
+ transform: translateY(-1px);
+ box-shadow: 0 4px 12px rgba(0,0,0,.3);
  }
- .team-card.expanded {
- border-color: rgba(229,64,64,.2);
- background: rgba(255,255,255,.035);
+ .team-card[data-activity="on-call"] {
+ border-color: rgba(229,64,64,.15);
+ box-shadow: 0 0 20px rgba(229,64,64,.04);
+ }
+ .team-card[data-activity="in-meeting"] {
+ border-color: rgba(167,139,250,.12);
+ box-shadow: 0 0 20px rgba(167,139,250,.03);
  }
 
  .team-card-top {
  display: flex;
  align-items: center;
- gap: 10px;
+ gap: 12px;
  }
 
  .team-card-avatar {
  position: relative;
- width: 40px;
- height: 40px;
+ width: 42px;
+ height: 42px;
  border-radius: 50%;
  flex-shrink: 0;
  overflow: visible;
  }
  .team-card-avatar img {
- width: 40px; height: 40px;
+ width: 42px; height: 42px;
  border-radius: 50%;
  object-fit: cover;
  border: 2px solid rgba(255,255,255,.08);
  }
+ .team-card[data-activity="on-call"] .team-card-avatar img,
+ .team-card[data-activity="on-call"] .tc-initials {
+ border-color: rgba(229,64,64,.35);
+ box-shadow: 0 0 10px rgba(229,64,64,.15);
+ }
+ .team-card[data-activity="in-meeting"] .team-card-avatar img,
+ .team-card[data-activity="in-meeting"] .tc-initials {
+ border-color: rgba(167,139,250,.3);
+ box-shadow: 0 0 10px rgba(167,139,250,.12);
+ }
  .team-card-avatar .tc-initials {
- width: 40px; height: 40px;
+ width: 42px; height: 42px;
  display: flex; align-items: center; justify-content: center;
  border-radius: 50%;
- background: #111;
- color: rgba(255,255,255,.6);
- font-size: 0.6875rem; font-weight: 500;
+ background: linear-gradient(135deg, #1a1a1a, #111);
+ color: rgba(255,255,255,.65);
+ font-size: 0.75rem; font-weight: 600;
  letter-spacing: 1px;
  border: 2px solid rgba(255,255,255,.08);
  }
@@ -471,28 +520,29 @@
  .team-card-status-dot {
  position: absolute;
  bottom: 0; right: 0;
- width: 10px; height: 10px;
+ width: 11px; height: 11px;
  border-radius: 50%;
  border: 2px solid #0c0c0c;
  z-index: 2;
  }
- .team-card-status-dot.online { background: #4ade80; box-shadow: 0 0 5px rgba(74,222,128,.4); }
- .team-card-status-dot.busy { background: #ef4444; box-shadow: 0 0 5px rgba(239,68,68,.4); }
- .team-card-status-dot.away { background: #fbbf24; box-shadow: 0 0 5px rgba(251,191,36,.4); }
- .team-card-status-dot.dnd { background: #a78bfa; box-shadow: 0 0 5px rgba(167,139,250,.4); }
+ .team-card-status-dot.online { background: #4ade80; box-shadow: 0 0 6px rgba(74,222,128,.5); }
+ .team-card-status-dot.busy { background: #ef4444; box-shadow: 0 0 6px rgba(239,68,68,.5); }
+ .team-card-status-dot.away { background: #fbbf24; box-shadow: 0 0 6px rgba(251,191,36,.5); }
+ .team-card-status-dot.dnd { background: #a78bfa; box-shadow: 0 0 6px rgba(167,139,250,.5); }
  .team-card-status-dot.offline { background: #374151; }
 
  .team-card-info { flex: 1; min-width: 0; }
  .team-card-name {
- font-size: 0.8125rem;
+ font-size: 0.875rem;
  font-weight: 600;
- color: rgba(255,255,255,.85);
+ color: rgba(255,255,255,.9);
  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+ letter-spacing: -.2px;
  }
  .team-card-role {
- font-size: 0.625rem;
+ font-size: 0.6875rem;
  color: rgba(255,255,255,.3);
- margin-top: 1px;
+ margin-top: 2px;
  }
 
  .team-card-activity-context {
@@ -929,10 +979,11 @@
  Clients View
  ============================================================ */
  .clients-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
- .clients-table th { padding: 10px 16px; text-align: left; background: var(--color-gray-50); border-bottom: 1px solid var(--color-gray-200); font-weight: 600; font-size: 0.8125rem; color: var(--color-gray-600); }
- .clients-table td { padding: 12px 16px; border-bottom: 1px solid var(--color-gray-100); vertical-align: middle; }
+ .clients-table th { padding: 10px 16px; text-align: left; background: rgba(255,255,255,.015); border-bottom: 1px solid rgba(255,255,255,.06); font-weight: 600; font-size: 0.8125rem; color: rgba(255,255,255,.4); text-transform: uppercase; letter-spacing: .5px; font-size: 0.6875rem; }
+ .clients-table td { padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,.03); vertical-align: middle; color: rgba(255,255,255,.55); }
  .clients-table tr:last-child td { border-bottom: none; }
- .clients-table tr:hover td { background: var(--color-gray-50); }
+ .clients-table tr:hover td { background: rgba(255,255,255,.02); }
+ .clients-table code { background: rgba(255,255,255,.05); padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; color: rgba(229,64,64,.7); }
 
  /* ============================================================
  Conversations View
@@ -944,12 +995,12 @@
  align-items: center;
  gap: 12px;
  padding: 14px 20px;
- border-bottom: 1px solid var(--color-gray-100);
+ border-bottom: 1px solid rgba(255,255,255,.04);
  cursor: pointer;
- transition: background .1s;
+ transition: background .15s;
  }
 
- .conversation-item:hover { background: var(--color-gray-50); }
+ .conversation-item:hover { background: rgba(255,255,255,.03); }
 
  .conv-avatar {
  width: 44px;
@@ -966,11 +1017,11 @@
  }
 
  .conv-info { flex: 1; min-width: 0; }
- .conv-name { font-weight: 600; font-size: 0.9375rem; }
- .conv-preview { font-size: 0.8125rem; color: var(--color-gray-500); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+ .conv-name { font-weight: 600; font-size: 0.9375rem; color: rgba(255,255,255,.85); }
+ .conv-preview { font-size: 0.8125rem; color: rgba(255,255,255,.35); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
  .conv-meta { text-align: right; flex-shrink: 0; }
- .conv-time { font-size: 0.75rem; color: var(--color-gray-400); }
+ .conv-time { font-size: 0.75rem; color: rgba(255,255,255,.25); }
  .conv-unread {
  display: inline-flex;
  align-items: center;
@@ -988,25 +1039,25 @@
  .conv-filter-bar {
  display: flex;
  gap: 0;
- border-bottom: 2px solid var(--color-gray-100);
+ border-bottom: 1px solid rgba(255,255,255,.06);
  padding: 0 16px;
  }
  .conv-filter-btn {
  padding: 10px 18px;
  font-size: 0.8125rem;
  font-weight: 600;
- color: var(--color-gray-500);
+ color: rgba(255,255,255,.35);
  background: none;
  border: none;
  border-bottom: 2px solid transparent;
- margin-bottom: -2px;
+ margin-bottom: -1px;
  cursor: pointer;
  transition: color .15s, border-color .15s;
  }
- .conv-filter-btn:hover { color: var(--color-gray-900); }
+ .conv-filter-btn:hover { color: rgba(255,255,255,.7); }
  .conv-filter-btn.active {
- color: var(--color-primary);
- border-bottom-color: var(--color-primary);
+ color: #e54040;
+ border-bottom-color: #e54040;
  }
  .conv-assigned-badge {
  display: inline-block;
@@ -1014,8 +1065,8 @@
  font-weight: 600;
  padding: 2px 8px;
  border-radius: 10px;
- background: var(--color-gray-100);
- color: var(--color-gray-600);
+ background: rgba(255,255,255,.05);
+ color: rgba(255,255,255,.4);
  margin-top: 2px;
  }
  .conv-assigned-badge.unassigned {
@@ -1236,10 +1287,10 @@
  .empty-state {
  text-align: center;
  padding: 48px 24px;
- color: var(--color-gray-400);
+ color: rgba(255,255,255,.15);
  }
 
- .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
+ .empty-state .icon { font-size: 3rem; margin-bottom: 12px; opacity: .5; }
  .empty-state p { font-size: 0.9375rem; }
 
  /* ============================================================
@@ -1267,44 +1318,47 @@
  display: flex;
  gap: 12px;
  padding: 12px 16px;
- border-bottom: 1px solid var(--color-gray-100);
+ border-bottom: 1px solid rgba(255,255,255,.04);
  cursor: pointer;
- transition: background .1s;
+ transition: background .15s;
  font-size: 0.875rem;
+ color: rgba(255,255,255,.6);
  }
 
- .gmail-item:hover { background: var(--color-gray-50); }
- .gmail-item.unread { background: #eef2ff; }
- .gmail-item.unread:hover { background: rgba(229,64,64,.08); }
+ .gmail-item:hover { background: rgba(255,255,255,.03); }
+ .gmail-item.unread { background: rgba(229,64,64,.04); }
+ .gmail-item.unread:hover { background: rgba(229,64,64,.07); }
 
  .gmail-item-info { flex: 1; min-width: 0; }
- .gmail-item-from { font-weight: 600; font-size: 0.8125rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
- .gmail-item.unread .gmail-item-from { color: var(--color-gray-900); }
- .gmail-item-subject { font-size: 0.8125rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--color-gray-700); }
- .gmail-item-snippet { font-size: 0.75rem; color: var(--color-gray-400); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
- .gmail-item-date { font-size: 0.75rem; color: var(--color-gray-400); flex-shrink: 0; }
+ .gmail-item-from { font-weight: 600; font-size: 0.8125rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: rgba(255,255,255,.7); }
+ .gmail-item.unread .gmail-item-from { color: rgba(255,255,255,.95); }
+ .gmail-item-subject { font-size: 0.8125rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: rgba(255,255,255,.5); }
+ .gmail-item-snippet { font-size: 0.75rem; color: rgba(255,255,255,.25); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+ .gmail-item-date { font-size: 0.75rem; color: rgba(255,255,255,.25); flex-shrink: 0; }
 
  .gmail-thread {
- background: rgba(255,255,255,.03);
- border: 1px solid var(--color-gray-200);
+ background: rgba(255,255,255,.02);
+ border: 1px solid rgba(255,255,255,.06);
  border-radius: var(--border-radius);
  padding: 20px;
  min-height: 300px;
+ backdrop-filter: blur(12px);
  }
 
- .gmail-thread-subject { font-size: 1rem; font-weight: 600; margin-bottom: 8px; }
- .gmail-thread-meta { font-size: 0.8125rem; color: var(--color-gray-500); margin-bottom: 16px; }
- .gmail-thread-body { font-size: 0.875rem; line-height: 1.7; white-space: pre-wrap; word-break: break-word; }
+ .gmail-thread-subject { font-size: 1rem; font-weight: 600; margin-bottom: 8px; color: rgba(255,255,255,.85); }
+ .gmail-thread-meta { font-size: 0.8125rem; color: rgba(255,255,255,.3); margin-bottom: 16px; }
+ .gmail-thread-body { font-size: 0.875rem; line-height: 1.7; white-space: pre-wrap; word-break: break-word; color: rgba(255,255,255,.65); }
 
  .gmail-connect-banner {
- background: var(--color-primary-light);
- border: 1px solid var(--color-primary);
+ background: rgba(229,64,64,.06);
+ border: 1px solid rgba(229,64,64,.2);
  border-radius: var(--border-radius);
  padding: 16px 20px;
  margin-bottom: 16px;
  display: flex;
  align-items: center;
  gap: 12px;
+ backdrop-filter: blur(12px);
  }
 
  .gmail-full-layout {
@@ -1312,15 +1366,17 @@
  grid-template-columns: 200px 1fr 1.4fr;
  gap: 0;
  align-items: start;
- border: 1px solid var(--color-gray-200);
- border-radius: var(--border-radius);
+ border: 1px solid rgba(255,255,255,.06);
+ border-radius: 12px;
  overflow: hidden;
  min-height: 620px;
+ background: rgba(255,255,255,.015);
+ backdrop-filter: blur(16px);
  }
 
  .gmail-sidebar {
- background: var(--color-gray-50);
- border-right: 1px solid var(--color-gray-200);
+ background: rgba(255,255,255,.02);
+ border-right: 1px solid rgba(255,255,255,.05);
  height: 100%;
  overflow-y: auto;
  }
@@ -1335,11 +1391,11 @@
  font-size: 0.8125rem;
  cursor: pointer;
  text-align: left;
- color: var(--color-gray-700);
+ color: rgba(255,255,255,.5);
  transition: background .12s;
  }
- .gmail-sidebar-btn:hover { background: var(--color-gray-100); }
- .gmail-sidebar-btn.active { background: rgba(229,64,64,.08); color: var(--color-primary); font-weight: 600; }
+ .gmail-sidebar-btn:hover { background: rgba(255,255,255,.04); }
+ .gmail-sidebar-btn.active { background: rgba(229,64,64,.08); color: #e54040; font-weight: 600; }
  .gmail-sidebar-btn .badge-count {
  margin-left: auto;
  background: #e54040;
@@ -1351,14 +1407,14 @@
  }
  .gmail-sidebar-divider {
  height: 1px;
- background: var(--color-gray-200);
+ background: rgba(255,255,255,.05);
  margin: 6px 0;
  }
  .gmail-sidebar-heading {
  padding: 8px 14px 4px;
  font-size: 0.6875rem;
  font-weight: 700;
- color: var(--color-gray-400);
+ color: rgba(255,255,255,.2);
  text-transform: uppercase;
  letter-spacing: .5px;
  }
@@ -1367,25 +1423,28 @@
  display: flex;
  gap: 8px;
  padding: 10px 14px;
- border-bottom: 1px solid var(--color-gray-200);
- background: rgba(255,255,255,.03);
+ border-bottom: 1px solid rgba(255,255,255,.05);
+ background: rgba(255,255,255,.015);
  }
  .gmail-search-bar input {
  flex: 1;
- border: 1px solid var(--color-gray-200);
+ border: 1px solid rgba(255,255,255,.08);
  border-radius: 20px;
  padding: 6px 14px;
  font-size: 0.8125rem;
  outline: none;
+ background: rgba(255,255,255,.03);
+ color: rgba(255,255,255,.85);
  }
- .gmail-search-bar input:focus { border-color: var(--color-primary); }
+ .gmail-search-bar input::placeholder { color: rgba(255,255,255,.2); }
+ .gmail-search-bar input:focus { border-color: rgba(229,64,64,.35); }
 
  .gmail-toolbar {
  display: flex;
  gap: 4px;
  padding: 6px 12px;
- border-bottom: 1px solid var(--color-gray-100);
- background: var(--color-gray-50);
+ border-bottom: 1px solid rgba(255,255,255,.04);
+ background: rgba(255,255,255,.015);
  flex-wrap: wrap;
  }
  .gmail-toolbar button {
@@ -1395,13 +1454,13 @@
  padding: 4px 8px;
  font-size: 0.75rem;
  cursor: pointer;
- color: var(--color-gray-600);
+ color: rgba(255,255,255,.4);
  transition: all .12s;
  display: flex;
  align-items: center;
  gap: 4px;
  }
- .gmail-toolbar button:hover { background: var(--color-gray-100); border-color: var(--color-gray-200); }
+ .gmail-toolbar button:hover { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.08); color: rgba(255,255,255,.7); }
 
  .gmail-item-star {
  cursor: pointer;
@@ -1416,7 +1475,7 @@
  flex-shrink: 0;
  width: 16px;
  height: 16px;
- accent-color: var(--color-primary);
+ accent-color: #e54040;
  cursor: pointer;
  }
 
@@ -1424,26 +1483,27 @@
  display: inline-flex;
  align-items: center;
  gap: 4px;
- background: var(--color-gray-100);
- border: 1px solid var(--color-gray-200);
+ background: rgba(255,255,255,.04);
+ border: 1px solid rgba(255,255,255,.06);
  border-radius: 6px;
  padding: 4px 10px;
  font-size: 0.75rem;
  cursor: pointer;
  transition: background .12s;
  margin: 4px 4px 0 0;
+ color: rgba(255,255,255,.5);
  }
- .gmail-attachment-chip:hover { background: var(--color-gray-200); }
+ .gmail-attachment-chip:hover { background: rgba(255,255,255,.06); }
 
  .gmail-profile-bar {
  display: flex;
  align-items: center;
  gap: 8px;
  padding: 8px 14px;
- border-bottom: 1px solid var(--color-gray-200);
+ border-bottom: 1px solid rgba(255,255,255,.05);
  font-size: 0.75rem;
- color: var(--color-gray-500);
- background: rgba(255,255,255,.03);
+ color: rgba(255,255,255,.35);
+ background: rgba(255,255,255,.015);
  }
 
 
@@ -1454,14 +1514,18 @@
     .slack-layout {
       display: grid;
       grid-template-columns: 220px 1fr;
-      gap: 16px;
+      gap: 0;
       height: calc(100vh - var(--header-height) - 48px);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 12px;
+      overflow: hidden;
+      background: rgba(255,255,255,.015);
+      backdrop-filter: blur(16px);
     }
 
     .slack-channels {
-      background: rgba(255,255,255,.03);
-      border: 1px solid var(--color-gray-200);
-      border-radius: var(--border-radius);
+      background: rgba(255,255,255,.02);
+      border-right: 1px solid rgba(255,255,255,.05);
       overflow-y: auto;
     }
 
@@ -1472,18 +1536,18 @@
       padding: 10px 14px;
       cursor: pointer;
       font-size: 0.875rem;
-      color: var(--color-gray-600);
-      border-bottom: 1px solid var(--color-gray-100);
-      transition: background .1s;
+      color: rgba(255,255,255,.45);
+      border-bottom: 1px solid rgba(255,255,255,.03);
+      transition: background .15s, color .15s;
     }
 
-    .slack-channel-item:hover { background: var(--color-gray-50); }
-    .slack-channel-item.active { background: var(--color-primary-light); color: var(--color-primary-dark); font-weight: 600; }
+    .slack-channel-item:hover { background: rgba(255,255,255,.03); color: rgba(255,255,255,.7); }
+    .slack-channel-item.active { background: rgba(229,64,64,.08); color: #e54040; font-weight: 600; }
 
     .slack-messages-pane {
-      background: rgba(255,255,255,.03);
-      border: 1px solid var(--color-gray-200);
-      border-radius: var(--border-radius);
+      background: rgba(255,255,255,.01);
+      border: none;
+      border-radius: 0;
       display: flex;
       flex-direction: column;
       overflow: hidden;
@@ -1520,13 +1584,13 @@
 
     .slack-msg-content { flex: 1; min-width: 0; }
     .slack-msg-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 2px; }
-    .slack-msg-user { font-weight: 600; font-size: 0.8125rem; }
-    .slack-msg-time { font-size: 0.75rem; color: var(--color-gray-400); }
-    .slack-msg-body { line-height: 1.5; }
+    .slack-msg-user { font-weight: 600; font-size: 0.8125rem; color: rgba(255,255,255,.8); }
+    .slack-msg-time { font-size: 0.75rem; color: rgba(255,255,255,.2); }
+    .slack-msg-body { line-height: 1.5; color: rgba(255,255,255,.6); }
 
     .slack-compose {
       padding: 12px 16px;
-      border-top: 1px solid var(--color-gray-200);
+      border-top: 1px solid rgba(255,255,255,.05);
       display: flex;
       gap: 8px;
     }
@@ -1540,12 +1604,22 @@
  }
 
  .integration-card {
- background: rgba(255,255,255,.03);
- border: 1px solid var(--color-gray-200);
- border-radius: var(--border-radius);
+ background: rgba(255,255,255,.025);
+ border: 1px solid rgba(255,255,255,.06);
+ border-radius: 12px;
  padding: 20px;
- box-shadow: var(--shadow-sm);
+ box-shadow: none;
+ backdrop-filter: blur(12px);
+ transition: background .2s, border-color .2s;
+ position: relative;
+ overflow: hidden;
  }
+ .integration-card::before {
+ content: '';
+ position: absolute; top: 0; left: 0; right: 0; height: 1px;
+ background: linear-gradient(90deg, transparent, rgba(255,255,255,.06), transparent);
+ }
+ .integration-card:hover { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.1); }
 
  .integration-card-header {
  display: flex;
@@ -1556,9 +1630,9 @@
 
  .integration-icon { font-size: 1.75rem; }
 
- .integration-title { font-size: 0.9375rem; font-weight: 600; }
- .integration-desc { font-size: 0.8125rem; color: var(--color-gray-500); margin-bottom: 4px; }
- .integration-url { font-size: 0.75rem; color: var(--color-gray-400); font-family: monospace; word-break: break-all; }
+ .integration-title { font-size: 0.9375rem; font-weight: 600; color: rgba(255,255,255,.85); }
+ .integration-desc { font-size: 0.8125rem; color: rgba(255,255,255,.35); margin-bottom: 4px; }
+ .integration-url { font-size: 0.75rem; color: rgba(255,255,255,.2); font-family: monospace; word-break: break-all; }
 
  .status-badge {
  display: inline-flex;
@@ -1570,8 +1644,8 @@
  font-weight: 600;
  }
 
- .status-badge.connected { background: rgba(16,185,129,.1); color: #10b981; }
- .status-badge.disconnected { background: var(--color-gray-100); color: var(--color-gray-500); }
+ .status-badge.connected { background: rgba(16,185,129,.08); color: #10b981; border: 1px solid rgba(16,185,129,.15); }
+ .status-badge.disconnected { background: rgba(255,255,255,.03); color: rgba(255,255,255,.3); border: 1px solid rgba(255,255,255,.06); }
 
  /* ============================================================
  Floating Chat Widgets
@@ -1691,48 +1765,48 @@
 
  .fab-badge {
  position: absolute; top: -4px; right: -4px;
- background: var(--color-danger); color: #fff;
+ background: #e54040; color: #fff;
  font-size: 0.625rem; font-weight: 700;
  min-width: 18px; height: 18px;
  border-radius: 9px; padding: 0 5px;
  display: flex; align-items: center; justify-content: center;
- border: 2px solid #fff;
+ border: 2px solid #0a0a0a;
  }
 
  .inbox-filter-bar {
  display: flex; align-items: center; gap: 0;
- border-bottom: 1px solid var(--color-gray-100);
+ border-bottom: 1px solid rgba(255,255,255,.05);
  padding: 0 8px;
- background: rgba(255,255,255,.03);
+ background: rgba(255,255,255,.02);
  }
  .inbox-filter-btn {
  padding: 7px 10px; font-size: 0.7rem; font-weight: 600;
- color: var(--color-gray-500); background: none; border: none;
+ color: rgba(255,255,255,.35); background: none; border: none;
  border-bottom: 2px solid transparent; margin-bottom: -1px;
  cursor: pointer; transition: color .15s;
  }
- .inbox-filter-btn:hover { color: var(--color-gray-900); }
- .inbox-filter-btn.active { color: var(--color-primary); border-bottom-color: var(--color-primary); }
+ .inbox-filter-btn:hover { color: rgba(255,255,255,.7); }
+ .inbox-filter-btn.active { color: #e54040; border-bottom-color: #e54040; }
  .inbox-mine-toggle {
  margin-left: auto; font-size: 0.7rem; font-weight: 600;
- color: var(--color-gray-500); display: flex; align-items: center; gap: 4px;
+ color: rgba(255,255,255,.35); display: flex; align-items: center; gap: 4px;
  cursor: pointer; padding: 7px 4px; user-select: none;
  }
- .inbox-mine-toggle input { width: 14px; height: 14px; cursor: pointer; }
+ .inbox-mine-toggle input { width: 14px; height: 14px; cursor: pointer; accent-color: #e54040; }
 
  .inbox-item {
  display: flex; align-items: flex-start; gap: 10px;
  padding: 12px 14px;
- border-bottom: 1px solid var(--color-gray-100);
- cursor: pointer; transition: background .1s;
+ border-bottom: 1px solid rgba(255,255,255,.04);
+ cursor: pointer; transition: background .15s;
  }
- .inbox-item:hover { background: var(--color-gray-50); }
- .inbox-item.unread { background: #f0f7ff; }
- .inbox-item-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 2px; }
+ .inbox-item:hover { background: rgba(255,255,255,.03); }
+ .inbox-item.unread { background: rgba(229,64,64,.04); }
+ .inbox-item-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 2px; color: rgba(255,255,255,.3); }
  .inbox-item-body { flex: 1; min-width: 0; }
- .inbox-item-title { font-size: 0.8125rem; font-weight: 600; color: var(--color-gray-900); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
- .inbox-item-preview { font-size: 0.75rem; color: var(--color-gray-500); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
- .inbox-item-time { font-size: 0.6875rem; color: var(--color-gray-400); white-space: nowrap; flex-shrink: 0; margin-top: 2px; }
+ .inbox-item-title { font-size: 0.8125rem; font-weight: 600; color: rgba(255,255,255,.8); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+ .inbox-item-preview { font-size: 0.75rem; color: rgba(255,255,255,.3); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+ .inbox-item-time { font-size: 0.6875rem; color: rgba(255,255,255,.2); white-space: nowrap; flex-shrink: 0; margin-top: 2px; }
 
  .chat-panel-header {
  padding: 12px 16px;
@@ -1781,8 +1855,8 @@
  }
 
  .chat-bubble.ai-bubble {
- background: var(--color-gray-100);
- color: var(--color-gray-800);
+ background: rgba(255,255,255,.06);
+ color: rgba(255,255,255,.75);
  align-self: flex-start;
  border-bottom-left-radius: 4px;
  white-space: pre-wrap;
@@ -1790,13 +1864,13 @@
 
  .chat-bubble-meta {
  font-size: 0.7rem;
- color: var(--color-gray-400);
+ color: rgba(255,255,255,.2);
  margin-bottom: 2px;
  }
 
  .chat-panel-compose {
  padding: 10px 12px;
- border-top: 1px solid var(--color-gray-200);
+ border-top: 1px solid rgba(255,255,255,.06);
  display: flex;
  gap: 8px;
  flex-shrink: 0;
@@ -1805,13 +1879,16 @@
  .chat-panel-compose input {
  flex: 1;
  padding: 8px 12px;
- border: 1px solid var(--color-gray-300);
+ border: 1px solid rgba(255,255,255,.1);
  border-radius: 20px;
  font-size: 0.8125rem;
  outline: none;
+ background: rgba(255,255,255,.04);
+ color: rgba(255,255,255,.85);
  }
+ .chat-panel-compose input::placeholder { color: rgba(255,255,255,.2); }
 
- .chat-panel-compose input:focus { border-color: var(--color-primary); }
+ .chat-panel-compose input:focus { border-color: rgba(229,64,64,.4); }
 
  .chat-send-btn {
  width: 34px;
@@ -1829,17 +1906,17 @@
  transition: background .15s;
  }
 
- .chat-send-btn:hover { background: var(--color-primary-dark); }
- .chat-send-btn:disabled { background: var(--color-gray-300); cursor: not-allowed; }
+ .chat-send-btn:hover { background: rgba(229,64,64,.15); }
+ .chat-send-btn:disabled { background: rgba(255,255,255,.05); cursor: not-allowed; color: rgba(255,255,255,.15); }
 
  .ai-thinking {
  align-self: flex-start;
- background: var(--color-gray-100);
+ background: rgba(255,255,255,.04);
  border-radius: 12px;
  border-bottom-left-radius: 4px;
  padding: 8px 14px;
  font-size: 0.8125rem;
- color: var(--color-gray-500);
+ color: rgba(255,255,255,.35);
  }
 
  @media (max-width: 480px) {
@@ -1866,12 +1943,22 @@
  }
 
  .meeting-room-card {
- background: rgba(255,255,255,.03);
- border: 1px solid var(--color-gray-200);
- border-radius: var(--border-radius);
+ background: rgba(255,255,255,.025);
+ border: 1px solid rgba(255,255,255,.06);
+ border-radius: 12px;
  padding: 20px;
- box-shadow: var(--shadow-sm);
+ box-shadow: none;
+ backdrop-filter: blur(12px);
+ transition: background .2s, border-color .2s;
+ position: relative;
+ overflow: hidden;
  }
+ .meeting-room-card::before {
+ content: '';
+ position: absolute; top: 0; left: 0; right: 0; height: 1px;
+ background: linear-gradient(90deg, transparent, rgba(255,255,255,.06), transparent);
+ }
+ .meeting-room-card:hover { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.1); }
 
  .meeting-room-card-header {
  display: flex;
@@ -1891,7 +1978,7 @@
 
  .meeting-room-meta {
  font-size: 0.75rem;
- color: var(--color-gray-400);
+ color: rgba(255,255,255,.25);
  margin-bottom: 12px;
  display: flex;
  flex-wrap: wrap;
@@ -1929,9 +2016,9 @@
  .vault-masked-value {
  font-family: monospace;
  font-size: 0.8rem;
- color: var(--color-gray-400);
- background: var(--color-gray-50);
- border: 1px solid var(--color-gray-200);
+ color: rgba(255,255,255,.35);
+ background: rgba(255,255,255,.03);
+ border: 1px solid rgba(255,255,255,.06);
  border-radius: 4px;
  padding: 3px 8px;
  flex: 1;
@@ -1944,9 +2031,9 @@
  border-radius: 9999px;
  }
 
- .vault-source-badge.vault { background: #ede9fe; color: #6d28d9; }
- .vault-source-badge.env { background: #fef3c7; color: #92400e; }
- .vault-source-badge.none { background: var(--color-gray-100); color: var(--color-gray-500); }
+ .vault-source-badge.vault { background: rgba(167,139,250,.1); color: #a78bfa; border: 1px solid rgba(167,139,250,.15); }
+ .vault-source-badge.env { background: rgba(251,191,36,.08); color: #fbbf24; border: 1px solid rgba(251,191,36,.12); }
+ .vault-source-badge.none { background: rgba(255,255,255,.03); color: rgba(255,255,255,.25); border: 1px solid rgba(255,255,255,.06); }
 
  .vault-pin-row {
  display: flex;
@@ -1954,10 +2041,10 @@
  gap: 8px;
  margin-top: 8px;
  padding-top: 12px;
- border-top: 1px solid var(--color-gray-200);
+ border-top: 1px solid rgba(255,255,255,.06);
  }
 
- .vault-pin-row label { font-size: 0.8125rem; font-weight: 500; white-space: nowrap; }
+ .vault-pin-row label { font-size: 0.8125rem; font-weight: 500; white-space: nowrap; color: rgba(255,255,255,.6); }
  .vault-pin-row input { flex: 1; }
 
  </style>
@@ -2143,7 +2230,7 @@
  <button class="btn btn-primary btn-sm" id="searchNumbersBtn">+ Get a Number</button>
  </div>
  <div class="card-body">
- <p style="font-size:0.8125rem;color:var(--color-gray-500);margin-bottom:12px;">
+ <p style="font-size:0.8125rem;color:rgba(255,255,255,.35);margin-bottom:12px;">
  Give each team member their own phone number so clients see a consistent, personal number.
  Powered by RingCentral.
  </p>
@@ -2343,7 +2430,7 @@
  <span style="font-size:1.5rem;"></span>
  <div style="flex:1;">
  <strong>Connect Gmail</strong>
- <div style="font-size:0.8125rem;color:var(--color-gray-600);margin-top:2px;">Authorize Gmail access to read and send emails from within the app.</div>
+ <div style="font-size:0.8125rem;color:rgba(255,255,255,.45);margin-top:2px;">Authorize Gmail access to read and send emails from within the app.</div>
  </div>
  <a id="gmailConnectBtn" href="/auth/google" class="btn btn-primary btn-sm">Connect Gmail</a>
  </div>
@@ -2384,7 +2471,7 @@
  </div>
 
  <!-- Message list -->
- <div style="border-right:1px solid var(--color-gray-200);display:flex;flex-direction:column;height:100%;overflow:hidden;">
+ <div style="border-right:1px solid rgba(255,255,255,.05);display:flex;flex-direction:column;height:100%;overflow:hidden;">
  <div class="gmail-toolbar" id="gmailToolbar">
  <label style="display:flex;align-items:center;"><input type="checkbox" id="gmailSelectAll" class="gmail-item-check" title="Select all" /></label>
  <button id="gmailRefreshBtn" title="Refresh">Refresh</button>
@@ -2412,16 +2499,16 @@
  <div class="gmail-connect-banner">
  <div style="flex:1;">
  <strong>Configure Slack</strong>
- <div style="font-size:0.8125rem;color:var(--color-gray-600);margin-top:2px;">Set <code>SLACK_BOT_TOKEN</code> in your .env file to connect your Slack workspace.</div>
+ <div style="font-size:0.8125rem;color:rgba(255,255,255,.45);margin-top:2px;">Set <code>SLACK_BOT_TOKEN</code> in your .env file to connect your Slack workspace.</div>
  </div>
  </div>
  </div>
 
  <div class="slack-layout" id="slackLayout">
  <div class="slack-channels">
- <div style="padding:12px 14px;font-size:0.8125rem;font-weight:600;color:var(--color-gray-500);border-bottom:1px solid var(--color-gray-100);">CHANNELS</div>
+ <div style="padding:12px 14px;font-size:0.6875rem;font-weight:600;color:rgba(255,255,255,.25);border-bottom:1px solid rgba(255,255,255,.05);letter-spacing:1px;">CHANNELS</div>
  <div id="slackChannelList">
- <div style="padding:16px;font-size:0.8125rem;color:var(--color-gray-400);">Loading…</div>
+ <div style="padding:16px;font-size:0.8125rem;color:rgba(255,255,255,.25);">Loading…</div>
  </div>
  </div>
 
@@ -2455,12 +2542,12 @@
  <div style="margin-top:24px;" class="card">
  <div class="card-header"><h3> Inbound Webhook</h3></div>
  <div class="card-body">
- <p style="font-size:0.875rem;color:var(--color-gray-600);margin-bottom:12px;">
+ <p style="font-size:0.875rem;color:rgba(255,255,255,.4);margin-bottom:12px;">
  Point your Zapier Zap to this URL to push data into Noah Connect automatically.
  Send a JSON POST with a <code>type</code> field (e.g. <code>new_lead</code>, <code>new_client</code>).
  </p>
  <div style="display:flex;gap:8px;align-items:center;">
- <code id="inboundWebhookUrl" style="flex:1;background:var(--color-gray-100);padding:8px 12px;border-radius:var(--border-radius);font-size:0.8125rem;word-break:break-all;"></code>
+ <code id="inboundWebhookUrl" style="flex:1;background:rgba(255,255,255,.04);padding:8px 12px;border-radius:var(--border-radius);font-size:0.8125rem;word-break:break-all;color:rgba(229,64,64,.7);border:1px solid rgba(255,255,255,.06);"></code>
  <button class="btn btn-secondary btn-sm" id="copyWebhookUrlBtn"> Copy</button>
  </div>
  </div>
@@ -2468,7 +2555,7 @@
 
  <div style="margin-top:24px;">
  <h3 style="font-size:1rem;font-weight:600;margin-bottom:12px;"> Automation Recipes</h3>
- <p style="font-size:0.8125rem;color:var(--color-gray-500);margin-bottom:12px;">
+ <p style="font-size:0.8125rem;color:rgba(255,255,255,.35);margin-bottom:12px;">
  These events fire to your Zapier webhook URL automatically. Connect them to 7,000+ apps.
  </p>
  <div class="integrations-grid" id="automationRecipes"></div>
@@ -2505,8 +2592,8 @@
 
  <div id="meetingsNotConfigured" style="display:none;" class="card" style="margin-bottom:16px;">
  <div class="card-body">
- <p style="font-size:0.875rem;color:var(--color-gray-600);">
- RingCentral Video is not configured. Go to <strong>Integrations</strong> → RingCentral and enter your credentials to enable video meetings.
+ <p style="font-size:0.875rem;color:rgba(255,255,255,.4);">
+ RingCentral Video is not configured. Go to <strong>Integrations</strong> &rarr; RingCentral and enter your credentials to enable video meetings.
  </p>
  </div>
  </div>
@@ -2581,23 +2668,23 @@
  <label class="form-label">Primary Color</label>
  <div style="display:flex;gap:8px;align-items:center;">
  <input class="form-control" id="brandPrimaryColor" type="text" placeholder="#4F46E5" style="flex:1;" />
- <input type="color" id="brandPrimaryColorPicker" value="#4F46E5" style="width:40px;height:38px;padding:2px;border:1px solid var(--color-gray-300);border-radius:6px;cursor:pointer;" />
+ <input type="color" id="brandPrimaryColorPicker" value="#4F46E5" style="width:40px;height:38px;padding:2px;border:1px solid rgba(255,255,255,.1);border-radius:6px;cursor:pointer;" />
  </div>
  </div>
  <div class="form-group">
  <label class="form-label">Secondary Color</label>
  <div style="display:flex;gap:8px;align-items:center;">
  <input class="form-control" id="brandSecondaryColor" type="text" placeholder="#7C3AED" style="flex:1;" />
- <input type="color" id="brandSecondaryColorPicker" value="#7C3AED" style="width:40px;height:38px;padding:2px;border:1px solid var(--color-gray-300);border-radius:6px;cursor:pointer;" />
+ <input type="color" id="brandSecondaryColorPicker" value="#7C3AED" style="width:40px;height:38px;padding:2px;border:1px solid rgba(255,255,255,.1);border-radius:6px;cursor:pointer;" />
  </div>
  </div>
- <div id="brandEmailPreview" style="margin-top:16px;border:1px solid var(--color-gray-200);border-radius:8px;overflow:hidden;font-size:0.8125rem;">
+ <div id="brandEmailPreview" style="margin-top:16px;border:1px solid rgba(255,255,255,.06);border-radius:8px;overflow:hidden;font-size:0.8125rem;">
  <div id="brandPreviewHeader" style="background:#4F46E5;color:#fff;padding:16px 20px;text-align:center;">
  <div id="brandPreviewName" style="font-weight:700;font-size:1rem;">Company Name</div>
  <div id="brandPreviewTagline" style="font-size:0.75rem;opacity:0.85;margin-top:2px;">Your tagline</div>
  </div>
- <div style="padding:16px 20px;color:#374151;font-size:0.8125rem;">Your email body will appear here.</div>
- <div id="brandPreviewFooter" style="background:#f9fafb;border-top:1px solid #e5e7eb;padding:10px 20px;text-align:center;font-size:0.75rem;color:#6b7280;">Footer text</div>
+ <div style="padding:16px 20px;color:rgba(255,255,255,.55);font-size:0.8125rem;">Your email body will appear here.</div>
+ <div id="brandPreviewFooter" style="background:rgba(255,255,255,.02);border-top:1px solid rgba(255,255,255,.05);padding:10px 20px;text-align:center;font-size:0.75rem;color:rgba(255,255,255,.3);">Footer text</div>
  </div>
  </div>
  </div>
@@ -2875,9 +2962,9 @@
  </div>
  <div class="modal-body">
  <div class="form-group">
- <label class="form-label">Room Name <span style="color:var(--color-gray-400);font-weight:400;">(optional)</span></label>
+ <label class="form-label">Room Name <span style="color:rgba(255,255,255,.25);font-weight:400;">(optional)</span></label>
  <input class="form-control" id="newMeetingName" placeholder="e.g. team-standup, sales-call" maxlength="40" />
- <p style="font-size:0.75rem;color:var(--color-gray-400);margin-top:4px;">Leave blank for an auto-generated name.</p>
+ <p style="font-size:0.75rem;color:rgba(255,255,255,.25);margin-top:4px;">Leave blank for an auto-generated name.</p>
  </div>
  <div class="grid-2">
  <div class="form-group">
@@ -2931,7 +3018,7 @@
  <div style="flex:1;">
  <h3 id="convThreadTitle">Conversation</h3>
  <div style="display:flex;align-items:center;gap:8px;margin-top:2px;">
- <span id="convThreadPhone" style="font-size:0.75rem;color:var(--color-gray-500);"></span>
+ <span id="convThreadPhone" style="font-size:0.75rem;color:rgba(255,255,255,.3);"></span>
  <select id="convThreadAssign" style="font-size:0.7rem;padding:2px 6px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.6);cursor:pointer;">
  <option value="">Unassigned</option>
  </select>
@@ -2990,7 +3077,7 @@
  </button>
  </div>
  <textarea class="form-control" id="templateBody" placeholder="Use {{variable_name}} for dynamic values, e.g. Hello {{client_name}}!" style="min-height:120px;"></textarea>
- <p style="font-size:0.75rem;color:var(--color-gray-400);margin-top:4px;">Use <code>{{variable}}</code> placeholders — detected automatically.</p>
+ <p style="font-size:0.75rem;color:rgba(255,255,255,.25);margin-top:4px;">Use <code>{{variable}}</code> placeholders -- detected automatically.</p>
  </div>
  </div>
  <div class="modal-footer">
@@ -3015,9 +3102,9 @@
  </select>
  </div>
  <div id="templateSendVars"></div>
- <div id="templateSendPreview" style="display:none;background:var(--color-gray-50);border:1px solid var(--color-gray-200);border-radius:6px;padding:12px;font-size:0.875rem;margin-top:8px;">
- <div style="font-weight:600;margin-bottom:4px;font-size:0.75rem;color:var(--color-gray-500);text-transform:uppercase;letter-spacing:.05em;">Preview</div>
- <div id="templateSendPreviewBody" style="color:var(--color-gray-700);white-space:pre-wrap;"></div>
+ <div id="templateSendPreview" style="display:none;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:6px;padding:12px;font-size:0.875rem;margin-top:8px;">
+ <div style="font-weight:600;margin-bottom:4px;font-size:0.75rem;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.05em;">Preview</div>
+ <div id="templateSendPreviewBody" style="color:rgba(255,255,255,.6);white-space:pre-wrap;"></div>
  </div>
  </div>
  <div class="modal-footer">
@@ -3077,7 +3164,7 @@
  <input type="hidden" id="gmailReplyTo" />
  <div class="form-group">
  <label class="form-label">To</label>
- <input class="form-control" id="gmailReplyToDisplay" type="text" readonly style="background:var(--color-gray-50);" />
+ <input class="form-control" id="gmailReplyToDisplay" type="text" readonly style="background:rgba(255,255,255,.02);" />
  </div>
  <div class="form-group">
  <label class="form-label">Subject</label>
@@ -3113,28 +3200,28 @@
  <div class="form-group">
  <label class="form-label">Status</label>
  <div style="display:flex;flex-direction:column;gap:8px;">
- <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:6px;border:1px solid var(--color-gray-200);">
+ <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.08);">
  <input type="radio" name="statusPick" value="online" /> <span style="width:8px;height:8px;border-radius:50%;background:var(--color-success);display:inline-block;"></span> Online
  </label>
- <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:6px;border:1px solid var(--color-gray-200);">
+ <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.08);">
  <input type="radio" name="statusPick" value="away" /> <span style="width:8px;height:8px;border-radius:50%;background:var(--color-warning);display:inline-block;"></span> Away
  </label>
- <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:6px;border:1px solid var(--color-gray-200);">
+ <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.08);">
  <input type="radio" name="statusPick" value="busy" /> <span style="width:8px;height:8px;border-radius:50%;background:var(--color-danger);display:inline-block;"></span> Busy
  </label>
- <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:6px;border:1px solid var(--color-gray-200);">
+ <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.08);">
  <input type="radio" name="statusPick" value="dnd" /> <span style="width:8px;height:8px;border-radius:50%;background:#a855f7;display:inline-block;"></span> Do Not Disturb
  </label>
- <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:6px;border:1px solid var(--color-gray-200);">
+ <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.08);">
  <input type="radio" name="statusPick" value="idle" /> <span style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.3);display:inline-block;"></span> Idle
  </label>
- <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:6px;border:1px solid var(--color-gray-200);">
- <input type="radio" name="statusPick" value="offline" /> <span style="width:8px;height:8px;border-radius:50%;background:var(--color-gray-400);display:inline-block;"></span> Offline
+ <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.08);">
+ <input type="radio" name="statusPick" value="offline" /> <span style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.25);display:inline-block;"></span> Offline
  </label>
  </div>
  </div>
  <div class="form-group">
- <label class="form-label">Status Message <span style="color:var(--color-gray-400);font-weight:400;">(optional)</span></label>
+ <label class="form-label">Status Message <span style="color:rgba(255,255,255,.25);font-weight:400;">(optional)</span></label>
  <input class="form-control" id="statusMessage" placeholder="e.g. In a meeting until 3pm" maxlength="100" />
  </div>
  </div>
@@ -3206,7 +3293,7 @@
  function renderLoginTeamList(team) {
  const list = document.getElementById('loginTeamList');
  if (!team.length) {
- list.innerHTML = '<div style="color:var(--color-gray-400);font-size:0.8125rem;padding:4px 0;">No team members yet — type your name below.</div>';
+ list.innerHTML = '<div style="color:rgba(255,255,255,.25);font-size:0.8125rem;padding:4px 0;">No team members yet -- type your name below.</div>';
  return;
  }
  list.innerHTML = team.map(u => {
@@ -3220,7 +3307,7 @@
  <div class="login-team-avatar">${avatarInner}</div>
  <div>
  <div>${escHtml(u.name)}</div>
- ${title ? `<div style="font-size:0.75rem;font-weight:400;color:var(--color-gray-500);">${escHtml(title)}</div>` : ''}
+ ${title ? `<div style="font-size:0.75rem;font-weight:400;color:rgba(255,255,255,.35);">${escHtml(title)}</div>` : ''}
  </div>
  </button>`;
  }).join('');
@@ -3642,7 +3729,7 @@
  <span class="call-target">${escHtml(c.talkingTo || 'Unknown')}</span>
  </div>`).join('');
  } else {
- listEl.innerHTML = '<div style="padding:16px;text-align:center;color:var(--color-gray-400);font-size:0.8125rem;">No active calls right now</div>';
+ listEl.innerHTML = '<div style="padding:16px;text-align:center;color:rgba(255,255,255,.2);font-size:0.8125rem;">No active calls right now</div>';
  }
 
  // Update office avatars with on-call status
@@ -3665,7 +3752,7 @@
  const data = await apiFetch('/api/ringcentral/call-log?perPage=20');
  const logEl = document.getElementById('callLogList');
  if (!data.callLog || !data.callLog.length) {
- logEl.innerHTML = '<div style="padding:16px;text-align:center;color:var(--color-gray-400);">No recent calls</div>';
+ logEl.innerHTML = '<div style="padding:16px;text-align:center;color:rgba(255,255,255,.2);">No recent calls</div>';
  return;
  }
  logEl.innerHTML = data.callLog.map(c => {
@@ -3924,7 +4011,7 @@
  <button class="room-join-btn js-room-join" data-room="${escAttr(room.slug)}">Join</button>
  </div>
  <div class="room-cards">
- ${count ? roomUsers.map(teamCardHtml).join('') : '<span class="room-empty">--</span>'}
+ ${count ? roomUsers.map(teamCardHtml).join('') : '<span class="room-empty-msg">No one here</span>'}
  </div>
  </div>`;
  }).join('');
@@ -6189,7 +6276,7 @@
  <td style="font-size:0.8125rem;">${escHtml(user)}</td>
  <td><span style="font-size:0.8125rem;font-weight:500;">${escHtml(action)}</span></td>
  <td style="font-size:0.8125rem;">${escHtml(a.entity_type || '–')}</td>
- <td style="font-size:0.75rem;color:var(--color-gray-500);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escAttr(details)}">${escHtml(details.slice(0, 80))}</td>
+ <td style="font-size:0.75rem;color:rgba(255,255,255,.3);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escAttr(details)}">${escHtml(details.slice(0, 80))}</td>
  </tr>`;
  }).join('');
  }
