@@ -33,6 +33,8 @@
  --shadow-sm: 0 1px 2px rgba(0,0,0,.3);
  --shadow: 0 1px 3px rgba(0,0,0,.4), 0 1px 2px rgba(0,0,0,.3);
  --shadow-md: 0 4px 6px -1px rgba(0,0,0,.4), 0 2px 4px -1px rgba(0,0,0,.3);
+ --shadow-lg: 0 20px 50px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.3);
+ --shadow-xl: 0 30px 80px rgba(0,0,0,.5), 0 15px 50px rgba(0,0,0,.35);
  }
 
  body {
@@ -154,16 +156,24 @@
 
  .header {
  height: var(--header-height);
- background: #0c0c0c;
- border-bottom: 1px solid rgba(255,255,255,.06);
+ background: linear-gradient(180deg, #0f0f0f 0%, #0a0a0a 100%);
+ border-bottom: 1px solid rgba(255,255,255,.08);
  display: flex;
  align-items: center;
  padding: 0 24px;
  gap: 16px;
  flex-shrink: 0;
+ box-shadow: 0 4px 12px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.03);
+ backdrop-filter: blur(8px);
  }
 
- .header-title { font-size: 1.125rem; font-weight: 600; flex: 1; color: rgba(255,255,255,.9); }
+ .header-title {
+ font-size: 1.1875rem;
+ font-weight: 700;
+ flex: 1;
+ color: #ffffff;
+ letter-spacing: -0.3px;
+ }
 
  .btn {
  display: inline-flex;
@@ -206,11 +216,17 @@
  Cards & Panels
  ============================================================ */
  .card {
- background: rgba(255,255,255,.10);
- border-radius: var(--border-radius);
- box-shadow: 0 8px 32px rgba(0,0,0,.25);
- border: 1px solid rgba(255,255,255,.15);
- backdrop-filter: blur(16px);
+ background: linear-gradient(135deg, rgba(255,255,255,.11) 0%, rgba(255,255,255,.06) 100%);
+ border-radius: 14px;
+ box-shadow: 0 12px 40px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.08);
+ border: 1px solid rgba(255,255,255,.16);
+ backdrop-filter: blur(20px);
+ -webkit-backdrop-filter: blur(20px);
+ transition: all .25s ease;
+ }
+ .card:hover {
+ border-color: rgba(255,255,255,.2);
+ box-shadow: 0 16px 48px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.1);
  }
 
  .card-header {
@@ -345,31 +361,36 @@
  grid-template-columns: 1.6fr 1fr 1fr;
  grid-template-rows: auto auto;
  gap: 0;
- background: rgba(255,255,255,.08);
- border-radius: 20px;
+ background: linear-gradient(135deg, rgba(255,255,255,.12) 0%, rgba(255,255,255,.06) 100%);
+ border-radius: 24px;
  overflow: hidden;
- border: 1px solid rgba(255,255,255,.12);
+ border: 1px solid rgba(255,255,255,.16);
  position: relative;
- box-shadow: 0 12px 40px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.05);
- backdrop-filter: blur(16px);
+ box-shadow: 0 30px 80px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.08);
+ backdrop-filter: blur(32px);
+ -webkit-backdrop-filter: blur(32px);
  }
 
  .office-room {
- background: rgba(255,255,255,.04);
- border-right: 1px solid rgba(255,255,255,.08);
- border-bottom: 1px solid rgba(255,255,255,.08);
- padding: 20px;
- min-height: 200px;
+ background: rgba(255,255,255,.05);
+ border-right: 1px solid rgba(255,255,255,.1);
+ border-bottom: 1px solid rgba(255,255,255,.1);
+ padding: 24px;
+ min-height: 220px;
  display: flex;
  flex-direction: column;
- transition: background .3s;
+ transition: all .3s ease;
  position: relative;
+ backdrop-filter: blur(12px);
  }
- .office-room:hover { background: rgba(255,255,255,.018); }
+ .office-room:hover {
+ background: rgba(255,255,255,.08);
+ border-color: rgba(255,255,255,.15);
+ }
  .office-room::before {
  content: '';
  position: absolute; inset: 0;
- background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.02) 0%, transparent 70%);
+ background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.04) 0%, transparent 70%);
  pointer-events: none;
  }
 
@@ -403,10 +424,11 @@
  .room-dot-lounge { background: #64748b; box-shadow: 0 0 6px rgba(100,116,139,.25); }
  .room-name {
  font-size: 0.6875rem;
- font-weight: 600;
- color: rgba(255,255,255,.35);
+ font-weight: 700;
+ color: rgba(255,255,255,.45);
  text-transform: uppercase;
- letter-spacing: 1.5px;
+ letter-spacing: 1.8px;
+ text-shadow: 0 1px 3px rgba(0,0,0,.2);
  }
  .room-count {
  font-size: 0.5625rem;
@@ -449,25 +471,26 @@
 
  /* ── Person Cards (inside rooms) ── */
  .team-card {
- background: rgba(255,255,255,.09);
- border: 1px solid rgba(255,255,255,.14);
- border-radius: 12px;
- padding: 14px 16px;
- transition: all .2s ease;
+ background: linear-gradient(135deg, rgba(255,255,255,.12) 0%, rgba(255,255,255,.06) 100%);
+ border: 1px solid rgba(255,255,255,.16);
+ border-radius: 14px;
+ padding: 16px 18px;
+ transition: all .25s ease;
  position: relative;
  overflow: hidden;
- box-shadow: 0 4px 16px rgba(0,0,0,.2);
+ box-shadow: 0 8px 24px rgba(0,0,0,.2), inset 0 1px 0 rgba(255,255,255,.08);
+ backdrop-filter: blur(16px);
  }
  .team-card::before {
  content: '';
  position: absolute; top: 0; left: 0; right: 0; height: 1px;
- background: linear-gradient(90deg, transparent, rgba(255,255,255,.06), transparent);
+ background: linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent);
  }
  .team-card:hover {
- background: rgba(255,255,255,.04);
- border-color: rgba(255,255,255,.1);
- transform: translateY(-1px);
- box-shadow: 0 4px 12px rgba(0,0,0,.3);
+ background: linear-gradient(135deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,.10) 100%);
+ border-color: rgba(255,255,255,.2);
+ transform: translateY(-2px);
+ box-shadow: 0 12px 32px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.1);
  }
  .team-card[data-activity="on-call"] {
  border-color: rgba(229,64,64,.15);
@@ -633,12 +656,13 @@
  /* ── Call Activity ── */
  .call-activity-panel {
  margin-top: 20px;
- background: rgba(255,255,255,.09);
- border-radius: 12px;
- border: 1px solid rgba(255,255,255,.12);
+ background: linear-gradient(135deg, rgba(255,255,255,.11) 0%, rgba(255,255,255,.06) 100%);
+ border-radius: 14px;
+ border: 1px solid rgba(255,255,255,.16);
  overflow: hidden;
- backdrop-filter: blur(20px);
- box-shadow: 0 8px 24px rgba(0,0,0,.2);
+ backdrop-filter: blur(24px);
+ -webkit-backdrop-filter: blur(24px);
+ box-shadow: 0 12px 36px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.08);
  }
  .call-activity-header {
  display: flex;
@@ -727,12 +751,13 @@
  /* ── Screen Share ── */
  .screen-share-panel {
  margin-top: 20px;
- background: rgba(255,255,255,.09);
- border-radius: 12px;
- border: 1px solid rgba(255,255,255,.12);
+ background: linear-gradient(135deg, rgba(255,255,255,.11) 0%, rgba(255,255,255,.06) 100%);
+ border-radius: 14px;
+ border: 1px solid rgba(255,255,255,.16);
  overflow: hidden;
- backdrop-filter: blur(20px);
- box-shadow: 0 8px 24px rgba(0,0,0,.2);
+ backdrop-filter: blur(24px);
+ -webkit-backdrop-filter: blur(24px);
+ box-shadow: 0 12px 36px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.08);
  }
  .screen-share-header {
  display: flex;
@@ -800,13 +825,19 @@
 
  /* ── AI Insight ── */
  .ai-insight-card {
- background: rgba(255,255,255,.08);
- border-radius: 10px;
- padding: 18px;
+ background: linear-gradient(135deg, rgba(255,255,255,.10) 0%, rgba(255,255,255,.05) 100%);
+ border-radius: 12px;
+ padding: 20px;
  margin-bottom: 12px;
- border: 1px solid rgba(255,255,255,.12);
- box-shadow: 0 4px 12px rgba(0,0,0,.15);
- backdrop-filter: blur(12px);
+ border: 1px solid rgba(255,255,255,.14);
+ box-shadow: 0 6px 16px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.06);
+ backdrop-filter: blur(16px);
+ -webkit-backdrop-filter: blur(16px);
+ transition: all .2s ease;
+ }
+ .ai-insight-card:hover {
+ border-color: rgba(255,255,255,.18);
+ box-shadow: 0 8px 20px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.08);
  }
  .ai-insight-card h4 { font-size: 0.75rem; font-weight: 500; margin: 0 0 10px; color: rgba(255,255,255,.5); letter-spacing: .3px; }
  .ai-insight-card .sentiment-badge {
@@ -875,12 +906,13 @@
  /* ── RingCentral AI Panel ── */
  .rc-ai-panel {
  margin-top: 24px;
- background: rgba(255,255,255,.09);
- border: 1px solid rgba(255,255,255,.12);
+ background: linear-gradient(135deg, rgba(255,255,255,.11) 0%, rgba(255,255,255,.06) 100%);
+ border: 1px solid rgba(255,255,255,.16);
  border-radius: 16px;
- padding: 20px;
- backdrop-filter: blur(20px);
- box-shadow: 0 8px 24px rgba(0,0,0,.2);
+ padding: 24px;
+ backdrop-filter: blur(24px);
+ -webkit-backdrop-filter: blur(24px);
+ box-shadow: 0 12px 36px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.08);
  }
  .rc-ai-status-dot {
  width: 8px; height: 8px; border-radius: 50%;
@@ -895,18 +927,24 @@
  }
  @media (max-width: 1100px) { .rc-ai-grid { grid-template-columns: repeat(2, 1fr); } }
  .rc-ai-card {
- background: rgba(255,255,255,.07);
- border: 1px solid rgba(255,255,255,.10);
- border-radius: 12px;
- padding: 16px;
+ background: linear-gradient(135deg, rgba(255,255,255,.10) 0%, rgba(255,255,255,.05) 100%);
+ border: 1px solid rgba(255,255,255,.14);
+ border-radius: 14px;
+ padding: 18px;
  display: flex;
  flex-direction: column;
  gap: 12px;
- transition: background .2s, border-color .2s;
- box-shadow: 0 4px 12px rgba(0,0,0,.15);
- backdrop-filter: blur(12px);
+ transition: all .25s ease;
+ box-shadow: 0 8px 24px rgba(0,0,0,.2), inset 0 1px 0 rgba(255,255,255,.06);
+ backdrop-filter: blur(16px);
+ -webkit-backdrop-filter: blur(16px);
  }
- .rc-ai-card:hover { background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.15); }
+ .rc-ai-card:hover {
+ background: linear-gradient(135deg, rgba(255,255,255,.13) 0%, rgba(255,255,255,.08) 100%);
+ border-color: rgba(255,255,255,.2);
+ box-shadow: 0 12px 32px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.08);
+ transform: translateY(-1px);
+ }
  .rc-ai-card-header { display: flex; align-items: flex-start; gap: 10px; }
  .rc-ai-card-icon {
  width: 28px; height: 28px;
@@ -944,15 +982,17 @@
  .avatar-popover {
  position: fixed;
  z-index: 9000;
- background: #1a1a1a;
- border-radius: 12px;
- box-shadow: 0 8px 30px rgba(0,0,0,.5);
- border: 1px solid rgba(255,255,255,.08);
+ background: linear-gradient(135deg, rgba(26,26,26,.95) 0%, rgba(16,16,16,.95) 100%);
+ border-radius: 14px;
+ box-shadow: 0 16px 48px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.06);
+ border: 1px solid rgba(255,255,255,.12);
  padding: 0;
- min-width: 220px;
- animation: popIn .12s ease-out;
+ min-width: 240px;
+ animation: popIn .2s cubic-bezier(0.34, 1.56, 0.64, 1);
+ backdrop-filter: blur(12px);
+ -webkit-backdrop-filter: blur(12px);
  }
- @keyframes popIn { from { opacity:0; transform: scale(.95); } to { opacity:1; transform: scale(1); } }
+ @keyframes popIn { from { opacity:0; transform: scale(.93); } to { opacity:1; transform: scale(1); } }
  .avatar-popover-header {
  display: flex; align-items: center; gap: 10px;
  padding: 14px 16px 10px;
@@ -1527,12 +1567,13 @@
       grid-template-columns: 220px 1fr;
       gap: 0;
       height: calc(100vh - var(--header-height) - 48px);
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 14px;
       overflow: hidden;
-      background: rgba(255,255,255,.08);
-      backdrop-filter: blur(20px);
-      box-shadow: 0 12px 40px rgba(0,0,0,.25);
+      background: linear-gradient(135deg, rgba(255,255,255,.10) 0%, rgba(255,255,255,.05) 100%);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      box-shadow: 0 16px 48px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.08);
     }
 
     .slack-channels {
@@ -1616,22 +1657,28 @@
  }
 
  .integration-card {
- background: rgba(255,255,255,.09);
- border: 1px solid rgba(255,255,255,.14);
- border-radius: 12px;
- padding: 20px;
- box-shadow: 0 8px 24px rgba(0,0,0,.2);
- backdrop-filter: blur(16px);
- transition: background .2s, border-color .2s;
+ background: linear-gradient(135deg, rgba(255,255,255,.11) 0%, rgba(255,255,255,.06) 100%);
+ border: 1px solid rgba(255,255,255,.16);
+ border-radius: 14px;
+ padding: 22px;
+ box-shadow: 0 10px 32px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.08);
+ backdrop-filter: blur(20px);
+ -webkit-backdrop-filter: blur(20px);
+ transition: all .25s ease;
  position: relative;
  overflow: hidden;
  }
  .integration-card::before {
  content: '';
  position: absolute; top: 0; left: 0; right: 0; height: 1px;
- background: linear-gradient(90deg, transparent, rgba(255,255,255,.06), transparent);
+ background: linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent);
  }
- .integration-card:hover { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.1); }
+ .integration-card:hover {
+ background: linear-gradient(135deg, rgba(255,255,255,.14) 0%, rgba(255,255,255,.09) 100%);
+ border-color: rgba(255,255,255,.2);
+ box-shadow: 0 14px 40px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.1);
+ transform: translateY(-2px);
+ }
 
  .integration-card-header {
  display: flex;
@@ -1674,25 +1721,32 @@
  }
 
  .fab {
- width: 44px;
- height: 44px;
+ width: 48px;
+ height: 48px;
  border-radius: 50%;
- border: 1px solid rgba(255,255,255,.15);
+ border: 1px solid rgba(255,255,255,.18);
  cursor: pointer;
  font-size: 1.2rem;
  display: flex;
  align-items: center;
  justify-content: center;
- box-shadow: 0 8px 20px rgba(0,0,0,.4);
- transition: transform .15s, box-shadow .15s;
+ box-shadow: 0 12px 30px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.1);
+ transition: all .2s cubic-bezier(0.34, 1.56, 0.64, 1);
  position: relative;
  flex-shrink: 0;
- background: rgba(255,255,255,.12);
- backdrop-filter: blur(16px);
- color: rgba(255,255,255,.7);
+ background: linear-gradient(135deg, rgba(255,255,255,.15) 0%, rgba(255,255,255,.08) 100%);
+ backdrop-filter: blur(20px);
+ -webkit-backdrop-filter: blur(20px);
+ color: rgba(255,255,255,.75);
  }
 
- .fab:hover { transform: scale(1.06); box-shadow: 0 6px 16px rgba(0,0,0,.4); border-color: rgba(255,255,255,.2); color: rgba(255,255,255,.9); }
+ .fab:hover {
+ transform: scale(1.1);
+ box-shadow: 0 16px 40px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.12);
+ border-color: rgba(255,255,255,.25);
+ color: rgba(255,255,255,.95);
+ background: linear-gradient(135deg, rgba(255,255,255,.2) 0%, rgba(255,255,255,.12) 100%);
+ }
 
  .fab-inbox { background: rgba(255,255,255,.05); }
  .fab-ai { background: rgba(255,255,255,.05); color: rgba(229,64,64,.7); }
@@ -1751,21 +1805,22 @@
  position: fixed;
  bottom: 90px;
  right: 24px;
- width: 340px;
- height: 460px;
- background: rgba(255,255,255,.11);
- border: 1px solid rgba(255,255,255,.12);
- border-radius: 12px;
- box-shadow: 0 12px 40px rgba(0,0,0,.3);
+ width: 360px;
+ height: 500px;
+ background: linear-gradient(135deg, rgba(255,255,255,.13) 0%, rgba(255,255,255,.07) 100%);
+ border: 1px solid rgba(255,255,255,.16);
+ border-radius: 16px;
+ box-shadow: 0 20px 60px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.08);
  display: flex;
  flex-direction: column;
  overflow: hidden;
  z-index: 299;
- transition: opacity .2s, transform .2s;
+ transition: opacity .3s ease, transform .3s cubic-bezier(0.34, 1.56, 0.64, 1);
  opacity: 0;
- transform: translateY(12px) scale(.97);
+ transform: translateY(16px) scale(.95);
  pointer-events: none;
- backdrop-filter: blur(16px);
+ backdrop-filter: blur(24px);
+ -webkit-backdrop-filter: blur(24px);
  }
 
  .chat-panel.open {
@@ -2060,6 +2115,147 @@
 
  .vault-pin-row label { font-size: 0.8125rem; font-weight: 500; white-space: nowrap; color: rgba(255,255,255,.6); }
  .vault-pin-row input { flex: 1; }
+
+ /* ============================================================
+    Roam-style Spatial Office Floor Map (Virtual Office hero)
+    ============================================================ */
+ .roam-stage {
+   position: relative;
+   border-radius: 28px;
+   padding: 26px;
+   background:
+     radial-gradient(circle at 18% 12%, rgba(229,64,64,.06), transparent 42%),
+     radial-gradient(circle at 88% 85%, rgba(96,165,250,.05), transparent 45%),
+     linear-gradient(160deg, rgba(255,255,255,.055), rgba(255,255,255,.012));
+   border: 1px solid rgba(255,255,255,.1);
+   box-shadow: 0 40px 90px rgba(0,0,0,.5), 0 12px 30px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.07);
+   backdrop-filter: blur(28px);
+   -webkit-backdrop-filter: blur(28px);
+   overflow: hidden;
+ }
+ .roam-stage::before {
+   content: '';
+   position: absolute; inset: 0;
+   background-image: radial-gradient(rgba(255,255,255,.05) 1px, transparent 1px);
+   background-size: 26px 26px;
+   -webkit-mask-image: linear-gradient(180deg, transparent, #000 14%, #000 86%, transparent);
+   mask-image: linear-gradient(180deg, transparent, #000 14%, #000 86%, transparent);
+   pointer-events: none;
+ }
+
+ .roam-grid {
+   position: relative; z-index: 1;
+   display: grid;
+   grid-template-columns: 1.5fr 1fr 1fr;
+   grid-template-rows: 210px 210px;
+   gap: 16px;
+ }
+ .roam-room {
+   position: relative;
+   border-radius: 20px;
+   border: 1px solid rgba(255,255,255,.07);
+   background: linear-gradient(160deg, rgba(255,255,255,.045), rgba(255,255,255,.012));
+   padding: 16px 18px;
+   display: flex;
+   flex-direction: column;
+   transition: border-color .25s, background .25s, box-shadow .25s, transform .25s;
+   overflow: hidden;
+ }
+ .roam-room:hover {
+   border-color: rgba(255,255,255,.16);
+   background: linear-gradient(160deg, rgba(255,255,255,.07), rgba(255,255,255,.022));
+   box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+ }
+ .roam-room::after {
+   content: ''; position: absolute; inset: 0; border-radius: 20px; pointer-events: none;
+   background: radial-gradient(ellipse at 50% -10%, var(--roam-glow, transparent), transparent 60%);
+ }
+ .roam-room-lobby      { grid-column: 1; grid-row: 1 / 3; }
+ .roam-room-conference { grid-column: 2; grid-row: 1; }
+ .roam-room-breakroom  { grid-column: 3; grid-row: 1; }
+ .roam-room-focus      { grid-column: 2; grid-row: 2; }
+ .roam-room-lounge     { grid-column: 3; grid-row: 2; }
+ .roam-room.is-empty { cursor: pointer; }
+
+ .roam-room-label { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; position: relative; z-index: 2; }
+ .roam-room-label .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+ .roam-room-label .nm { font-size: 0.6875rem; font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; color: rgba(255,255,255,.5); }
+ .roam-room-label .ct { margin-left: auto; font-size: 0.625rem; color: rgba(255,255,255,.35); background: rgba(255,255,255,.06); padding: 2px 8px; border-radius: 10px; }
+
+ .roam-people { position: relative; z-index: 2; flex: 1; display: flex; flex-wrap: wrap; gap: 26px 18px; align-content: flex-start; padding-top: 26px; }
+
+ .roam-person { position: relative; width: 64px; display: flex; flex-direction: column; align-items: center; gap: 7px; cursor: pointer; }
+ .roam-ava { position: relative; width: 52px; height: 52px; border-radius: 50%; transition: transform .18s ease; }
+ .roam-person:hover .roam-ava { transform: translateY(-3px) scale(1.06); }
+ .roam-ava img, .roam-ava .ini {
+   width: 52px; height: 52px; border-radius: 50%; object-fit: cover;
+   border: 2px solid rgba(255,255,255,.12);
+   box-shadow: 0 8px 18px rgba(0,0,0,.45);
+ }
+ .roam-ava .ini { display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #232323, #111); color: rgba(255,255,255,.7); font-weight: 700; font-size: 0.8rem; letter-spacing: .5px; }
+ .roam-ava.s-online img, .roam-ava.s-online .ini { border-color: rgba(74,222,128,.7); }
+ .roam-ava.s-busy img,   .roam-ava.s-busy .ini   { border-color: rgba(239,68,68,.7); }
+ .roam-ava.s-away img,   .roam-ava.s-away .ini   { border-color: rgba(251,191,36,.7); }
+ .roam-ava.s-dnd img,    .roam-ava.s-dnd .ini    { border-color: rgba(167,139,250,.7); }
+
+ .roam-status { position: absolute; bottom: 1px; right: 1px; width: 13px; height: 13px; border-radius: 50%; border: 2.5px solid #0c0c0c; }
+ .roam-status.online { background: #4ade80; box-shadow: 0 0 6px rgba(74,222,128,.5); }
+ .roam-status.busy { background: #ef4444; box-shadow: 0 0 6px rgba(239,68,68,.5); }
+ .roam-status.away { background: #fbbf24; box-shadow: 0 0 6px rgba(251,191,36,.5); }
+ .roam-status.dnd { background: #a78bfa; box-shadow: 0 0 6px rgba(167,139,250,.5); }
+ .roam-status.offline { background: #4b5563; }
+
+ .roam-ava.calling::before {
+   content: ''; position: absolute; inset: -5px; border-radius: 50%;
+   border: 2px solid rgba(229,64,64,.55);
+   animation: roamPulse 1.8s ease-out infinite;
+ }
+ @keyframes roamPulse { 0% { transform: scale(.9); opacity: .85; } 100% { transform: scale(1.4); opacity: 0; } }
+
+ .roam-name { font-size: 0.6875rem; font-weight: 600; color: rgba(255,255,255,.85); max-width: 72px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; transition: opacity .15s; }
+ .roam-person:hover .roam-name { opacity: 0; }
+
+ .roam-bubble {
+   position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+   background: rgba(20,20,22,.96); border: 1px solid rgba(255,255,255,.1);
+   border-radius: 11px; padding: 6px 10px; font-size: 0.625rem; color: rgba(255,255,255,.72);
+   white-space: nowrap; max-width: 160px; overflow: hidden; text-overflow: ellipsis;
+   box-shadow: 0 8px 20px rgba(0,0,0,.45); pointer-events: none; opacity: 0; transition: opacity .2s;
+   display: flex; align-items: center; gap: 6px; z-index: 8;
+ }
+ .roam-person:hover .roam-bubble, .roam-bubble.live { opacity: 1; }
+ .roam-bubble::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-top-color: rgba(20,20,22,.96); }
+ .roam-bubble .bd { width: 5px; height: 5px; border-radius: 50%; background: #e54040; animation: callPulse 2s infinite; flex-shrink: 0; }
+ .roam-bubble.meeting .bd { background: #a78bfa; }
+
+ .roam-actions {
+   position: absolute; top: 56px; left: 50%; transform: translateX(-50%);
+   display: flex; gap: 4px; opacity: 0; pointer-events: none; transition: opacity .15s; z-index: 9;
+   background: rgba(14,14,16,.92); padding: 4px; border-radius: 9px; border: 1px solid rgba(255,255,255,.08);
+   box-shadow: 0 8px 20px rgba(0,0,0,.5); backdrop-filter: blur(8px);
+ }
+ .roam-person:hover .roam-actions { opacity: 1; pointer-events: auto; }
+ .roam-act { width: 26px; height: 26px; border-radius: 6px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; color: rgba(255,255,255,.55); cursor: pointer; transition: all .15s; }
+ .roam-act:hover { background: rgba(229,64,64,.15); color: #e54040; }
+ .roam-act.listen:hover { background: rgba(74,222,128,.15); color: #4ade80; }
+ .roam-act.screen:hover { background: rgba(96,165,250,.15); color: #60a5fa; }
+
+ .roam-empty { margin: auto; display: flex; flex-direction: column; align-items: center; gap: 9px; color: rgba(255,255,255,.22); font-size: 0.6875rem; font-style: italic; }
+ .roam-empty .plus { width: 32px; height: 32px; border-radius: 50%; border: 1px dashed rgba(255,255,255,.16); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-style: normal; transition: all .2s; }
+ .roam-room.is-empty:hover .roam-empty .plus { border-color: rgba(229,64,64,.4); color: rgba(229,64,64,.7); }
+
+ .roam-offline { margin-top: 18px; display: flex; align-items: center; gap: 16px; padding: 16px 20px; border-radius: 18px; background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.05); flex-wrap: wrap; }
+ .roam-offline .lbl { font-size: 0.5625rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,.22); margin-right: 4px; }
+ .roam-offline .roam-person { width: 54px; opacity: .5; }
+ .roam-offline .roam-person:hover { opacity: 1; }
+ .roam-offline .roam-ava, .roam-offline .roam-ava img, .roam-offline .roam-ava .ini { width: 42px; height: 42px; }
+
+ @media (max-width: 980px) {
+   .roam-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+   .roam-room-lobby, .roam-room-conference, .roam-room-breakroom, .roam-room-focus, .roam-room-lounge { grid-column: auto; grid-row: auto; }
+   .roam-room-lobby { grid-column: 1 / 3; }
+   .roam-room { min-height: 180px; }
+ }
 
  </style>
 </head>
@@ -3374,7 +3570,12 @@
  { id: 'demo-1', name: 'Chris B', email: 'chris@noahconnect.com', status: 'online', job_title: 'Sales', phone: '+14155550101', avatar_url: makeDemoAvatar(1, 0, 'CB'), activity: 'on-call', activity_context: 'Talking to Shelly Jones' },
  { id: 'demo-2', name: 'Jon D', email: 'jon@noahconnect.com', status: 'online', job_title: 'Admin', phone: '+14155550102', avatar_url: makeDemoAvatar(2, 200, 'JD'), activity: 'idle-activity', activity_context: 'Reviewing invoices' },
  { id: 'demo-3', name: 'Mike B', email: 'mike@noahconnect.com', status: 'busy', job_title: 'Dispatch', phone: '+14155550103', avatar_url: makeDemoAvatar(3, 30, 'MB'), activity: 'in-meeting', activity_context: 'Team standup call' },
- { id: 'demo-4', name: 'Matt B', email: 'matt@noahconnect.com', status: 'online', job_title: 'Sales', phone: '+14155550104', avatar_url: makeDemoAvatar(4, 160, 'MB'), activity: 'idle-activity', activity_context: 'On YouTube' },
+ { id: 'demo-4', name: 'Matt B', email: 'matt@noahconnect.com', status: 'online', job_title: 'Sales', phone: '+14155550104', avatar_url: makeDemoAvatar(4, 160, 'MB'), activity: 'on-call', activity_context: 'Closing the Henderson deal' },
+ { id: 'demo-5', name: 'Sara K', email: 'sara@noahconnect.com', status: 'busy', job_title: 'Support Lead', phone: '+14155550105', avatar_url: makeDemoAvatar(5, 280, 'SK'), activity: 'in-meeting', activity_context: 'Client onboarding' },
+ { id: 'demo-6', name: 'Dana R', email: 'dana@noahconnect.com', status: 'away', job_title: 'Marketing', phone: '+14155550106', avatar_url: makeDemoAvatar(6, 110, 'DR'), activity: 'idle-activity', activity_context: 'Grabbing coffee' },
+ { id: 'demo-7', name: 'Leo P', email: 'leo@noahconnect.com', status: 'dnd', job_title: 'Engineering', phone: '+14155550107', avatar_url: makeDemoAvatar(7, 60, 'LP'), activity: 'idle-activity', activity_context: 'Heads-down: shipping release' },
+ { id: 'demo-8', name: 'Nina F', email: 'nina@noahconnect.com', status: 'idle', job_title: 'Design', phone: '+14155550108', avatar_url: makeDemoAvatar(8, 330, 'NF'), activity: 'idle-activity', activity_context: 'Listening to lo-fi' },
+ { id: 'demo-9', name: 'Omar T', email: 'omar@noahconnect.com', status: 'offline', job_title: 'Finance', phone: '+14155550109', avatar_url: makeDemoAvatar(9, 220, 'OT'), activity: 'idle-activity', activity_context: '' },
  ];
 
  function applyDemoToggleUI() {
@@ -3963,6 +4164,15 @@
  message: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>',
  };
 
+ // Per-room presence colors for the spatial map
+ const ROOM_META = {
+ lobby:      { dot: '#4ade80', glow: 'rgba(74,222,128,.07)' },
+ conference: { dot: '#ef4444', glow: 'rgba(239,68,68,.07)' },
+ breakroom:  { dot: '#fbbf24', glow: 'rgba(251,191,36,.06)' },
+ focus:      { dot: '#a78bfa', glow: 'rgba(167,139,250,.06)' },
+ lounge:     { dot: '#60a5fa', glow: 'rgba(96,165,250,.06)' },
+ };
+
  function renderUsers(users) {
  const el = document.getElementById('teamGrid');
  if (!users.length) {
@@ -3970,42 +4180,42 @@
  return;
  }
 
- function teamCardHtml(u) {
+ // A single person rendered as a profile "head" placed on the map
+ function personHtml(u) {
  const status = u.status || 'offline';
  const initials = (u.name || 'U').split(' ').map(s => s[0]).join('').slice(0, 2).toUpperCase();
  const avatarInner = u.avatar_url
  ? `<img src="${escAttr(u.avatar_url)}" alt="${escAttr(u.name)}" />`
- : `<div class="tc-initials">${escHtml(initials)}</div>`;
+ : `<div class="ini">${escHtml(initials)}</div>`;
  const roleLabel = u.job_title || u.role || u.department || '';
  const activity = u.activity || 'idle-activity';
  const activityContext = u.activity_context || '';
- const actIcon = activity === 'on-call' ? SVG_ICONS.phone
- : activity === 'in-meeting' ? SVG_ICONS.video
- : SVG_ICONS.clock;
- const liveDot = activity === 'on-call' ? '<span class="tc-live-dot"></span>' : '';
+ const calling = activity === 'on-call';
+ const meeting = activity === 'in-meeting';
+ const bubbleLive = calling && activityContext;
+ const bubbleIcon = calling ? SVG_ICONS.phone : meeting ? SVG_ICONS.video : SVG_ICONS.clock;
+ const liveDot = calling ? '<span class="bd"></span>' : '';
+ const bubble = activityContext
+ ? `<div class="roam-bubble ${bubbleLive ? 'live' : ''} ${meeting ? 'meeting' : ''}">${liveDot}<span class="tc-ctx-icon" style="display:flex;opacity:.6;">${bubbleIcon}</span><span>${escHtml(activityContext)}</span></div>`
+ : '';
 
  return `
- <div class="team-card js-team-card" data-user-id="${escAttr(u.id)}" data-name="${escAttr(u.name || '')}" data-phone="${escAttr(u.phone || '')}" data-email="${escAttr(u.email || '')}" data-avatar="${escAttr(u.avatar_url || '')}" data-role="${escAttr(roleLabel)}" data-status="${escAttr(status)}">
- <div class="team-card-top">
- <div class="team-card-avatar">
+ <div class="roam-person js-roam-person"
+ data-user-id="${escAttr(u.id)}" data-name="${escAttr(u.name || '')}"
+ data-phone="${escAttr(u.phone || '')}" data-email="${escAttr(u.email || '')}"
+ data-avatar="${escAttr(u.avatar_url || '')}" data-role="${escAttr(roleLabel)}"
+ data-status="${escAttr(status)}">
+ ${bubble}
+ <div class="roam-ava s-${status} ${calling ? 'calling' : ''}">
  ${avatarInner}
- <span class="team-card-status-dot ${status}"></span>
+ <span class="roam-status ${status}"></span>
  </div>
- <div class="team-card-info">
- <div class="team-card-name">${escHtml(u.name || 'Unknown')}</div>
- <div class="team-card-role">${escHtml(roleLabel || 'Team Member')}</div>
- </div>
- </div>
- <div class="team-card-activity-context ${activity}">
- <span class="tc-ctx-icon">${actIcon}</span>
- ${liveDot}
- <span class="tc-ctx-text">${escHtml(activityContext)}</span>
- </div>
- <div class="team-card-actions">
- <button class="tc-action-btn tc-action-listen js-tc-action" data-action="listen" data-name="${escAttr(u.name || '')}"><span class="tc-act-icon">${SVG_ICONS.listen}</span>Listen</button>
- <button class="tc-action-btn tc-action-coach js-tc-action" data-action="coach" data-name="${escAttr(u.name || '')}"><span class="tc-act-icon">${SVG_ICONS.coach}</span>Coach</button>
- <button class="tc-action-btn tc-action-screen js-tc-action" data-action="screen" data-name="${escAttr(u.name || '')}"><span class="tc-act-icon">${SVG_ICONS.screen}</span>Screen</button>
- <button class="tc-action-btn js-tc-action" data-action="message" data-name="${escAttr(u.name || '')}"><span class="tc-act-icon">${SVG_ICONS.message}</span>Message</button>
+ <div class="roam-name">${escHtml((u.name || 'Unknown').split(' ')[0])}</div>
+ <div class="roam-actions">
+ <button class="roam-act listen js-roam-act" data-action="listen" data-name="${escAttr(u.name || '')}" title="Listen">${SVG_ICONS.listen}</button>
+ <button class="roam-act js-roam-act" data-action="coach" data-name="${escAttr(u.name || '')}" title="Coach">${SVG_ICONS.coach}</button>
+ <button class="roam-act screen js-roam-act" data-action="screen" data-name="${escAttr(u.name || '')}" title="Screen">${SVG_ICONS.screen}</button>
+ <button class="roam-act js-roam-act" data-action="message" data-name="${escAttr(u.name || '')}" title="Message">${SVG_ICONS.message}</button>
  </div>
  </div>`;
  }
@@ -4016,29 +4226,44 @@
  const floorHtml = rooms.map(room => {
  const roomUsers = users.filter(u => room.statuses.includes(u.status || 'offline'));
  const count = roomUsers.length;
+ const meta = ROOM_META[room.slug] || { dot: '#9ca3af', glow: 'transparent' };
+ const peopleHtml = count
+ ? roomUsers.map(personHtml).join('')
+ : `<div class="roam-empty"><span class="plus">+</span>Empty — click to join</div>`;
  return `
- <div class="office-room room-${room.slug}">
- <div class="room-header">
- <span class="room-status-dot room-dot-${room.slug}"></span>
- <span class="room-name">${room.name}</span>
- ${count ? `<span class="room-count">${count}</span>` : ''}
- <button class="room-join-btn js-room-join" data-room="${escAttr(room.slug)}">Join</button>
+ <div class="roam-room roam-room-${room.slug} ${count ? '' : 'is-empty js-room-join'}" data-room="${escAttr(room.slug)}" style="--roam-glow:${meta.glow};">
+ <div class="roam-room-label">
+ <span class="dot" style="background:${meta.dot};box-shadow:0 0 8px ${meta.dot}66;"></span>
+ <span class="nm">${room.name}</span>
+ ${count ? `<span class="ct">${count}</span>` : ''}
  </div>
- <div class="room-cards">
- ${count ? roomUsers.map(teamCardHtml).join('') : '<span class="room-empty-msg">No one here</span>'}
- </div>
+ <div class="roam-people">${peopleHtml}</div>
  </div>`;
  }).join('');
 
  const offlineHtml = offlineUsers.length ? `
- <div class="offline-row">
- <span class="offline-row-label">Offline</span>
- ${offlineUsers.map(teamCardHtml).join('')}
+ <div class="roam-offline">
+ <span class="lbl">Offline</span>
+ ${offlineUsers.map(personHtml).join('')}
  </div>` : '';
 
- el.innerHTML = `<div class="office-floor">${floorHtml}</div>${offlineHtml}`;
+ el.innerHTML = `<div class="roam-stage"><div class="roam-grid">${floorHtml}</div></div>${offlineHtml}`;
 
- el.querySelectorAll('.js-tc-action').forEach(btn => {
+ // Click a head → contact popover (chat / email / status)
+ el.querySelectorAll('.js-roam-person').forEach(p => {
+ p.addEventListener('click', (e) => {
+ if (e.target.closest('.js-roam-act')) return;
+ e.stopPropagation();
+ const d = p.dataset;
+ showAvatarPopover(p.querySelector('.roam-ava'), {
+ userId: d.userId, name: d.name, phone: d.phone, email: d.email,
+ avatar: d.avatar, role: d.role, status: d.status, msg: '',
+ });
+ });
+ });
+
+ // Quick actions on hover (listen / coach / screen / message)
+ el.querySelectorAll('.js-roam-act').forEach(btn => {
  btn.addEventListener('click', (e) => {
  e.stopPropagation();
  const action = btn.dataset.action;
@@ -4057,10 +4282,11 @@
  });
  });
 
- el.querySelectorAll('.js-room-join').forEach(btn => {
- btn.addEventListener('click', (e) => {
+ // Click an empty room → join
+ el.querySelectorAll('.js-room-join').forEach(room => {
+ room.addEventListener('click', (e) => {
  e.stopPropagation();
- toast('Joining ' + btn.dataset.room + '...', 'info');
+ toast('Joining ' + (room.dataset.room || 'room') + '...', 'info');
  });
  });
  }
@@ -4241,20 +4467,20 @@
  // ============================================================
  // Init — wire up all event listeners here
  // ============================================================
- document.getElementById('refreshBtn').addEventListener('click', refreshCurrentView);
- document.getElementById('msgType').addEventListener('change', handleMsgTypeChange);
- document.getElementById('sendMsgBtn').addEventListener('click', sendMessage);
- document.getElementById('convSearchInput').addEventListener('input', (e) => filterConversations(e.target.value));
- document.getElementById('clientSearchInput').addEventListener('input', (e) => searchClients(e.target.value));
- document.getElementById('addClientBtn').addEventListener('click', () => openModal('addClientModal'));
- document.getElementById('addUserBtn').addEventListener('click', () => openModal('addUserModal'));
- document.getElementById('syncGwBtn').addEventListener('click', syncGoogleWorkspace);
- document.getElementById('createClientBtn').addEventListener('click', createClient);
- document.getElementById('createUserBtn').addEventListener('click', createUser);
- document.getElementById('sendClientSmsBtn').addEventListener('click', sendClientSms);
+ document.getElementById('refreshBtn')?.addEventListener('click', refreshCurrentView);
+ document.getElementById('msgType')?.addEventListener('change', handleMsgTypeChange);
+ document.getElementById('sendMsgBtn')?.addEventListener('click', sendMessage);
+ document.getElementById('convSearchInput')?.addEventListener('input', (e) => filterConversations(e.target.value));
+ document.getElementById('clientSearchInput')?.addEventListener('input', (e) => searchClients(e.target.value));
+ document.getElementById('addClientBtn')?.addEventListener('click', () => openModal('addClientModal'));
+ document.getElementById('addUserBtn')?.addEventListener('click', () => openModal('addUserModal'));
+ document.getElementById('syncGwBtn')?.addEventListener('click', syncGoogleWorkspace);
+ document.getElementById('createClientBtn')?.addEventListener('click', createClient);
+ document.getElementById('createUserBtn')?.addEventListener('click', createUser);
+ document.getElementById('sendClientSmsBtn')?.addEventListener('click', sendClientSms);
 
  // Client SMS AI draft
- document.getElementById('clientSmsAiBtn').addEventListener('click', async () => {
+ document.getElementById('clientSmsAiBtn')?.addEventListener('click', async () => {
  const btn = document.getElementById('clientSmsAiBtn');
  const prompt = document.getElementById('clientSmsAiPrompt').value.trim();
  if (!prompt) { toast('Describe what to say.', 'warning'); return; }
