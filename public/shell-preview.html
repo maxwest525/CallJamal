@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Noah Connect — Shell Prototype</title>
+<style>
+  *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --bg:#080809; --accent:#e54040; }
+  body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:var(--bg); color:rgba(255,255,255,.85); height:100vh; display:flex; flex-direction:column; overflow:hidden; }
+  ::-webkit-scrollbar{width:6px;height:6px;} ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px;}
+
+  /* ---- Top channel bar ---- */
+  .topbar{height:68px;flex-shrink:0;display:flex;align-items:center;gap:14px;padding:0 18px;background:linear-gradient(180deg,#121214,#0c0c0e);border-bottom:1px solid rgba(255,255,255,.08);box-shadow:0 6px 20px rgba(0,0,0,.35);position:relative;z-index:20;}
+  .brand{display:flex;align-items:center;gap:10px;padding-right:6px;}
+  .brand-mark{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,#e54040,#a02828);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;box-shadow:0 4px 12px rgba(229,64,64,.35);}
+  .brand-name{font-size:.9rem;font-weight:700;color:#fff;letter-spacing:-.2px;}
+  .brand-name small{display:block;font-size:.58rem;font-weight:500;color:rgba(255,255,255,.4);letter-spacing:.5px;}
+  .chan-arrow{width:34px;height:34px;flex-shrink:0;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);color:rgba(255,255,255,.5);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+  .chan-arrow:hover{background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.2);}
+  .chan-track{flex:1;display:flex;align-items:center;gap:8px;justify-content:center;overflow:hidden;}
+  .chan-chip{display:flex;align-items:center;gap:9px;padding:8px 15px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);cursor:pointer;transition:all .2s;position:relative;white-space:nowrap;}
+  .chan-chip:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.14);transform:translateY(-1px);}
+  .chan-chip.active{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2);box-shadow:0 8px 24px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.08);}
+  .chan-chip.active::after{content:'';position:absolute;left:15px;right:15px;bottom:-9px;height:3px;border-radius:3px;background:var(--chip-accent,#fff);box-shadow:0 0 12px var(--chip-accent,#fff);}
+  .chan-logo{width:22px;height:22px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+  .chan-label{display:flex;flex-direction:column;line-height:1.1;}
+  .chan-label .nm{font-size:.8125rem;font-weight:600;color:rgba(255,255,255,.9);}
+  .chan-label .ct{font-size:.6rem;color:rgba(255,255,255,.4);}
+  .chan-chip .unread{margin-left:3px;background:var(--accent);color:#fff;font-size:.6rem;font-weight:700;min-width:18px;height:18px;border-radius:9px;padding:0 5px;display:flex;align-items:center;justify-content:center;}
+  .me{display:flex;align-items:center;gap:8px;}
+  .me img{width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid rgba(74,222,128,.6);}
+  .me .nm{font-size:.8125rem;font-weight:600;color:#fff;} .me .st{font-size:.6rem;color:#4ade80;}
+
+  .stage{flex:1;overflow:hidden;display:flex;flex-direction:column;}
+  .pane{flex:1;overflow:hidden;display:none;}
+  .pane.active{display:flex;}
+
+  /* ---- generic 2-pane ---- */
+  .twopane{display:grid;grid-template-columns:330px 1fr;width:100%;overflow:hidden;}
+  .listcol{border-right:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.012);overflow-y:auto;}
+  .listhead{padding:15px 18px 9px;font-size:.7rem;font-weight:700;letter-spacing:1.1px;text-transform:uppercase;color:rgba(255,255,255,.4);}
+  .rightcol{display:flex;flex-direction:column;overflow:hidden;}
+
+  /* avatars */
+  .av{width:42px;height:42px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid rgba(255,255,255,.1);}
+  .ini{display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#2a2a2a,#161616);color:rgba(255,255,255,.75);font-weight:700;font-size:.8rem;border-radius:50%;border:2px solid rgba(255,255,255,.1);flex-shrink:0;}
+
+  /* ===== OFFICE (spatial map) ===== */
+  .office-wrap{flex:1;overflow:auto;padding:22px;}
+  .office-stage{position:relative;border-radius:24px;padding:22px;background:radial-gradient(circle at 18% 12%,rgba(229,64,64,.06),transparent 42%),radial-gradient(circle at 88% 85%,rgba(96,165,250,.05),transparent 45%),linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.012));border:1px solid rgba(255,255,255,.1);box-shadow:0 30px 80px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.06);}
+  .office-stage::before{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1px);background-size:26px 26px;-webkit-mask-image:linear-gradient(180deg,transparent,#000 14%,#000 86%,transparent);pointer-events:none;}
+  .office-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.5fr 1fr 1fr;grid-template-rows:200px 200px;gap:14px;}
+  .room{position:relative;border-radius:18px;border:1px solid rgba(255,255,255,.07);background:linear-gradient(160deg,rgba(255,255,255,.045),rgba(255,255,255,.012));padding:14px 16px;display:flex;flex-direction:column;overflow:hidden;}
+  .room.r1{grid-column:1;grid-row:1/3;} .room.r2{grid-column:2;grid-row:1;} .room.r3{grid-column:3;grid-row:1;} .room.r4{grid-column:2;grid-row:2;} .room.r5{grid-column:3;grid-row:2;}
+  .room-lbl{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+  .room-lbl .d{width:7px;height:7px;border-radius:50%;} .room-lbl .n{font-size:.66rem;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:rgba(255,255,255,.5);} .room-lbl .c{margin-left:auto;font-size:.6rem;color:rgba(255,255,255,.35);background:rgba(255,255,255,.06);padding:1px 7px;border-radius:9px;}
+  .people{display:flex;flex-wrap:wrap;gap:20px 14px;padding-top:18px;}
+  .person{width:62px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;position:relative;}
+  .person .av,.person .ini{width:50px;height:50px;}
+  .person:hover .av,.person:hover .ini{transform:translateY(-3px) scale(1.05);transition:transform .15s;}
+  .person .nm{font-size:.66rem;font-weight:600;color:rgba(255,255,255,.85);}
+  .person .bubble{position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);background:rgba(20,20,22,.96);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:5px 9px;font-size:.6rem;color:rgba(255,255,255,.75);white-space:nowrap;max-width:150px;overflow:hidden;text-overflow:ellipsis;box-shadow:0 8px 20px rgba(0,0,0,.45);display:flex;align-items:center;gap:5px;}
+  .person .bubble .pd{width:5px;height:5px;border-radius:50%;background:#e54040;}
+  .sdot{position:absolute;bottom:0;right:6px;width:12px;height:12px;border-radius:50%;border:2.5px solid #0e0e10;}
+  .sdot.online{background:#4ade80;} .sdot.busy{background:#ef4444;} .sdot.away{background:#fbbf24;} .sdot.dnd{background:#a78bfa;}
+
+  /* ===== SLACK / SMS chat ===== */
+  .conv{display:flex;align-items:center;gap:12px;padding:12px 18px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.03);transition:background .15s;}
+  .conv:hover{background:rgba(255,255,255,.03);} .conv.active{background:rgba(229,64,64,.07);box-shadow:inset 2px 0 0 var(--accent);}
+  .conv .av,.conv .ini{width:42px;height:42px;}
+  .conv-mid{flex:1;min-width:0;} .conv-nm{font-size:.875rem;font-weight:600;color:rgba(255,255,255,.9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;} .conv-pv{font-size:.75rem;color:rgba(255,255,255,.4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .conv-meta{text-align:right;flex-shrink:0;} .conv-tm{font-size:.66rem;color:rgba(255,255,255,.3);} .conv-un{display:inline-flex;margin-top:5px;background:var(--accent);color:#fff;font-size:.6rem;font-weight:700;min-width:18px;height:18px;border-radius:9px;padding:0 5px;align-items:center;justify-content:center;}
+  .thread-head{display:flex;align-items:center;gap:12px;padding:13px 20px;border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0;}
+  .thread-head .av,.thread-head .ini{width:38px;height:38px;}
+  .thread-head .t-nm{font-size:.95rem;font-weight:700;color:#fff;} .thread-head .t-sub{font-size:.68rem;color:rgba(255,255,255,.45);display:flex;align-items:center;gap:6px;margin-top:1px;}
+  .via{font-size:.54rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:2px 7px;border-radius:5px;}
+  .thread-body{flex:1;overflow-y:auto;padding:22px;display:flex;flex-direction:column;gap:13px;}
+  .bubble2{max-width:64%;padding:10px 14px;border-radius:16px;font-size:.875rem;line-height:1.5;}
+  .bubble2.them{align-self:flex-start;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-bottom-left-radius:5px;color:rgba(255,255,255,.85);}
+  .bubble2.me{align-self:flex-end;background:linear-gradient(135deg,#e54040,#c73535);color:#fff;border-bottom-right-radius:5px;box-shadow:0 6px 18px rgba(229,64,64,.25);}
+  .bubble2 .nmlbl{font-size:.66rem;opacity:.7;display:block;margin-bottom:3px;font-weight:700;} .bubble2 .tmlbl{display:block;font-size:.6rem;opacity:.6;margin-top:5px;}
+
+  /* bottom adaptive bar */
+  .botbar{flex-shrink:0;padding:14px 18px 16px;background:linear-gradient(0deg,#0c0c0e,rgba(12,12,14,.6));border-top:1px solid rgba(255,255,255,.08);}
+  .composer-inner{display:flex;align-items:center;gap:10px;padding:7px 7px 7px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.05);}
+  .composer-inner:focus-within{border-color:rgba(229,64,64,.4);box-shadow:0 10px 30px rgba(0,0,0,.35),0 0 0 3px rgba(229,64,64,.1);}
+  .cc{display:flex;align-items:center;gap:7px;flex-shrink:0;padding-right:11px;border-right:1px solid rgba(255,255,255,.1);} .cc .clab{font-size:.68rem;font-weight:700;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.5px;}
+  .ci{flex:1;background:transparent;border:none;outline:none;color:#fff;font-size:.9rem;padding:8px 4px;} .ci::placeholder{color:rgba(255,255,255,.3);}
+  .cb{width:40px;height:40px;border-radius:11px;flex-shrink:0;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.55);}
+  .cb:hover{background:rgba(255,255,255,.1);color:#fff;} .cb.mic.rec{background:rgba(229,64,64,.18);border-color:rgba(229,64,64,.4);color:var(--accent);} .cb.ai{color:var(--accent);}
+  .cb.send{background:linear-gradient(135deg,#e54040,#c73535);border-color:transparent;color:#fff;box-shadow:0 6px 16px rgba(229,64,64,.3);}
+
+  /* ===== GMAIL inbox ===== */
+  .mail-toolbar{display:flex;align-items:center;gap:6px;padding:10px 16px;border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0;}
+  .mail-tb-btn{padding:6px 11px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.6);font-size:.75rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s;}
+  .mail-tb-btn:hover{background:rgba(255,255,255,.1);color:#fff;}
+  .mail-tb-btn.primary{background:linear-gradient(135deg,#e54040,#c73535);border-color:transparent;color:#fff;}
+  .mail-search{margin-left:auto;flex:1;max-width:320px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:7px 14px;color:#fff;font-size:.8rem;outline:none;}
+  .mail-row{display:flex;align-items:center;gap:12px;padding:13px 18px;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer;transition:background .12s;}
+  .mail-row:hover{background:rgba(255,255,255,.03);}
+  .mail-row.unread{background:rgba(255,255,255,.022);}
+  .mail-star{color:rgba(255,255,255,.25);font-size:1rem;flex-shrink:0;}
+  .mail-row.unread .mail-from{color:#fff;font-weight:700;}
+  .mail-from{width:160px;flex-shrink:0;font-size:.85rem;color:rgba(255,255,255,.7);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .mail-snip{flex:1;min-width:0;font-size:.84rem;color:rgba(255,255,255,.5);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .mail-snip b{color:rgba(255,255,255,.88);font-weight:600;}
+  .mail-time{flex-shrink:0;font-size:.7rem;color:rgba(255,255,255,.35);}
+  .mail-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0;}
+  .mail-reader{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+  .mail-rhead{padding:18px 24px 14px;border-bottom:1px solid rgba(255,255,255,.06);}
+  .mail-subj{font-size:1.15rem;font-weight:700;color:#fff;margin-bottom:10px;}
+  .mail-rfrom{display:flex;align-items:center;gap:11px;}
+  .mail-rbody{flex:1;overflow-y:auto;padding:22px 24px;font-size:.9rem;line-height:1.65;color:rgba(255,255,255,.8);}
+  .mail-actions{display:flex;gap:10px;padding:16px 24px;border-top:1px solid rgba(255,255,255,.06);}
+
+  /* ===== RINGCENTRAL phone ===== */
+  .phone-wrap{display:grid;grid-template-columns:330px 1fr;width:100%;overflow:hidden;}
+  .call-row{display:flex;align-items:center;gap:12px;padding:13px 18px;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer;transition:background .12s;}
+  .call-row:hover{background:rgba(255,255,255,.03);} .call-row.active{background:rgba(229,64,64,.07);box-shadow:inset 2px 0 0 var(--accent);}
+  .call-ico{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .call-ico.in{background:rgba(74,222,128,.12);color:#4ade80;} .call-ico.out{background:rgba(255,255,255,.06);color:rgba(255,255,255,.5);} .call-ico.miss{background:rgba(229,64,64,.12);color:#e54040;} .call-ico.vm{background:rgba(251,191,36,.12);color:#fbbf24;}
+  .call-mid{flex:1;min-width:0;} .call-nm{font-size:.875rem;font-weight:600;color:rgba(255,255,255,.9);} .call-sub{font-size:.72rem;color:rgba(255,255,255,.4);}
+  .call-tm{font-size:.68rem;color:rgba(255,255,255,.3);flex-shrink:0;}
+  .phone-main{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;overflow-y:auto;padding:28px 24px;}
+  .vm-card{width:100%;max-width:460px;background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:20px;margin-bottom:24px;box-shadow:0 16px 40px rgba(0,0,0,.35);}
+  .vm-top{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+  .vm-nm{font-size:1rem;font-weight:700;color:#fff;} .vm-sub{font-size:.72rem;color:rgba(255,255,255,.45);}
+  .wave{display:flex;align-items:center;gap:3px;height:34px;padding:0 12px;background:rgba(255,255,255,.03);border-radius:9px;border:1px solid rgba(255,255,255,.06);margin-bottom:12px;}
+  .wave span{width:3px;border-radius:3px;background:rgba(229,64,64,.55);}
+  .vm-trans{font-size:.84rem;line-height:1.55;color:rgba(255,255,255,.7);background:rgba(255,255,255,.03);border-left:2px solid rgba(255,255,255,.15);border-radius:0 8px 8px 0;padding:11px 13px;margin-bottom:14px;}
+  .vm-trans .ai{font-size:.6rem;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:rgba(229,64,64,.8);display:flex;align-items:center;gap:5px;margin-bottom:6px;}
+  .vm-actions{display:flex;gap:10px;}
+  .pbtn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;border-radius:11px;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .15s;background:rgba(255,255,255,.05);color:rgba(255,255,255,.75);border:1px solid rgba(255,255,255,.1);}
+  .pbtn:hover{background:rgba(255,255,255,.1);}
+  .pbtn.call{background:linear-gradient(135deg,#4ade80,#22a35a);color:#04210f;border-color:transparent;}
+  .dialpad{display:grid;grid-template-columns:repeat(3,72px);gap:14px;margin-bottom:18px;}
+  .dkey{height:60px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#fff;font-size:1.4rem;font-weight:600;cursor:pointer;transition:all .12s;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .dkey small{font-size:.5rem;color:rgba(255,255,255,.35);letter-spacing:1px;}
+  .dkey:hover{background:rgba(255,255,255,.1);}
+  .dialnum{font-size:1.6rem;font-weight:600;color:#fff;letter-spacing:1px;height:40px;margin-bottom:14px;}
+  /* phone bottom dial bar */
+  .dialbar{display:flex;align-items:center;gap:12px;padding:8px 8px 8px 18px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.3);}
+  .dialbar input{flex:1;background:transparent;border:none;outline:none;color:#fff;font-size:1rem;letter-spacing:1px;}
+  .dialbar .callbtn{width:48px;height:44px;border-radius:12px;border:none;background:linear-gradient(135deg,#4ade80,#22a35a);color:#04210f;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 16px rgba(74,222,128,.3);}
+  .note{flex-shrink:0;text-align:center;font-size:.68rem;color:rgba(255,255,255,.3);padding:6px 0 10px;}
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand"><div class="brand-mark">N</div><div class="brand-name">Noah Connect<small>COMMS HUB</small></div></div>
+    <button class="chan-arrow" id="prev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <div class="chan-track" id="track"></div>
+    <button class="chan-arrow" id="next"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 18l6-6-6-6"/></svg></button>
+    <div class="me"><img src="https://u.hyperfx.ai/s/gXUkHja4ja" alt="me"/><div><div class="nm">Chris B</div><div class="st">● Online</div></div></div>
+  </div>
+  <div class="stage" id="stage"></div>
+  <div class="note">Prototype · ← → or click a channel to switch · each channel is its real surface (Office map · Slack chat · Gmail inbox · RingCentral phone · SMS)</div>
+
+<script>
+  const AV={corgi:'https://u.hyperfx.ai/s/gXUkHja4ja',husky:'https://u.hyperfx.ai/s/Bel9MDEiAV',retriever:'https://u.hyperfx.ai/s/7ygmluZRZb',fox:'https://u.hyperfx.ai/s/N4eR2TNVsi',cat:'https://u.hyperfx.ai/s/DAiHauhCON',redpanda:'https://u.hyperfx.ai/s/x54sr05YJB',owl:'https://u.hyperfx.ai/s/jMCDHyyNdx',parrot:'https://u.hyperfx.ai/s/nqVUnF2v8A',pug:'https://u.hyperfx.ai/s/LSxctH0ZeQ'};
+  const LOGOS={
+    office:`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#e54040" stroke-width="2"><path d="M3 21V8l9-5 9 5v13"/><path d="M9 21v-6h6v6"/></svg>`,
+    slack:`<svg viewBox="0 0 24 24" width="22" height="22"><path fill="#36C5F0" d="M5.04 15.17a2.52 2.52 0 11-2.52-2.52h2.52v2.52z"/><path fill="#36C5F0" d="M6.31 15.17a2.52 2.52 0 015.04 0v6.31a2.52 2.52 0 11-5.04 0v-6.31z"/><path fill="#2EB67D" d="M8.83 5.04a2.52 2.52 0 11-2.52-2.52v2.52H8.83z"/><path fill="#2EB67D" d="M8.83 6.31a2.52 2.52 0 010 5.04H2.52a2.52 2.52 0 110-5.04h6.31z"/><path fill="#ECB22E" d="M18.96 8.83a2.52 2.52 0 112.52 2.52h-2.52V8.83z"/><path fill="#ECB22E" d="M17.69 8.83a2.52 2.52 0 01-5.04 0V2.52a2.52 2.52 0 115.04 0v6.31z"/><path fill="#E01E5A" d="M15.17 18.96a2.52 2.52 0 112.52 2.52v-2.52h-2.52z"/><path fill="#E01E5A" d="M15.17 17.69a2.52 2.52 0 010-5.04h6.31a2.52 2.52 0 110 5.04h-6.31z"/></svg>`,
+    gmail:`<svg viewBox="0 0 24 24" width="22" height="22"><path fill="#4285F4" d="M2 6.5A1.5 1.5 0 013.5 5H4l8 6 8-6h.5A1.5 1.5 0 0122 6.5V18a1 1 0 01-1 1h-3V9.6l-6 4.5-6-4.5V19H3a1 1 0 01-1-1z"/><path fill="#34A853" d="M2 18V8l4 3v8H3a1 1 0 01-1-1z"/><path fill="#FBBC04" d="M2 6.5A1.5 1.5 0 013.5 5H4l2 1.5V11L2 8z"/><path fill="#EA4335" d="M18 19V9.6l-6 4.5-6-4.5V5l6 4.5L18 5z" opacity=".9"/><path fill="#C5221F" d="M18 5h.5A1.5 1.5 0 0122 6.5V8l-4 3V5z"/></svg>`,
+    ringcentral:`<svg viewBox="0 0 24 24" width="22" height="22"><rect width="24" height="24" rx="6" fill="#FF8800"/><path fill="#fff" d="M7.5 6.5c0-.55.45-1 1-1 5 0 9 4 9 9 0 .55-.45 1-1 1h-1.6c-.5 0-.9-.37-.98-.86A5.5 5.5 0 009.36 9.1c-.49-.08-.86-.48-.86-.98z"/><circle cx="9" cy="15" r="2.2" fill="#fff"/></svg>`,
+    sms:`<svg viewBox="0 0 24 24" width="22" height="22"><rect width="24" height="24" rx="6" fill="#25D366"/><path fill="#fff" d="M6 7.5A1.5 1.5 0 017.5 6h9A1.5 1.5 0 0118 7.5v6A1.5 1.5 0 0116.5 15H10l-3.2 2.8c-.32.28-.8.05-.8-.38z"/></svg>`,
+  };
+  const TABS=[
+    {id:'office',name:'Office',sub:'7 in office',accent:'#e54040',unread:0,logo:LOGOS.office},
+    {id:'slack',name:'Slack',sub:'4 channels',accent:'#E01E5A',unread:3,logo:LOGOS.slack},
+    {id:'gmail',name:'Gmail',sub:'2 unread',accent:'#EA4335',unread:2,logo:LOGOS.gmail},
+    {id:'ringcentral',name:'RingCentral',sub:'1 voicemail',accent:'#FF8800',unread:1,logo:LOGOS.ringcentral},
+    {id:'sms',name:'Text',sub:'1 new lead',accent:'#25D366',unread:1,logo:LOGOS.sms},
+  ];
+  let active=0;
+  const stage=document.getElementById('stage'), track=document.getElementById('track');
+  const imgEl=(o)=>o.img?`<img class="av" src="${o.img}">`:`<div class="ini">${o.ini||'?'}</div>`;
+
+  function renderChips(){
+    track.innerHTML=TABS.map((t,i)=>`<div class="chan-chip ${i===active?'active':''}" data-i="${i}" style="--chip-accent:${t.accent}"><span class="chan-logo">${t.logo}</span><span class="chan-label"><span class="nm">${t.name}</span><span class="ct">${t.sub}</span></span>${t.unread?`<span class="unread">${t.unread}</span>`:''}</div>`).join('');
+    track.querySelectorAll('.chan-chip').forEach(el=>el.onclick=()=>{active=+el.dataset.i;render();});
+  }
+
+  // ---------- OFFICE ----------
+  const ROOMS=[
+    {cls:'r1',n:'Main Office',d:'#4ade80',c:3,ppl:[{img:AV.corgi,nm:'Chris',s:'online',b:'📞 Shelly Jones'},{img:AV.husky,nm:'Jon',s:'online'},{img:AV.fox,nm:'Matt',s:'online',b:'📞 Henderson deal'}]},
+    {cls:'r2',n:'Conference',d:'#ef4444',c:2,ppl:[{img:AV.retriever,nm:'Mike',s:'busy'},{img:AV.cat,nm:'Sara',s:'busy'}]},
+    {cls:'r3',n:'Break Room',d:'#fbbf24',c:1,ppl:[{img:AV.redpanda,nm:'Dana',s:'away'}]},
+    {cls:'r4',n:'Focus Room',d:'#a78bfa',c:1,ppl:[{img:AV.owl,nm:'Leo',s:'dnd'}]},
+    {cls:'r5',n:'Lounge',d:'#60a5fa',c:1,ppl:[{img:AV.parrot,nm:'Nina',s:'online'}]},
+  ];
+  function officePane(){
+    const grid=ROOMS.map(r=>`<div class="room ${r.cls}"><div class="room-lbl"><span class="d" style="background:${r.d};box-shadow:0 0 8px ${r.d}88"></span><span class="n">${r.n}</span><span class="c">${r.c}</span></div><div class="people">${r.ppl.map(p=>`<div class="person">${p.b?`<div class="bubble"><span class="pd"></span>${p.b}</div>`:''}${imgEl(p)}<span class="sdot ${p.s}"></span><span class="nm">${p.nm}</span></div>`).join('')}</div></div>`).join('');
+    return `<div class="pane active" style="flex-direction:column;"><div class="office-wrap"><div class="office-stage"><div class="office-grid">${grid}</div></div></div>
+      <div class="botbar"><div class="composer-inner"><div class="cc"><span class="chan-logo">${LOGOS.office}</span><span class="clab">Team</span></div><input class="ci" placeholder="Message the team or type / for a command…"><button class="cb mic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg></button><button class="cb send"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg></button></div></div></div>`;
+  }
+
+  // ---------- SLACK ----------
+  const SLACK=[
+    {nm:'#sales',ini:'#',pv:'Matt: closed the Henderson deal 🎉',tm:'2m',un:3,via:'#sales',th:[{w:'them',n:'Matt B',t:'Just closed the Henderson deal 🎉',tm:'10:02'},{w:'them',n:'Sara K',t:'Huge! Nice work 👏',tm:'10:03'},{w:'me',t:'Let’s kick off onboarding today',tm:'10:05'}]},
+    {nm:'#dispatch',ini:'#',pv:'Mike: 3 jobs scheduled tomorrow',tm:'18m',un:0,via:'#dispatch',th:[{w:'them',n:'Mike B',t:'3 jobs scheduled tomorrow, all confirmed',tm:'9:47'}]},
+    {nm:'Dana R',img:AV.redpanda,pv:'Sent the new ad creatives',tm:'1h',un:0,via:'DM',th:[{w:'them',n:'Dana R',t:'Sent over the new ad creatives — thoughts?',tm:'8:55'}]},
+  ];
+  let slackI=0;
+  function chatPane(data,sel,setSel,placeholder,logo,label,accent){
+    const cv=data[sel];
+    const list=data.map((c,i)=>`<div class="conv ${i===sel?'active':''}" data-i="${i}">${imgEl(c)}<div class="conv-mid"><div class="conv-nm">${c.nm}</div><div class="conv-pv">${c.pv}</div></div><div class="conv-meta"><div class="conv-tm">${c.tm}</div>${c.un?`<div class="conv-un">${c.un}</div>`:''}</div></div>`).join('');
+    const body=cv.th.map(m=>`<div class="bubble2 ${m.w}">${m.w==='them'&&m.n?`<span class="nmlbl">${m.n}</span>`:''}${m.t}<span class="tmlbl">${m.tm}</span></div>`).join('');
+    return `<div class="pane active"><div class="twopane"><div class="listcol"><div class="listhead">${label}</div>${list}</div>
+      <div class="rightcol"><div class="thread-head">${imgEl(cv)}<div><div class="t-nm">${cv.nm}</div><div class="t-sub"><span class="via" style="background:${accent}22;color:${accent};border:1px solid ${accent}55">${cv.via}</span> active now</div></div></div>
+      <div class="thread-body">${body}</div>
+      <div class="botbar"><div class="composer-inner"><div class="cc"><span class="chan-logo">${logo}</span><span class="clab">${label}</span></div><input class="ci" placeholder="${placeholder}"><button class="cb mic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg></button><button class="cb ai"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 5.5L19.5 9l-5.6 1.5L12 16l-1.9-5.5L4.5 9l5.6-1.5z"/></svg></button><button class="cb send"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg></button></div></div></div></div></div>`;
+  }
+
+  // ---------- GMAIL ----------
+  const MAIL=[
+    {from:'Sally Jones',ini:'SJ',subj:'Re: Kitchen remodel quote',snip:'Following up on the quote — can we talk today?',tm:'9:58 AM',unread:true,body:`Hi Chris,<br><br>Following up on the quote for the kitchen remodel. Things are moving fast on our end — can we talk sometime today?<br><br>Thanks,<br>Sally`},
+    {from:'Acme Procurement',ini:'AP',subj:'PO #4471 approved',snip:'Invoice attached, net-30 terms.',tm:'4:30 AM',unread:true,body:`Hi Chris,<br><br>PO #4471 is approved. Invoice attached, net-30.<br><br>Best,<br>Acme Procurement`},
+    {from:'LinkedIn',ini:'in',subj:'You appeared in 9 searches',snip:'See who’s looking at your profile this week.',tm:'Yesterday',unread:false,body:`You appeared in 9 searches this week.`},
+  ];
+  let mailI=0;
+  function gmailPane(){
+    const m=MAIL[mailI];
+    const list=MAIL.map((e,i)=>`<div class="mail-row ${e.unread?'unread':''} ${i===mailI?'':''}" data-i="${i}"><span class="mail-star">☆</span>${e.unread?'<span class="mail-dot"></span>':'<span style="width:8px"></span>'}<span class="mail-from">${e.from}</span><span class="mail-snip"><b>${e.subj}</b> — ${e.snip}</span><span class="mail-time">${e.tm}</span></div>`).join('');
+    return `<div class="pane active"><div class="twopane">
+      <div class="listcol"><div class="mail-toolbar"><button class="mail-tb-btn primary">✎ Compose</button><input class="mail-search" placeholder="Search mail…"></div>${list}</div>
+      <div class="rightcol mail-reader"><div class="mail-rhead"><div class="mail-subj">${m.subj}</div><div class="mail-rfrom"><div class="ini" style="width:40px;height:40px">${m.ini}</div><div><div class="t-nm" style="font-size:.9rem;font-weight:700;color:#fff">${m.from}</div><div class="t-sub" style="font-size:.7rem;color:rgba(255,255,255,.45)">to me · ${m.tm}</div></div></div></div>
+      <div class="mail-rbody">${m.body}</div>
+      <div class="mail-actions"><button class="cb send" style="width:auto;padding:0 16px;gap:6px;font-size:.8rem;font-weight:600">↩ Reply</button><button class="mail-tb-btn">Reply all</button><button class="mail-tb-btn">Forward</button><button class="mail-tb-btn" style="margin-left:auto;color:#e54040;border-color:rgba(229,64,64,.3)"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="margin-right:4px"><path d="M12 2l1.9 5.5L19.5 9l-5.6 1.5L12 16l-1.9-5.5L4.5 9l5.6-1.5z"/></svg>AI draft reply</button></div></div></div></div>`;
+  }
+
+  // ---------- RINGCENTRAL ----------
+  const CALLS=[
+    {type:'vm',nm:'Mrs. Jones',sub:'Voicemail · 0:48',tm:'25m',ico:'✉'},
+    {type:'miss',nm:'Unknown',sub:'Missed call',tm:'1h',ico:'↘'},
+    {type:'out',nm:'Henderson LLC',sub:'Outgoing · 12:30',tm:'3h',ico:'↗'},
+    {type:'in',nm:'Sara K',sub:'Incoming · 4:05',tm:'5h',ico:'↘'},
+  ];
+  function phonePane(){
+    const calls=CALLS.map(c=>`<div class="call-row"><div class="call-ico ${c.type}">${c.ico}</div><div class="call-mid"><div class="call-nm">${c.nm}</div><div class="call-sub">${c.sub}</div></div><div class="call-tm">${c.tm}</div></div>`).join('');
+    const bars=Array.from({length:32}).map((_,i)=>`<span style="height:${30+Math.round(50*Math.abs(Math.sin(i)))}%"></span>`).join('');
+    const keys=[['1',''],['2','ABC'],['3','DEF'],['4','GHI'],['5','JKL'],['6','MNO'],['7','PQRS'],['8','TUV'],['9','WXYZ'],['*',''],['0','+'],['#','']];
+    const pad=keys.map(k=>`<button class="dkey">${k[0]}<small>${k[1]}</small></button>`).join('');
+    return `<div class="pane active"><div class="phone-wrap">
+      <div class="listcol"><div class="listhead">Recents & Voicemail</div>${calls}</div>
+      <div class="rightcol"><div class="phone-main">
+        <div class="vm-card">
+          <div class="vm-top"><div class="ini" style="width:44px;height:44px">MJ</div><div><div class="vm-nm">Mrs. Jones</div><div class="vm-sub">Voicemail · today 9:40 AM · 0:48</div></div></div>
+          <div class="wave">${bars}</div>
+          <div class="vm-trans"><div class="ai"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 5.5L19.5 9l-5.6 1.5L12 16l-1.9-5.5L4.5 9l5.6-1.5z"/></svg>Noah transcript</div>“Hi, I need to reschedule my install for next week if possible. Please call me back.”</div>
+          <div class="vm-actions"><button class="pbtn call"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15 15 0 006.6 6.6l2.2-2.2a1 1 0 011-.24 11 11 0 003.5.56 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11 11 0 00.56 3.5 1 1 0 01-.24 1z"/></svg>Call back</button><button class="pbtn">▶ Play</button><button class="pbtn">✉ Message</button></div>
+        </div>
+        <div class="dialnum" id="dialnum"></div>
+        <div class="dialpad" id="dialpad">${pad}</div>
+      </div>
+      <div class="botbar"><div class="dialbar"><span class="chan-logo">${LOGOS.ringcentral}</span><input id="dialinput" placeholder="Enter a number to call…"><button class="callbtn"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15 15 0 006.6 6.6l2.2-2.2a1 1 0 011-.24 11 11 0 003.5.56 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11 11 0 00.56 3.5 1 1 0 01-.24 1z"/></svg></button></div></div>
+      </div></div></div>`;
+  }
+
+  // ---------- SMS ----------
+  const SMS=[
+    {nm:'Marcus Lee',ini:'ML',pv:'Need a commercial HVAC bid by Friday',tm:'40m',un:1,via:'SMS',th:[{w:'them',n:'Marcus',t:'Saw your ad — do you handle commercial HVAC installs? Need a bid by Friday.',tm:'9:20'}]},
+    {nm:'Shelly Jones',img:AV.cat,pv:'Thanks! See you at 3 👍',tm:'2h',un:0,via:'SMS',th:[{w:'me',t:'I’ll call you at 3 to go over everything',tm:'7:30'},{w:'them',n:'Shelly',t:'Thanks! See you at 3 👍',tm:'7:31'}]},
+  ];
+  let smsI=0;
+
+  function render(){
+    renderChips();
+    const t=TABS[active];
+    if(t.id==='office') stage.innerHTML=officePane();
+    else if(t.id==='slack') stage.innerHTML=chatPane(SLACK,slackI,v=>slackI=v,'Message #sales…',LOGOS.slack,'Slack','#E01E5A');
+    else if(t.id==='gmail') stage.innerHTML=gmailPane();
+    else if(t.id==='ringcentral') stage.innerHTML=phonePane();
+    else if(t.id==='sms') stage.innerHTML=chatPane(SMS,smsI,v=>smsI=v,'Send a text…',LOGOS.sms,'Text','#25D366');
+    wire();
+  }
+  function wire(){
+    stage.querySelectorAll('.conv').forEach(el=>el.onclick=()=>{ const i=+el.dataset.i; if(TABS[active].id==='slack')slackI=i; else smsI=i; render(); });
+    stage.querySelectorAll('.mail-row').forEach(el=>el.onclick=()=>{ mailI=+el.dataset.i; render(); });
+    const di=document.getElementById('dialinput'), dn=document.getElementById('dialnum');
+    stage.querySelectorAll('.dkey').forEach(k=>k.onclick=()=>{ const c=k.textContent.trim()[0]; if(di){di.value+=c;} if(dn){dn.textContent=di.value;} });
+    stage.querySelectorAll('.cb.mic').forEach(b=>b.onclick=()=>{ b.classList.toggle('rec'); const inp=b.closest('.composer-inner').querySelector('.ci'); if(!b.classList.contains('rec')&&!inp.value)inp.value="Hey Sally, I'll call you at 3 PM today."; });
+    stage.querySelectorAll('.cb.ai').forEach(b=>b.onclick=()=>{ const inp=b.closest('.composer-inner').querySelector('.ci'); inp.value="Hi — happy to help. I'll follow up shortly with details."; inp.focus(); });
+  }
+  document.getElementById('prev').onclick=()=>{active=(active-1+TABS.length)%TABS.length;render();};
+  document.getElementById('next').onclick=()=>{active=(active+1)%TABS.length;render();};
+  document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'){active=(active-1+TABS.length)%TABS.length;render();}if(e.key==='ArrowRight'){active=(active+1)%TABS.length;render();}});
+  render();
+</script>
+</body>
+</html>
