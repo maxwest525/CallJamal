@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Noah Connect — Shell Prototype</title>
+<style>
+  *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #080809;
+    --accent: #e54040;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg); color: rgba(255,255,255,.85);
+    height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+  }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 3px; }
+
+  /* ---------- Top channel bar ---------- */
+  .topbar {
+    height: 68px; flex-shrink: 0;
+    display: flex; align-items: center; gap: 14px; padding: 0 20px;
+    background: linear-gradient(180deg, #121214, #0c0c0e);
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    box-shadow: 0 6px 20px rgba(0,0,0,.35);
+    position: relative; z-index: 20;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; padding-right: 8px; }
+  .brand-mark { width: 30px; height: 30px; border-radius: 9px; background: linear-gradient(135deg,#e54040,#a02828); display: flex; align-items: center; justify-content: center; font-weight: 800; color: #fff; font-size: .95rem; box-shadow: 0 4px 12px rgba(229,64,64,.35); }
+  .brand-name { font-size: .9rem; font-weight: 700; color: #fff; letter-spacing: -.2px; }
+  .brand-name small { display: block; font-size: .6rem; font-weight: 500; color: rgba(255,255,255,.4); letter-spacing: .5px; }
+
+  .chan-arrow {
+    width: 36px; height: 36px; flex-shrink: 0; border-radius: 10px;
+    border: 1px solid rgba(255,255,255,.1); background: rgba(255,255,255,.03);
+    color: rgba(255,255,255,.5); cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: all .15s;
+  }
+  .chan-arrow:hover { background: rgba(255,255,255,.08); color: #fff; border-color: rgba(255,255,255,.2); }
+
+  .chan-track { flex: 1; display: flex; align-items: center; gap: 10px; justify-content: center; overflow: hidden; }
+  .chan-chip {
+    display: flex; align-items: center; gap: 9px; padding: 9px 16px; border-radius: 12px;
+    background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07);
+    cursor: pointer; transition: all .2s; position: relative; white-space: nowrap;
+  }
+  .chan-chip:hover { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.14); transform: translateY(-1px); }
+  .chan-chip.active { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.2); box-shadow: 0 8px 24px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.08); }
+  .chan-chip.active::after { content: ''; position: absolute; left: 16px; right: 16px; bottom: -10px; height: 3px; border-radius: 3px; background: var(--chip-accent, #fff); box-shadow: 0 0 12px var(--chip-accent, #fff); }
+  .chan-logo { width: 22px; height: 22px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .chan-label { display: flex; flex-direction: column; line-height: 1.1; }
+  .chan-label .nm { font-size: .8125rem; font-weight: 600; color: rgba(255,255,255,.9); }
+  .chan-label .ct { font-size: .625rem; color: rgba(255,255,255,.4); }
+  .chan-chip .unread { margin-left: 4px; background: var(--accent); color: #fff; font-size: .625rem; font-weight: 700; min-width: 18px; height: 18px; border-radius: 9px; padding: 0 5px; display: flex; align-items: center; justify-content: center; }
+
+  .topbar-right { display: flex; align-items: center; gap: 10px; padding-left: 8px; }
+  .me { display: flex; align-items: center; gap: 8px; }
+  .me img { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(74,222,128,.6); }
+  .me .nm { font-size: .8125rem; font-weight: 600; color: #fff; }
+  .me .st { font-size: .625rem; color: #4ade80; }
+
+  /* ---------- Main two-pane channel view ---------- */
+  .stage { flex: 1; display: grid; grid-template-columns: 320px 1fr; overflow: hidden; }
+  .list-pane { border-right: 1px solid rgba(255,255,255,.06); background: rgba(255,255,255,.012); overflow-y: auto; }
+  .list-head { padding: 16px 18px 10px; font-size: .7rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: rgba(255,255,255,.4); display: flex; align-items: center; gap: 8px; }
+  .conv {
+    display: flex; align-items: center; gap: 12px; padding: 12px 18px; cursor: pointer;
+    border-bottom: 1px solid rgba(255,255,255,.03); transition: background .15s;
+  }
+  .conv:hover { background: rgba(255,255,255,.03); }
+  .conv.active { background: rgba(229,64,64,.07); box-shadow: inset 2px 0 0 var(--accent); }
+  .conv img, .conv .ini { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 2px solid rgba(255,255,255,.1); }
+  .conv .ini { display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg,#2a2a2a,#161616); color: rgba(255,255,255,.7); font-weight: 700; font-size: .8rem; }
+  .conv-mid { flex: 1; min-width: 0; }
+  .conv-nm { font-size: .875rem; font-weight: 600; color: rgba(255,255,255,.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .conv-pv { font-size: .75rem; color: rgba(255,255,255,.4); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .conv-meta { text-align: right; flex-shrink: 0; }
+  .conv-tm { font-size: .6875rem; color: rgba(255,255,255,.3); }
+  .conv-un { display: inline-flex; margin-top: 5px; background: var(--accent); color: #fff; font-size: .625rem; font-weight: 700; min-width: 18px; height: 18px; border-radius: 9px; padding: 0 5px; align-items: center; justify-content: center; }
+
+  .thread-pane { display: flex; flex-direction: column; overflow: hidden; background: radial-gradient(circle at 50% 0%, rgba(255,255,255,.02), transparent 60%); }
+  .thread-head { display: flex; align-items: center; gap: 12px; padding: 14px 22px; border-bottom: 1px solid rgba(255,255,255,.06); flex-shrink: 0; }
+  .thread-head img, .thread-head .ini { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,.1); }
+  .thread-head .ini { display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg,#2a2a2a,#161616); color: #fff; font-weight: 700; font-size: .8rem; }
+  .thread-head .t-nm { font-size: .95rem; font-weight: 700; color: #fff; }
+  .thread-head .t-sub { font-size: .7rem; color: rgba(255,255,255,.45); display: flex; align-items: center; gap: 6px; margin-top: 1px; }
+  .via { font-size: .55rem; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; padding: 2px 7px; border-radius: 5px; }
+
+  .thread-body { flex: 1; overflow-y: auto; padding: 24px 22px; display: flex; flex-direction: column; gap: 14px; }
+  .bubble { max-width: 64%; padding: 11px 15px; border-radius: 16px; font-size: .875rem; line-height: 1.5; }
+  .bubble.them { align-self: flex-start; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.08); border-bottom-left-radius: 5px; color: rgba(255,255,255,.85); }
+  .bubble.me { align-self: flex-end; background: linear-gradient(135deg,#e54040,#c73535); color: #fff; border-bottom-right-radius: 5px; box-shadow: 0 6px 18px rgba(229,64,64,.25); }
+  .bubble .b-tm { display: block; font-size: .625rem; opacity: .6; margin-top: 5px; }
+
+  /* ---------- Persistent bottom composer ---------- */
+  .composer {
+    flex-shrink: 0; padding: 14px 18px 18px;
+    background: linear-gradient(0deg, #0c0c0e, rgba(12,12,14,.6));
+    border-top: 1px solid rgba(255,255,255,.08);
+  }
+  .composer-inner {
+    display: flex; align-items: center; gap: 10px; padding: 8px 8px 8px 16px;
+    background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.12);
+    border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.05);
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .composer-inner:focus-within { border-color: rgba(229,64,64,.4); box-shadow: 0 10px 30px rgba(0,0,0,.35), 0 0 0 3px rgba(229,64,64,.1); }
+  .composer-chan { display: flex; align-items: center; gap: 7px; flex-shrink: 0; padding-right: 12px; border-right: 1px solid rgba(255,255,255,.1); }
+  .composer-chan .clogo { width: 20px; height: 20px; }
+  .composer-chan .clab { font-size: .7rem; font-weight: 700; color: rgba(255,255,255,.6); text-transform: uppercase; letter-spacing: .5px; }
+  .composer-input { flex: 1; background: transparent; border: none; outline: none; color: #fff; font-size: .9rem; padding: 8px 4px; }
+  .composer-input::placeholder { color: rgba(255,255,255,.3); }
+  .c-btn {
+    width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0; cursor: pointer; transition: all .15s;
+    display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,.1); background: rgba(255,255,255,.04); color: rgba(255,255,255,.55);
+  }
+  .c-btn:hover { background: rgba(255,255,255,.1); color: #fff; }
+  .c-btn.mic.rec { background: rgba(229,64,64,.18); border-color: rgba(229,64,64,.4); color: var(--accent); animation: micpulse 1.2s infinite; }
+  @keyframes micpulse { 0%,100% { box-shadow: 0 0 0 0 rgba(229,64,64,.3); } 50% { box-shadow: 0 0 0 6px rgba(229,64,64,0); } }
+  .c-btn.ai { color: var(--accent); }
+  .c-btn.send { background: linear-gradient(135deg,#e54040,#c73535); border-color: transparent; color: #fff; box-shadow: 0 6px 16px rgba(229,64,64,.3); }
+  .c-btn.send:hover { transform: translateY(-1px); }
+  .dictation-hint { font-size: .7rem; color: var(--accent); padding: 6px 4px 0; height: 22px; opacity: 0; transition: opacity .2s; }
+  .dictation-hint.on { opacity: 1; }
+
+  .note { position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%); font-size: .7rem; color: rgba(255,255,255,.3); }
+</style>
+</head>
+<body>
+  <!-- Top channel bar -->
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark">N</div>
+      <div class="brand-name">Noah Connect<small>COMMS HUB</small></div>
+    </div>
+    <button class="chan-arrow" id="prevChan" title="Previous channel (←)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <div class="chan-track" id="chanTrack"></div>
+    <button class="chan-arrow" id="nextChan" title="Next channel (→)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+    <div class="topbar-right">
+      <div class="me">
+        <img src="https://u.hyperfx.ai/s/gXUkHja4ja" alt="me" />
+        <div><div class="nm">Chris B</div><div class="st">● Online</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Channel content -->
+  <div class="stage">
+    <div class="list-pane">
+      <div class="list-head" id="listHead">Conversations</div>
+      <div id="convList"></div>
+    </div>
+    <div class="thread-pane">
+      <div class="thread-head" id="threadHead"></div>
+      <div class="thread-body" id="threadBody"></div>
+      <!-- Persistent composer -->
+      <div class="composer">
+        <div class="composer-inner">
+          <div class="composer-chan" id="composerChan"></div>
+          <input class="composer-input" id="composerInput" placeholder="Type a message…" />
+          <button class="c-btn mic" id="micBtn" title="Dictate">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+          </button>
+          <button class="c-btn ai" id="aiBtn" title="AI draft">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 5.5L19.5 9l-5.6 1.5L12 16l-1.9-5.5L4.5 9l5.6-1.5L12 2z"/></svg>
+          </button>
+          <button class="c-btn send" id="sendBtn" title="Send">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+          </button>
+        </div>
+        <div class="dictation-hint" id="dictHint">● Listening… speak your message</div>
+      </div>
+    </div>
+  </div>
+  <div class="note">Prototype · use ← → arrows or click a channel to switch · composer stays docked</div>
+
+<script>
+  const AV = {
+    corgi:'https://u.hyperfx.ai/s/gXUkHja4ja', husky:'https://u.hyperfx.ai/s/Bel9MDEiAV',
+    retriever:'https://u.hyperfx.ai/s/7ygmluZRZb', fox:'https://u.hyperfx.ai/s/N4eR2TNVsi',
+    cat:'https://u.hyperfx.ai/s/DAiHauhCON', redpanda:'https://u.hyperfx.ai/s/x54sr05YJB',
+    owl:'https://u.hyperfx.ai/s/jMCDHyyNdx', parrot:'https://u.hyperfx.ai/s/nqVUnF2v8A', pug:'https://u.hyperfx.ai/s/LSxctH0ZeQ',
+  };
+  // Brand logos (inline SVG)
+  const LOGOS = {
+    slack: `<svg viewBox="0 0 24 24" width="22" height="22"><path fill="#36C5F0" d="M5.04 15.17a2.52 2.52 0 11-2.52-2.52h2.52v2.52z"/><path fill="#36C5F0" d="M6.31 15.17a2.52 2.52 0 015.04 0v6.31a2.52 2.52 0 11-5.04 0v-6.31z"/><path fill="#2EB67D" d="M8.83 5.04a2.52 2.52 0 11-2.52-2.52v2.52H8.83z" transform="translate(0 0)"/><path fill="#2EB67D" d="M8.83 6.31a2.52 2.52 0 010 5.04H2.52a2.52 2.52 0 110-5.04h6.31z"/><path fill="#ECB22E" d="M18.96 8.83a2.52 2.52 0 112.52 2.52h-2.52V8.83z"/><path fill="#ECB22E" d="M17.69 8.83a2.52 2.52 0 01-5.04 0V2.52a2.52 2.52 0 115.04 0v6.31z"/><path fill="#E01E5A" d="M15.17 18.96a2.52 2.52 0 112.52 2.52v-2.52h-2.52z"/><path fill="#E01E5A" d="M15.17 17.69a2.52 2.52 0 010-5.04h6.31a2.52 2.52 0 110 5.04h-6.31z"/></svg>`,
+    gmail: `<svg viewBox="0 0 24 24" width="22" height="22"><path fill="#4285F4" d="M2 6.5A1.5 1.5 0 013.5 5H4l8 6 8-6h.5A1.5 1.5 0 0122 6.5V18a1 1 0 01-1 1h-3V9.6l-6 4.5-6-4.5V19H3a1 1 0 01-1-1V6.5z"/><path fill="#34A853" d="M2 18V8l4 3v8H3a1 1 0 01-1-1z"/><path fill="#FBBC04" d="M2 6.5A1.5 1.5 0 013.5 5H4l2 1.5V11L2 8V6.5z"/><path fill="#EA4335" d="M18 19V9.6l-6 4.5-6-4.5V5l6 4.5L18 5v14z" opacity=".9"/><path fill="#C5221F" d="M18 5h.5A1.5 1.5 0 0122 6.5V8l-4 3V5z"/></svg>`,
+    ringcentral: `<svg viewBox="0 0 24 24" width="22" height="22"><rect width="24" height="24" rx="6" fill="#FF8800"/><path fill="#fff" d="M7.5 6.5c0-.55.45-1 1-1 5 0 9 4 9 9 0 .55-.45 1-1 1h-1.6c-.5 0-.9-.37-.98-.86A5.5 5.5 0 009.36 9.1c-.49-.08-.86-.48-.86-.98V6.5z"/><circle cx="9" cy="15" r="2.2" fill="#fff"/></svg>`,
+    sms: `<svg viewBox="0 0 24 24" width="22" height="22"><rect width="24" height="24" rx="6" fill="#25D366"/><path fill="#fff" d="M6 7.5A1.5 1.5 0 017.5 6h9A1.5 1.5 0 0118 7.5v6A1.5 1.5 0 0116.5 15H10l-3.2 2.8c-.32.28-.8.05-.8-.38V7.5z"/></svg>`,
+  };
+
+  const CHANNELS = [
+    { id:'slack', name:'Slack', sub:'4 channels', accent:'#E01E5A', unread:3, logo:LOGOS.slack,
+      composer:'Message #sales…',
+      convs:[
+        { name:'#sales', ini:'#', preview:'Matt: closed the Henderson deal 🎉', time:'2m', unread:3,
+          via:'#sales', thread:[
+            {who:'them', name:'Matt B', text:'Just closed the Henderson deal 🎉', tm:'10:02'},
+            {who:'them', name:'Sara K', text:'Huge! Nice work 👏', tm:'10:03'},
+            {who:'me', text:'Let’s get the onboarding kicked off today', tm:'10:05'},
+          ]},
+        { name:'#dispatch', ini:'#', preview:'Mike: 3 jobs scheduled for tomorrow', time:'18m', unread:0, via:'#dispatch',
+          thread:[{who:'them', name:'Mike B', text:'3 jobs scheduled for tomorrow, all confirmed', tm:'9:47'}]},
+        { name:'Dana R', img:AV.redpanda, preview:'Sent the new ad creatives', time:'1h', unread:0, via:'DM',
+          thread:[{who:'them', name:'Dana R', text:'Sent over the new ad creatives — thoughts?', tm:'8:55'}]},
+      ]},
+    { id:'gmail', name:'Gmail', sub:'2 unread', accent:'#EA4335', unread:2, logo:LOGOS.gmail,
+      composer:'Reply to email…',
+      convs:[
+        { name:'Sally Jones', ini:'SJ', preview:'Following up on the kitchen remodel quote', time:'2h', unread:1, via:'EMAIL',
+          thread:[{who:'them', name:'Sally Jones', text:'Hi Chris — following up on the quote for the kitchen remodel. Can we talk today?', tm:'7:58'}]},
+        { name:'Acme Procurement', ini:'AP', preview:'PO #4471 approved — see attached', time:'5h', unread:1, via:'EMAIL',
+          thread:[{who:'them', name:'Acme Procurement', text:'PO #4471 approved. Invoice attached, net-30.', tm:'4:30'}]},
+      ]},
+    { id:'ringcentral', name:'RingCentral', sub:'1 voicemail', accent:'#FF8800', unread:1, logo:LOGOS.ringcentral,
+      composer:'Send an SMS via RingCentral…',
+      convs:[
+        { name:'Mrs. Jones', ini:'MJ', preview:'📞 Voicemail · 0:48 — reschedule install', time:'25m', unread:1, via:'CALL',
+          thread:[{who:'them', name:'Mrs. Jones', text:'📞 Voicemail (0:48): "Hi, I need to reschedule my install for next week if possible…"', tm:'9:40'},
+                  {who:'them', name:'Noah AI', text:'I took a message and flagged this for callback.', tm:'9:41'}]},
+        { name:'Henderson LLC', ini:'HL', preview:'Call ended · 12:30', time:'3h', unread:0, via:'CALL',
+          thread:[{who:'them', name:'Henderson LLC', text:'Call ended · duration 12:30 · outcome: won', tm:'6:50'}]},
+      ]},
+    { id:'sms', name:'Text', sub:'1 new lead', accent:'#25D366', unread:1, logo:LOGOS.sms,
+      composer:'Send a text…',
+      convs:[
+        { name:'Marcus Lee', ini:'ML', preview:'Need a commercial HVAC bid by Friday', time:'40m', unread:1, via:'SMS',
+          thread:[{who:'them', name:'Marcus Lee', text:'Saw your ad — do you handle commercial HVAC installs? Need a bid by Friday.', tm:'9:20'}]},
+        { name:'Shelly Jones', img:AV.cat, preview:'Thanks! See you at 3 👍', time:'2h', unread:0, via:'SMS',
+          thread:[{who:'me', text:'I’ll call you at 3 to go over everything', tm:'7:30'},{who:'them', name:'Shelly', text:'Thanks! See you at 3 👍', tm:'7:31'}]},
+      ]},
+  ];
+
+  let active = 0, activeConv = 0;
+  const track = document.getElementById('chanTrack');
+
+  function renderChips() {
+    track.innerHTML = CHANNELS.map((c,i)=>`
+      <div class="chan-chip ${i===active?'active':''}" data-i="${i}" style="--chip-accent:${c.accent}">
+        <span class="chan-logo">${c.logo}</span>
+        <span class="chan-label"><span class="nm">${c.name}</span><span class="ct">${c.sub}</span></span>
+        ${c.unread?`<span class="unread">${c.unread}</span>`:''}
+      </div>`).join('');
+    track.querySelectorAll('.chan-chip').forEach(el=>el.addEventListener('click',()=>{active=+el.dataset.i;activeConv=0;renderAll();}));
+  }
+  function avatarEl(o, cls){ return o.img?`<img class="${cls||''}" src="${o.img}" alt="${o.name}">`:`<div class="ini ${cls||''}">${o.ini||'?'}</div>`; }
+
+  function renderList(){
+    const ch = CHANNELS[active];
+    document.getElementById('listHead').textContent = ch.name + ' · ' + ch.sub;
+    document.getElementById('convList').innerHTML = ch.convs.map((cv,i)=>`
+      <div class="conv ${i===activeConv?'active':''}" data-i="${i}">
+        ${avatarEl(cv)}
+        <div class="conv-mid"><div class="conv-nm">${cv.name}</div><div class="conv-pv">${cv.preview}</div></div>
+        <div class="conv-meta"><div class="conv-tm">${cv.time}</div>${cv.unread?`<div class="conv-un">${cv.unread}</div>`:''}</div>
+      </div>`).join('');
+    document.querySelectorAll('.conv').forEach(el=>el.addEventListener('click',()=>{activeConv=+el.dataset.i;renderThread();renderList();}));
+  }
+  function renderThread(){
+    const ch = CHANNELS[active], cv = ch.convs[activeConv];
+    document.getElementById('threadHead').innerHTML = `
+      ${avatarEl(cv)}
+      <div><div class="t-nm">${cv.name}</div>
+      <div class="t-sub"><span class="via" style="background:${ch.accent}22;color:${ch.accent};border:1px solid ${ch.accent}55">${cv.via}</span> active now</div></div>`;
+    document.getElementById('threadBody').innerHTML = cv.thread.map(m=>`
+      <div class="bubble ${m.who}">${m.who==='them' && m.name?`<strong style="font-size:.7rem;opacity:.7;display:block;margin-bottom:3px;">${m.name}</strong>`:''}${m.text}<span class="b-tm">${m.tm}</span></div>`).join('');
+    const inp = document.getElementById('composerInput'); inp.placeholder = ch.composer;
+    document.getElementById('composerChan').innerHTML = `<span class="clogo">${ch.logo}</span><span class="clab">${ch.name}</span>`;
+  }
+  function renderAll(){ renderChips(); renderList(); renderThread(); }
+
+  document.getElementById('prevChan').addEventListener('click',()=>{active=(active-1+CHANNELS.length)%CHANNELS.length;activeConv=0;renderAll();});
+  document.getElementById('nextChan').addEventListener('click',()=>{active=(active+1)%CHANNELS.length;activeConv=0;renderAll();});
+  document.addEventListener('keydown',e=>{ if(e.key==='ArrowLeft'){active=(active-1+CHANNELS.length)%CHANNELS.length;activeConv=0;renderAll();} if(e.key==='ArrowRight'){active=(active+1)%CHANNELS.length;activeConv=0;renderAll();}});
+
+  // composer behaviors (mock)
+  const micBtn=document.getElementById('micBtn'), dictHint=document.getElementById('dictHint'), inp=document.getElementById('composerInput');
+  let recording=false;
+  micBtn.addEventListener('click',()=>{
+    recording=!recording; micBtn.classList.toggle('rec',recording); dictHint.classList.toggle('on',recording);
+    if(!recording && !inp.value){ inp.value="Hey Sally, I'll call you at 3 PM today to walk through the quote."; }
+  });
+  document.getElementById('aiBtn').addEventListener('click',()=>{
+    const cv=CHANNELS[active].convs[activeConv];
+    inp.value = cv.via==='SMS' ? "Hi Marcus — yes, we handle commercial HVAC. I can get you a bid by Thursday." :
+                cv.via==='EMAIL' ? "Hi Sally, happy to help — I'll call you at 3 PM today to walk through the quote." :
+                "On it — I'll take care of this now.";
+    inp.focus();
+  });
+  function send(){ if(!inp.value.trim())return; const tb=document.getElementById('threadBody');
+    const d=document.createElement('div'); d.className='bubble me'; d.innerHTML=inp.value+'<span class="b-tm">now</span>'; tb.appendChild(d); tb.scrollTop=tb.scrollHeight; inp.value=''; if(recording){recording=false;micBtn.classList.remove('rec');dictHint.classList.remove('on');} }
+  document.getElementById('sendBtn').addEventListener('click',send);
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter')send();});
+
+  renderAll();
+</script>
+</body>
+</html>
